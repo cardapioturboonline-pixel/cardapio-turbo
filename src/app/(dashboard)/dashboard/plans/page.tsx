@@ -78,9 +78,16 @@ export default function PlansPage() {
   const { business } = useBusiness()
   const currentPlan = business?.plan ?? 'free'
 
+  const checkoutLinks: Record<string, string> = {
+    pro: 'https://mpago.la/16GzkN7',
+    business: 'https://mpago.la/2FYjZHP',
+  }
+
   function handleUpgrade(planId: string) {
     if (planId === currentPlan) return
-    toast.success(`Redirecionando para checkout do plano ${planId}...`)
+    if (checkoutLinks[planId]) {
+      window.open(checkoutLinks[planId], '_blank')
+    }
   }
 
   return (
