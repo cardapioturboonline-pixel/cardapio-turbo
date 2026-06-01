@@ -27,6 +27,7 @@ export default function CustomizePage() {
   const [theme, setTheme] = useState('classic')
   const [font, setFont] = useState('Inter')
   const [layout, setLayout] = useState<'compact' | 'premium'>('premium')
+  const [showWatermark, setShowWatermark] = useState(true)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -35,13 +36,15 @@ export default function CustomizePage() {
       setTheme(business.theme ?? 'classic')
       setFont(business.font ?? 'Inter')
       setLayout((business.layout as 'compact' | 'premium') ?? 'premium')
+      setShowWatermark(business.show_watermark ?? true)
     }
   }, [business])
 
   async function handleSave() {
     setSaving(true)
-    await updateBusiness({ primary_color: color, theme, font, layout })
+    const ok = await updateBusiness({ primary_color: color, theme, font, layout, show_watermark: showWatermark })
     setSaving(false)
+    if (!ok) { toast.error('Erro ao salvar. Tente novamente.'); return }
     toast.success('Personalização salva!')
   }
 
@@ -148,7 +151,7 @@ export default function CustomizePage() {
                 <p className="text-sm font-medium text-gray-900">Marca d&apos;água</p>
                 <p className="text-xs text-gray-500">Exibir &quot;Powered by Cardápio Turbo&quot;</p>
               </div>
-              <Switch checked={!(business?.show_watermark ?? true)} onCheckedChange={() => {}} />
+              <Switch checked={!showWatermark} onCheckedChange={v => setShowWatermark(!v)} />
             </div>
           </div>
         </div>
