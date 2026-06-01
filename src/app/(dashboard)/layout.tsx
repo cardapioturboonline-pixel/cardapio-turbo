@@ -1,11 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { Sidebar } from '@/components/layout/Sidebar'
+import { createClient } from '@/lib/supabase/client'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    async function checkBusiness() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data: biz } = await supabase.from('businesses').select('id').eq('user_id', user.id).maybeSingle()
+      if (!biz) router.replace('/onboarding')
+    }
+    checkBusiness()
+  }, [])
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
