@@ -37,9 +37,9 @@ export function useProducts() {
     let bizId = businessId
     if (!bizId) {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return null
-      const { data: biz } = await supabase.from('businesses').select('id').eq('user_id', user.id).single()
-      if (!biz) return null
+      if (!user) { console.error('[createProduct] user not authenticated'); return null }
+      const { data: biz, error: bizError } = await supabase.from('businesses').select('id').eq('user_id', user.id).single()
+      if (!biz) { console.error('[createProduct] business not found for user', user.id, bizError); return null }
       bizId = biz.id
       setBusinessId(bizId)
     }
@@ -50,6 +50,7 @@ export function useProducts() {
       .insert({ ...insertData, business_id: bizId, views: 0, orders: 0 })
       .select()
       .single()
+    if (error) console.error('[createProduct] insert error:', error)
     if (!error && newProduct) setProducts(prev => [...prev, newProduct])
     return newProduct
   }, [businessId])
