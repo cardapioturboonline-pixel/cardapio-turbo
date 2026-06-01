@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { User, Store, Share2, CreditCard, AlertTriangle } from 'lucide-react'
+import { User, Store, Share2, CreditCard, AlertTriangle, Clock } from 'lucide-react'
+import type { OpeningHours, DayHours } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useBusiness } from '@/lib/hooks/useBusiness'
@@ -9,12 +10,33 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/components/ui/sonner'
 import { useRouter } from 'next/navigation'
 
-type Tab = 'profile' | 'store' | 'social' | 'payment' | 'danger'
+type Tab = 'profile' | 'store' | 'social' | 'hours' | 'payment' | 'danger'
+
+const DAYS = [
+  { key: 'monday', label: 'Segunda-feira' },
+  { key: 'tuesday', label: 'Terça-feira' },
+  { key: 'wednesday', label: 'Quarta-feira' },
+  { key: 'thursday', label: 'Quinta-feira' },
+  { key: 'friday', label: 'Sexta-feira' },
+  { key: 'saturday', label: 'Sábado' },
+  { key: 'sunday', label: 'Domingo' },
+] as const
+
+const DEFAULT_HOURS: OpeningHours = {
+  monday: { open: '08:00', close: '22:00', closed: false },
+  tuesday: { open: '08:00', close: '22:00', closed: false },
+  wednesday: { open: '08:00', close: '22:00', closed: false },
+  thursday: { open: '08:00', close: '22:00', closed: false },
+  friday: { open: '08:00', close: '22:00', closed: false },
+  saturday: { open: '08:00', close: '22:00', closed: false },
+  sunday: { open: '08:00', close: '22:00', closed: true },
+}
 
 const tabs: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
   { id: 'profile', label: 'Perfil', icon: User },
   { id: 'store', label: 'Loja', icon: Store },
   { id: 'social', label: 'Redes Sociais', icon: Share2 },
+  { id: 'hours', label: 'Horários', icon: Clock },
   { id: 'payment', label: 'Pagamentos', icon: CreditCard },
   { id: 'danger', label: 'Zona de Perigo', icon: AlertTriangle },
 ]
@@ -27,6 +49,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const [saving, setSaving] = useState(false)
   const [selectedPayments, setSelectedPayments] = useState<string[]>(['Dinheiro', 'Pix', 'Cartão de Crédito'])
+  const [openingHours, setOpeningHours] = useState<OpeningHours>(DEFAULT_HOURS)
 
   // User profile state
   const [userName, setUserName] = useState('')
@@ -61,6 +84,9 @@ export default function SettingsPage() {
       setFacebook(business.facebook || '')
       setTiktok(business.tiktok || '')
       if (business.payment_methods?.length) setSelectedPayments(business.payment_methods)
+      if (business.opening_hours && Object.keys(business.opening_hours).length > 0) {
+        setOpeningHours({ ...DEFAULT_HOURS, ...business.opening_hours })
+      }
     }
   }, [business])
 
@@ -186,6 +212,51 @@ export default function SettingsPage() {
               </div>
               <button onClick={handleSaveSocial} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
                 {saving ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+          )}
+
+          {activeTab === 'hours' && (
+            <div className="space-y-4">
+              <h2 className="font-semibold text-gray-900">Horários de funcionamento</h2>
+              <p className="text-sm text-gray-500">Configure os dias e horários que sua loja está aberta</p>
+              <div className="space-y-2">
+                {DAYS.map(({ key, label }) => {
+                  const day = openingHours[key] as DayHours ?? { open: '08:00', close: '22:00', closed: false }
+                  return (
+                    <div key={key} className={`flex items-center gap-4 rounded-lg border p-3 ${day.closed ? 'bg-gray-50 border-gray-200' : 'bg-white border-gray-200'}`}>
+                      <div className="w-36 shrink-0">
+                        <p className={`text-sm font-medium ${day.closed ? 'text-gray-400' : 'text-gray-900'}`}>{label}</p>
+                      </div>
+                      <label className="flex items-center gap-2 cursor-pointer shrink-0">
+                        <input type="checkbox" checked={!day.closed}
+                          onChange={e => setOpeningHours(prev => ({ ...prev, [key]: { ...day, closed: !e.target.checked } }))}
+                          className="rounded border-gray-300 text-orange-500" />
+                        <span className="text-xs text-gray-500">{day.closed ? 'Fechado' : 'Aberto'}</span>
+                      </label>
+                      {!day.closed && (
+                        <div className="flex items-center gap-2 flex-1">
+                          <input type="time" value={day.open}
+                            onChange={e => setOpeningHours(prev => ({ ...prev, [key]: { ...day, open: e.target.value } }))}
+                            className="rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                          <span className="text-gray-400 text-sm">até</span>
+                          <input type="time" value={day.close}
+                            onChange={e => setOpeningHours(prev => ({ ...prev, [key]: { ...day, close: e.target.value } }))}
+                            className="rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              <button onClick={async () => {
+                setSaving(true)
+                const ok = await updateBusiness({ opening_hours: openingHours })
+                setSaving(false)
+                if (!ok) { toast.error('Erro ao salvar horários'); return }
+                toast.success('Horários salvos!')
+              }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                {saving ? 'Salvando...' : 'Salvar horários'}
               </button>
             </div>
           )}
