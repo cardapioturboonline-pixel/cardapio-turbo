@@ -19,10 +19,16 @@ export default function QRCodePage() {
     toast.success('Link copiado!')
   }
 
-  function downloadQR() {
+  function getSvgDataUrl() {
     const svg = document.getElementById('qrcode-svg')
-    if (!svg) return
+    if (!svg) return null
     const svgData = new XMLSerializer().serializeToString(svg)
+    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`
+  }
+
+  function downloadQR() {
+    const dataUrl = getSvgDataUrl()
+    if (!dataUrl) return
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     const img = new Image()
@@ -34,9 +40,40 @@ export default function QRCodePage() {
       a.download = `cardapio-${business?.slug ?? 'menu'}-qr.png`
       a.href = canvas.toDataURL('image/png')
       a.click()
+      toast.success('QR Code baixado!')
     }
-    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`
-    toast.success('QR Code baixado!')
+    img.src = dataUrl
+  }
+
+  function downloadPDF() {
+    const dataUrl = getSvgDataUrl()
+    if (!dataUrl) return
+    const win = window.open('', '_blank')
+    if (!win) return
+    win.document.write(`
+      <html>
+        <head>
+          <title>QR Code - ${business?.name ?? 'Cardápio'}</title>
+          <style>
+            body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: sans-serif; }
+            h1 { font-size: 24px; margin-bottom: 8px; color: #111; }
+            p { font-size: 14px; color: #666; margin-bottom: 24px; }
+            img { width: 260px; height: 260px; }
+            .url { margin-top: 16px; font-size: 12px; color: #999; word-break: break-all; max-width: 300px; text-align: center; }
+            @media print { button { display: none; } }
+          </style>
+        </head>
+        <body>
+          <h1>${business?.name ?? 'Cardápio Digital'}</h1>
+          <p>Escaneie o QR Code para acessar o cardápio</p>
+          <img src="${dataUrl}" />
+          <p class="url">${menuUrl}</p>
+          <button onclick="window.print()" style="margin-top:24px;padding:10px 24px;background:#f97316;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer">Imprimir / Salvar PDF</button>
+          <script>setTimeout(() => window.print(), 500)</script>
+        </body>
+      </html>
+    `)
+    win.document.close()
   }
 
   return (
@@ -73,7 +110,7 @@ export default function QRCodePage() {
               <button onClick={downloadQR} className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                 <Download className="h-4 w-4" /> Baixar PNG
               </button>
-              <button onClick={() => toast.success('PDF gerado!')} className="flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-orange-600 transition-colors">
+              <button onClick={downloadPDF} className="flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-orange-600 transition-colors">
                 <Download className="h-4 w-4" /> Baixar PDF
               </button>
             </div>
