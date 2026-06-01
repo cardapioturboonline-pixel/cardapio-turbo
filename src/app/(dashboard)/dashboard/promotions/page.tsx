@@ -6,42 +6,53 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
-import { mockCoupons } from '@/lib/mock-data'
-import type { Coupon } from '@/types'
-import { toast } from '@/components/ui/sonner'
+import { useCoupons } from '@/lib/hooks/useCoupons'
 import { useBusiness } from '@/lib/hooks/useBusiness'
+import { toast } from '@/components/ui/sonner'
 
 export default function PromotionsPage() {
   const { business } = useBusiness()
-  const isPro = business?.plan !== 'free'
-  const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons)
+  const isPro = business !== null && business?.plan !== 'free'
+  const { coupons, loading, createCoupon, updateCoupon, deleteCoupon } = useCoupons()
   const [showForm, setShowForm] = useState(false)
-  const [form, setForm] = useState({ code: '', discount_type: 'percentage' as 'percentage' | 'fixed', discount_value: '', min_order_value: '', expires_at: '' })
+  const [saving, setSaving] = useState(false)
+  const [form, setForm] = useState({
+    code: '',
+    discount_type: 'percentage' as 'percentage' | 'fixed',
+    discount_value: '',
+    min_order_value: '',
+    expires_at: '',
+    is_active: true,
+  })
 
-  function createCoupon() {
+  async function handleCreate() {
     if (!form.code || !form.discount_value) { toast.error('Preencha código e valor do desconto'); return }
-    const newCoupon: Coupon = {
-      id: `coup-${Date.now()}`, business_id: 'biz-001',
+    setSaving(true)
+    const result = await createCoupon({
+      business_id: '',
       code: form.code.toUpperCase(),
       discount_type: form.discount_type,
       discount_value: parseFloat(form.discount_value),
       min_order_value: form.min_order_value ? parseFloat(form.min_order_value) : undefined,
       expires_at: form.expires_at || undefined,
-      uses: 0, is_active: true,
-    }
-    setCoupons(prev => [...prev, newCoupon])
+      is_active: true,
+    })
+    setSaving(false)
+    if (!result) { toast.error('Erro ao criar cupom'); return }
     setShowForm(false)
-    setForm({ code: '', discount_type: 'percentage', discount_value: '', min_order_value: '', expires_at: '' })
+    setForm({ code: '', discount_type: 'percentage', discount_value: '', min_order_value: '', expires_at: '', is_active: true })
     toast.success('Cupom criado!')
   }
 
-  function toggleCoupon(id: string) {
-    setCoupons(prev => prev.map(c => c.id === id ? { ...c, is_active: !c.is_active } : c))
+  async function handleToggle(id: string, is_active: boolean) {
+    await updateCoupon(id, { is_active: !is_active })
   }
 
-  function deleteCoupon(id: string) {
-    setCoupons(prev => prev.filter(c => c.id !== id))
-    toast.success('Cupom excluído!')
+  async function handleDelete(id: string) {
+    if (!confirm('Excluir este cupom?')) return
+    const ok = await deleteCoupon(id)
+    if (ok) toast.success('Cupom excluído!')
+    else toast.error('Erro ao excluir cupom')
   }
 
   return (
@@ -51,7 +62,6 @@ export default function PromotionsPage() {
         <p className="text-sm text-gray-500">Gerencie cupons de desconto e promoções</p>
       </div>
 
-      {/* Coupons section */}
       <div className="rounded-xl border border-gray-200 bg-white p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -105,7 +115,9 @@ export default function PromotionsPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <button onClick={createCoupon} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600">Criar cupom</button>
+              <button onClick={handleCreate} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                {saving ? 'Criando...' : 'Criar cupom'}
+              </button>
               <button onClick={() => setShowForm(false)} className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">Cancelar</button>
             </div>
           </div>
@@ -113,7 +125,8 @@ export default function PromotionsPage() {
 
         {isPro && (
           <div className="space-y-2">
-            {coupons.length === 0 && <p className="text-sm text-gray-400 py-4 text-center">Nenhum cupom cadastrado</p>}
+            {loading && <p className="text-sm text-gray-400 py-4 text-center">Carregando...</p>}
+            {!loading && coupons.length === 0 && <p className="text-sm text-gray-400 py-4 text-center">Nenhum cupom cadastrado</p>}
             {coupons.map(coupon => (
               <div key={coupon.id} className="flex items-center gap-4 rounded-lg border border-gray-200 p-4">
                 <div className="flex-1 min-w-0">
@@ -128,8 +141,8 @@ export default function PromotionsPage() {
                     {` • ${coupon.uses} usos`}
                   </p>
                 </div>
-                <Switch checked={coupon.is_active} onCheckedChange={() => toggleCoupon(coupon.id)} />
-                <button onClick={() => deleteCoupon(coupon.id)} className="rounded-md p-1.5 text-gray-400 hover:text-red-500">
+                <Switch checked={coupon.is_active} onCheckedChange={() => handleToggle(coupon.id, coupon.is_active)} />
+                <button onClick={() => handleDelete(coupon.id)} className="rounded-md p-1.5 text-gray-400 hover:text-red-500">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
