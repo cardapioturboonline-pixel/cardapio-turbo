@@ -126,13 +126,23 @@ export default function PlansPage() {
                 <span className="text-gray-500">{plan.period}</span>
               </div>
 
-              <button
-                onClick={() => handleUpgrade(plan.id)}
-                disabled={isCurrent}
-                className={`w-full rounded-xl py-2.5 text-sm font-semibold transition-colors mb-6 ${isCurrent ? 'bg-gray-100 text-gray-400 cursor-default' : plan.btnClass}`}
-              >
-                {isCurrent ? 'Plano atual' : plan.id === 'free' ? 'Usar grátis' : 'Assinar agora'}
-              </button>
+              {isCurrent || !checkoutLinks[plan.id] ? (
+                <button
+                  disabled={isCurrent}
+                  className={`w-full rounded-xl py-2.5 text-sm font-semibold transition-colors mb-6 ${isCurrent ? 'bg-gray-100 text-gray-400 cursor-default' : plan.btnClass}`}
+                >
+                  {isCurrent ? 'Plano atual' : 'Usar grátis'}
+                </button>
+              ) : (
+                <a
+                  href={checkoutLinks[plan.id]}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`w-full rounded-xl py-2.5 text-sm font-semibold transition-colors mb-6 flex items-center justify-center ${plan.btnClass}`}
+                >
+                  Assinar agora
+                </a>
+              )}
 
               <ul className="space-y-2.5">
                 {plan.features.map((feature, i) => (
