@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS public.businesses (
   trial_ends_at TIMESTAMPTZ,
   is_active BOOLEAN DEFAULT true,
   show_watermark BOOLEAN DEFAULT true,
+  payment_methods TEXT[] DEFAULT '{}',
   custom_domain TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
