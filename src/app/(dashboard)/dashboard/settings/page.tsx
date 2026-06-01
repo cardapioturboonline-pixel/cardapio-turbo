@@ -26,7 +26,7 @@ export default function SettingsPage() {
   const { business, updateBusiness } = useBusiness()
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const [saving, setSaving] = useState(false)
-  const [selectedPayments, setSelectedPayments] = useState(['Dinheiro', 'Pix', 'Cartão de Crédito'])
+  const [selectedPayments, setSelectedPayments] = useState<string[]>(['Dinheiro', 'Pix', 'Cartão de Crédito'])
 
   // User profile state
   const [userName, setUserName] = useState('')
@@ -60,6 +60,7 @@ export default function SettingsPage() {
       setInstagram(business.instagram || '')
       setFacebook(business.facebook || '')
       setTiktok(business.tiktok || '')
+      if (business.payment_methods?.length) setSelectedPayments(business.payment_methods)
     }
   }, [business])
 
@@ -74,15 +75,17 @@ export default function SettingsPage() {
 
   async function handleSaveStore() {
     setSaving(true)
-    await updateBusiness({ name: storeName, whatsapp: storeWhatsapp, city: storeCity })
+    const ok = await updateBusiness({ name: storeName, whatsapp: storeWhatsapp, city: storeCity })
     setSaving(false)
+    if (!ok) { toast.error('Erro ao salvar dados da loja'); return }
     toast.success('Dados da loja salvos!')
   }
 
   async function handleSaveSocial() {
     setSaving(true)
-    await updateBusiness({ instagram, facebook, tiktok })
+    const ok = await updateBusiness({ instagram, facebook, tiktok })
     setSaving(false)
+    if (!ok) { toast.error('Erro ao salvar redes sociais'); return }
     toast.success('Redes sociais salvas!')
   }
 
@@ -199,8 +202,14 @@ export default function SettingsPage() {
                   </label>
                 ))}
               </div>
-              <button onClick={() => toast.success('Formas de pagamento salvas!')} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
-                Salvar
+              <button onClick={async () => {
+                setSaving(true)
+                const ok = await updateBusiness({ payment_methods: selectedPayments })
+                setSaving(false)
+                if (!ok) { toast.error('Erro ao salvar formas de pagamento'); return }
+                toast.success('Formas de pagamento salvas!')
+              }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                {saving ? 'Salvando...' : 'Salvar'}
               </button>
             </div>
           )}

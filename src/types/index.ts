@@ -34,6 +34,7 @@ export interface Business {
   trial_ends_at?: string
   is_active: boolean
   show_watermark: boolean
+  payment_methods?: string[]
   custom_domain?: string
   created_at: string
   updated_at: string
