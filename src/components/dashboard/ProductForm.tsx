@@ -25,7 +25,7 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
     description: initialData?.description ?? '',
     price: initialData?.price?.toString() ?? '',
     promotional_price: initialData?.promotional_price?.toString() ?? '',
-    category_id: initialData?.category_id ?? (categories[0]?.id ?? ''),
+    category_id: initialData?.category_id ?? (categories[0]?.id ?? null) as string | null,
     image_url: initialData?.image_url ?? '',
     is_available: initialData?.is_available ?? true,
     is_featured: initialData?.is_featured ?? false,
@@ -108,8 +108,9 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
             </div>
             <div className="space-y-1.5">
               <Label>Categoria</Label>
-              <select value={form.category_id} onChange={e => setForm(p => ({ ...p, category_id: e.target.value }))}
+              <select value={form.category_id ?? ''} onChange={e => setForm(p => ({ ...p, category_id: e.target.value || null }))}
                 className="h-9 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
+                <option value="">Sem categoria</option>
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
