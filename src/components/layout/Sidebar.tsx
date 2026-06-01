@@ -11,6 +11,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
+import { useBusiness } from '@/lib/hooks/useBusiness'
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -32,6 +33,7 @@ export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [user, setUser] = useState<{ name: string; email: string } | null>(null)
+  const { business } = useBusiness()
 
   useEffect(() => {
     const supabase = createClient()
@@ -51,8 +53,16 @@ export function Sidebar({ onClose }: SidebarProps) {
     router.push('/login')
   }
 
-  const planLabel = 'Free'
-  const planColor = 'secondary' as 'secondary'
+  const isPro = business?.plan !== 'free'
+  const planLabel = isPro ? business!.plan.charAt(0).toUpperCase() + business!.plan.slice(1) : 'Free'
+  const planColor = isPro ? 'default' : 'secondary' as 'default' | 'secondary'
+
+  const trialDaysLeft = (() => {
+    if (!business?.trial_ends_at || isPro) return null
+    const diff = new Date(business.trial_ends_at).getTime() - Date.now()
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
+    return days > 0 ? days : 0
+  })()
 
   return (
     <div className="flex h-full flex-col bg-white border-r border-gray-200">
@@ -96,9 +106,20 @@ export function Sidebar({ onClose }: SidebarProps) {
 
       {/* User footer */}
       <div className="p-4 border-t border-gray-200 space-y-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge variant={planColor}>Plano {planLabel}</Badge>
+          {trialDaysLeft !== null && (
+            <span className={`text-xs font-medium ${trialDaysLeft <= 2 ? 'text-red-500' : 'text-orange-500'}`}>
+              {trialDaysLeft === 0 ? 'Trial expirado' : `${trialDaysLeft} dia${trialDaysLeft !== 1 ? 's' : ''} de trial`}
+            </span>
+          )}
         </div>
+        {trialDaysLeft !== null && trialDaysLeft <= 3 && (
+          <Link href="/dashboard/plans" onClick={onClose}
+            className="block w-full rounded-lg bg-orange-500 px-3 py-2 text-center text-xs font-semibold text-white hover:bg-orange-600 transition-colors">
+            {trialDaysLeft === 0 ? '🔒 Assinar para continuar' : '⚡ Fazer upgrade Pro'}
+          </Link>
+        )}
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-semibold text-sm">
             {user?.name?.[0]?.toUpperCase() || 'U'}

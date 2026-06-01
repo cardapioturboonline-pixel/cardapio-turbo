@@ -130,6 +130,7 @@ export default function OnboardingPage() {
         primary_color: color,
         logo_url:      logoUrl || null,
         plan:          'free',
+        trial_ends_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         is_active:     true,
         show_watermark: true,
         description:   '',
