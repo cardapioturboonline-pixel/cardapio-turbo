@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/sonner'
+import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -18,18 +19,36 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    await new Promise(r => setTimeout(r, 800))
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithPassword({
+      email: form.email,
+      password: form.password,
+    })
     setLoading(false)
+    if (error) {
+      toast.error(error.message === 'Invalid login credentials'
+        ? 'Email ou senha incorretos'
+        : error.message)
+      return
+    }
     toast.success('Login realizado com sucesso!')
     router.push('/dashboard')
+    router.refresh()
   }
 
   async function handleGoogle() {
     setLoading(true)
-    await new Promise(r => setTimeout(r, 600))
-    setLoading(false)
-    toast.success('Login com Google realizado!')
-    router.push('/dashboard')
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+    if (error) {
+      setLoading(false)
+      toast.error('Erro ao entrar com Google')
+    }
   }
 
   return (
