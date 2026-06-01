@@ -40,6 +40,7 @@ const plans = [
       "Personalização básica",
     ],
     cta: "Começar grátis",
+    href: "/register",
   },
   {
     name: "Pro",
@@ -59,10 +60,11 @@ const plans = [
       "Sem marca d'água",
     ],
     cta: "Testar 7 dias grátis",
+    href: "https://mpago.la/16GzkN7",
   },
   {
     name: "Business",
-    price: "R$ 49,90",
+    price: "R$ 79,90",
     period: "/mês",
     badge: null,
     color: "border-purple-500",
@@ -76,7 +78,8 @@ const plans = [
       "IA para recomendações",
       "Relatórios comparativos",
     ],
-    cta: "Falar com vendas",
+    cta: "Assinar Business",
+    href: "https://mpago.la/2FYjZHP",
   },
 ];
 
@@ -137,7 +140,7 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
-            <Link href="/menu/demo">
+            <Link href="/menu/dogao-do-denis-ikir">
               <Button size="lg" variant="outline" className="px-8 py-6 text-lg rounded-xl">
                 Ver demonstração
               </Button>
@@ -285,14 +288,14 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/register">
+                <a href={(plan as { href?: string }).href ?? '/register'} target={((plan as { href?: string }).href ?? '').startsWith('http') ? '_blank' : '_self'} rel="noreferrer">
                   <Button
                     variant={plan.btnVariant}
                     className={`w-full ${plan.btnVariant === 'default' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}`}
                   >
                     {plan.cta}
                   </Button>
-                </Link>
+                </a>
               </div>
             ))}
           </div>
