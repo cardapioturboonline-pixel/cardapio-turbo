@@ -7,6 +7,7 @@ import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from '@/components/ui/sonner'
+import { createClient } from '@/lib/supabase/client'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -26,18 +27,37 @@ export default function RegisterPage() {
       return
     }
     setLoading(true)
-    await new Promise(r => setTimeout(r, 900))
+    const supabase = createClient()
+    const { error } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {
+        data: { full_name: form.name },
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+      },
+    })
     setLoading(false)
-    toast.success('Conta criada! Vamos configurar sua loja.')
+    if (error) {
+      toast.error(error.message)
+      return
+    }
+    toast.success('Conta criada! Verifique seu email para confirmar.')
     router.push('/onboarding')
   }
 
   async function handleGoogle() {
     setLoading(true)
-    await new Promise(r => setTimeout(r, 600))
-    setLoading(false)
-    toast.success('Cadastro com Google realizado!')
-    router.push('/onboarding')
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+      },
+    })
+    if (error) {
+      setLoading(false)
+      toast.error('Erro ao cadastrar com Google')
+    }
   }
 
   return (
