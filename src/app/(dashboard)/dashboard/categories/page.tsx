@@ -32,10 +32,12 @@ export default function CategoriesPage() {
   async function handleSave() {
     if (!form.name) { toast.error('Informe o nome da categoria'); return }
     if (editId) {
-      await updateCategory(editId, form)
+      const ok = await updateCategory(editId, form)
+      if (!ok) { toast.error('Erro ao atualizar categoria'); return }
       toast.success('Categoria atualizada!')
     } else {
-      await createCategory({ ...form, sort_order: categories.length + 1 })
+      const result = await createCategory({ ...form, sort_order: categories.length + 1 })
+      if (!result) { toast.error('Erro ao criar categoria'); return }
       toast.success('Categoria criada!')
     }
     setShowForm(false)

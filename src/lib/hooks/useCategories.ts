@@ -76,6 +76,12 @@ export function useCategories() {
       ;[arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]]
       return arr.map((c, i) => ({ ...c, sort_order: i + 1 }))
     })
+    // Persist new sort_order to DB
+    setCategories(updated => {
+      const supabase = createClient()
+      updated.forEach(c => supabase.from('categories').update({ sort_order: c.sort_order }).eq('id', c.id))
+      return updated
+    })
   }, [])
 
   return { categories, loading, createCategory, updateCategory, deleteCategory, reorderCategory }
