@@ -22,7 +22,7 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false)
 
   const [info, setInfo] = useState({ name: '', whatsapp: '', city: '', type: '' })
-  const [visual, setVisual] = useState({ primaryColor: '#f97316' })
+  const [visual, setVisual] = useState({ primaryColor: '#f97316', logoUrl: '' })
   const [product, setProduct] = useState({ name: '', price: '', category: 'Destaque' })
 
   async function handleFinish() {
@@ -131,15 +131,34 @@ export default function OnboardingPage() {
               </div>
               <div className="space-y-1.5">
                 <Label>Logo da loja</Label>
-                <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 px-6 py-8 cursor-pointer hover:border-orange-300 transition-colors">
-                  <div className="text-center">
-                    <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-orange-50">
-                      <Package className="h-5 w-5 text-orange-500" />
+                <label className="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 px-6 py-8 cursor-pointer hover:border-orange-300 transition-colors">
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={e => {
+                      const file = e.target.files?.[0]
+                      if (!file) return
+                      if (file.size > 2 * 1024 * 1024) {
+                        toast.error('Imagem muito grande. Máximo 2MB.')
+                        return
+                      }
+                      const url = URL.createObjectURL(file)
+                      setVisual(p => ({ ...p, logoUrl: url }))
+                    }}
+                  />
+                  {visual.logoUrl ? (
+                    <img src={visual.logoUrl} alt="Logo" className="h-20 w-20 rounded-lg object-cover" />
+                  ) : (
+                    <div className="text-center">
+                      <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-orange-50">
+                        <Package className="h-5 w-5 text-orange-500" />
+                      </div>
+                      <p className="text-sm text-gray-500">Clique para fazer upload da logo</p>
+                      <p className="text-xs text-gray-400 mt-1">PNG, JPG até 2MB</p>
                     </div>
-                    <p className="text-sm text-gray-500">Clique para fazer upload da logo</p>
-                    <p className="text-xs text-gray-400 mt-1">PNG, JPG até 2MB</p>
-                  </div>
-                </div>
+                  )}
+                </label>
               </div>
             </div>
           )}
