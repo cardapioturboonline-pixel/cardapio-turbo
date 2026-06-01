@@ -42,7 +42,7 @@ export default function RegisterPage() {
       return
     }
     toast.success('Conta criada! Verifique seu email para confirmar.')
-    router.push('/onboarding')
+    router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
   }
 
   async function handleGoogle() {
