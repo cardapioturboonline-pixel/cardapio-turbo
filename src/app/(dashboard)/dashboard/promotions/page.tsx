@@ -6,12 +6,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
-import { mockCoupons, mockBusiness } from '@/lib/mock-data'
+import { mockCoupons } from '@/lib/mock-data'
 import type { Coupon } from '@/types'
 import { toast } from '@/components/ui/sonner'
+import { useBusiness } from '@/lib/hooks/useBusiness'
 
 export default function PromotionsPage() {
-  const isPro = mockBusiness.plan !== 'free'
+  const { business } = useBusiness()
+  const isPro = business?.plan !== 'free'
   const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons)
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ code: '', discount_type: 'percentage' as 'percentage' | 'fixed', discount_value: '', min_order_value: '', expires_at: '' })

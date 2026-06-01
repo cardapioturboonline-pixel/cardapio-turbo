@@ -15,7 +15,7 @@ export default function CategoriesPage() {
   const { products } = useProducts()
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
-  const [form, setForm] = useState({ name: '', description: '', icon: '🍽', business_id: 'biz-001', sort_order: 0, is_active: true })
+  const [form, setForm] = useState({ name: '', description: '', icon: '🍽', business_id: '', sort_order: 0, is_active: true })
 
   function productCount(catId: string) {
     return products.filter(p => p.category_id === catId).length
@@ -40,7 +40,7 @@ export default function CategoriesPage() {
     }
     setShowForm(false)
     setEditId(null)
-    setForm({ name: '', description: '', icon: '🍽', business_id: 'biz-001', sort_order: 0, is_active: true })
+    setForm({ name: '', description: '', icon: '🍽', business_id: '', sort_order: 0, is_active: true })
   }
 
   async function handleDelete(id: string) {

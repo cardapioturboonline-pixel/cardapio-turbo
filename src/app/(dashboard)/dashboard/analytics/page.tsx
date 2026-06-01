@@ -3,8 +3,9 @@
 import { Eye, TrendingUp, Package, Lock, Clock } from 'lucide-react'
 import { StatsCard } from '@/components/shared/StatsCard'
 import { PlanGate } from '@/components/shared/PlanGate'
-import { mockStats, mockBusiness, mockProducts } from '@/lib/mock-data'
+import { mockStats, mockProducts } from '@/lib/mock-data'
 import { formatCurrency } from '@/lib/utils/format'
+import { useBusiness } from '@/lib/hooks/useBusiness'
 
 const hourlyData = [
   { hour: '08h', visits: 12 }, { hour: '09h', visits: 23 }, { hour: '10h', visits: 45 },
@@ -17,6 +18,9 @@ const maxHourly = Math.max(...hourlyData.map(h => h.visits))
 const maxViews = Math.max(...mockStats.views_by_day.map(d => d.count))
 
 export default function AnalyticsPage() {
+  const { business } = useBusiness()
+  const currentPlan = business?.plan ?? 'free'
+
   return (
     <div className="space-y-6">
       <div>
@@ -70,7 +74,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Peak hours - Pro only */}
-      <PlanGate requiredPlan="pro" currentPlan={mockBusiness.plan}>
+      <PlanGate requiredPlan="pro" currentPlan={currentPlan}>
         <div className="rounded-xl border border-gray-200 bg-white p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="h-5 w-5 text-orange-500" />
