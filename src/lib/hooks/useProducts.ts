@@ -1,57 +1,74 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import type { Product } from '@/types'
-import { mockProducts } from '@/lib/mock-data'
+import { createClient } from '@/lib/supabase/client'
 
 export function useProducts() {
-  const [products, setProducts] = useState<Product[]>(mockProducts)
-  const [loading, setLoading] = useState(false)
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [businessId, setBusinessId] = useState<string | null>(null)
 
-  const createProduct = useCallback(async (data: Omit<Product, 'id' | 'created_at' | 'updated_at' | 'views' | 'orders'>) => {
-    setLoading(true)
-    await new Promise(r => setTimeout(r, 600))
-    const newProduct: Product = {
-      ...data,
-      id: `prod-${Date.now()}`,
-      views: 0,
-      orders: 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLoading(false); return }
+      const { data: biz } = await supabase
+        .from('businesses')
+        .select('id')
+        .eq('user_id', user.id)
+        .single()
+      if (!biz) { setLoading(false); return }
+      setBusinessId(biz.id)
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('business_id', biz.id)
+        .order('sort_order', { ascending: true })
+      setProducts(data || [])
+      setLoading(false)
     }
-    setProducts(prev => [...prev, newProduct])
-    setLoading(false)
-    return newProduct
+    load()
   }, [])
 
+  const createProduct = useCallback(async (data: Omit<Product, 'id' | 'created_at' | 'updated_at' | 'views' | 'orders'>) => {
+    if (!businessId) return null
+    const supabase = createClient()
+    const { data: newProduct, error } = await supabase
+      .from('products')
+      .insert({ ...data, business_id: businessId, views: 0, orders: 0 })
+      .select()
+      .single()
+    if (!error && newProduct) setProducts(prev => [...prev, newProduct])
+    return newProduct
+  }, [businessId])
+
   const updateProduct = useCallback(async (id: string, data: Partial<Product>) => {
-    setLoading(true)
-    await new Promise(r => setTimeout(r, 500))
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, ...data, updated_at: new Date().toISOString() } : p))
-    setLoading(false)
-    return true
+    const supabase = createClient()
+    const { error } = await supabase.from('products').update(data).eq('id', id)
+    if (!error) setProducts(prev => prev.map(p => p.id === id ? { ...p, ...data } : p))
+    return !error
   }, [])
 
   const deleteProduct = useCallback(async (id: string) => {
-    setLoading(true)
-    await new Promise(r => setTimeout(r, 400))
-    setProducts(prev => prev.filter(p => p.id !== id))
-    setLoading(false)
-    return true
+    const supabase = createClient()
+    const { error } = await supabase.from('products').delete().eq('id', id)
+    if (!error) setProducts(prev => prev.filter(p => p.id !== id))
+    return !error
   }, [])
 
   const toggleAvailability = useCallback(async (id: string) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, is_available: !p.is_available } : p))
-    return true
-  }, [])
+    const product = products.find(p => p.id === id)
+    if (!product) return false
+    return updateProduct(id, { is_available: !product.is_available })
+  }, [products, updateProduct])
 
   const duplicateProduct = useCallback(async (id: string) => {
     const product = products.find(p => p.id === id)
     if (!product) return null
-    return createProduct({
-      ...product,
-      name: `${product.name} (cópia)`,
-    })
+    const { id: _, created_at, updated_at, views, orders, ...rest } = product
+    return createProduct({ ...rest, name: `${product.name} (cópia)` })
   }, [products, createProduct])
 
   return { products, loading, createProduct, updateProduct, deleteProduct, toggleAvailability, duplicateProduct }

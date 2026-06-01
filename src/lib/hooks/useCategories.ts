@@ -1,43 +1,64 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import type { Category } from '@/types'
-import { mockCategories } from '@/lib/mock-data'
+import { createClient } from '@/lib/supabase/client'
 
 export function useCategories() {
-  const [categories, setCategories] = useState<Category[]>(mockCategories)
-  const [loading, setLoading] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [businessId, setBusinessId] = useState<string | null>(null)
 
-  const createCategory = useCallback(async (data: Omit<Category, 'id' | 'created_at'>) => {
-    setLoading(true)
-    await new Promise(r => setTimeout(r, 500))
-    const newCat: Category = {
-      ...data,
-      id: `cat-${Date.now()}`,
-      created_at: new Date().toISOString(),
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLoading(false); return }
+      const { data: biz } = await supabase
+        .from('businesses')
+        .select('id')
+        .eq('user_id', user.id)
+        .single()
+      if (!biz) { setLoading(false); return }
+      setBusinessId(biz.id)
+      const { data } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('business_id', biz.id)
+        .order('sort_order', { ascending: true })
+      setCategories(data || [])
+      setLoading(false)
     }
-    setCategories(prev => [...prev, newCat])
-    setLoading(false)
-    return newCat
+    load()
   }, [])
 
+  const createCategory = useCallback(async (data: Omit<Category, 'id' | 'created_at'>) => {
+    if (!businessId) return null
+    const supabase = createClient()
+    const { data: newCat, error } = await supabase
+      .from('categories')
+      .insert({ ...data, business_id: businessId })
+      .select()
+      .single()
+    if (!error && newCat) setCategories(prev => [...prev, newCat])
+    return newCat
+  }, [businessId])
+
   const updateCategory = useCallback(async (id: string, data: Partial<Category>) => {
-    setLoading(true)
-    await new Promise(r => setTimeout(r, 400))
-    setCategories(prev => prev.map(c => c.id === id ? { ...c, ...data } : c))
-    setLoading(false)
-    return true
+    const supabase = createClient()
+    const { error } = await supabase.from('categories').update(data).eq('id', id)
+    if (!error) setCategories(prev => prev.map(c => c.id === id ? { ...c, ...data } : c))
+    return !error
   }, [])
 
   const deleteCategory = useCallback(async (id: string) => {
-    setLoading(true)
-    await new Promise(r => setTimeout(r, 400))
-    setCategories(prev => prev.filter(c => c.id !== id))
-    setLoading(false)
-    return true
+    const supabase = createClient()
+    const { error } = await supabase.from('categories').delete().eq('id', id)
+    if (!error) setCategories(prev => prev.filter(c => c.id !== id))
+    return !error
   }, [])
 
-  const reorderCategory = useCallback((id: string, direction: 'up' | 'down') => {
+  const reorderCategory = useCallback(async (id: string, direction: 'up' | 'down') => {
     setCategories(prev => {
       const idx = prev.findIndex(c => c.id === id)
       if (idx === -1) return prev
