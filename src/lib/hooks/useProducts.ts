@@ -33,11 +33,21 @@ export function useProducts() {
   }, [])
 
   const createProduct = useCallback(async (data: Omit<Product, 'id' | 'created_at' | 'updated_at' | 'views' | 'orders'>) => {
-    if (!businessId) return null
     const supabase = createClient()
+    let bizId = businessId
+    if (!bizId) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return null
+      const { data: biz } = await supabase.from('businesses').select('id').eq('user_id', user.id).single()
+      if (!biz) return null
+      bizId = biz.id
+      setBusinessId(bizId)
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { additionals: _additionals, ...insertData } = data as typeof data & { additionals?: unknown }
     const { data: newProduct, error } = await supabase
       .from('products')
-      .insert({ ...data, business_id: businessId, views: 0, orders: 0 })
+      .insert({ ...insertData, business_id: bizId, views: 0, orders: 0 })
       .select()
       .single()
     if (!error && newProduct) setProducts(prev => [...prev, newProduct])
@@ -46,7 +56,9 @@ export function useProducts() {
 
   const updateProduct = useCallback(async (id: string, data: Partial<Product>) => {
     const supabase = createClient()
-    const { error } = await supabase.from('products').update(data).eq('id', id)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { additionals: _additionals, ...updateData } = data as typeof data & { additionals?: unknown }
+    const { error } = await supabase.from('products').update(updateData).eq('id', id)
     if (!error) setProducts(prev => prev.map(p => p.id === id ? { ...p, ...data } : p))
     return !error
   }, [])

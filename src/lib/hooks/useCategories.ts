@@ -33,11 +33,19 @@ export function useCategories() {
   }, [])
 
   const createCategory = useCallback(async (data: Omit<Category, 'id' | 'created_at'>) => {
-    if (!businessId) return null
     const supabase = createClient()
+    let bizId = businessId
+    if (!bizId) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return null
+      const { data: biz } = await supabase.from('businesses').select('id').eq('user_id', user.id).single()
+      if (!biz) return null
+      bizId = biz.id
+      setBusinessId(bizId)
+    }
     const { data: newCat, error } = await supabase
       .from('categories')
-      .insert({ ...data, business_id: businessId })
+      .insert({ ...data, business_id: bizId })
       .select()
       .single()
     if (!error && newCat) setCategories(prev => [...prev, newCat])

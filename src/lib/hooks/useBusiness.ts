@@ -3,10 +3,9 @@
 import { useState, useCallback, useEffect } from 'react'
 import type { Business } from '@/types'
 import { createClient } from '@/lib/supabase/client'
-import { mockBusiness } from '@/lib/mock-data'
 
 export function useBusiness() {
-  const [business, setBusiness] = useState<Business>(mockBusiness)
+  const [business, setBusiness] = useState<Business | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -34,7 +33,7 @@ export function useBusiness() {
       .from('businesses')
       .update(data)
       .eq('user_id', user.id)
-    if (!error) setBusiness(prev => ({ ...prev, ...data }))
+    if (!error) setBusiness(prev => prev ? { ...prev, ...data } : prev)
     setLoading(false)
     return !error
   }, [])

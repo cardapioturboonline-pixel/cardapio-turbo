@@ -52,7 +52,7 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
       return
     }
     setLoading(true)
-    await onSave({
+    const result = await onSave({
       ...form,
       price: parseFloat(form.price),
       promotional_price: form.promotional_price ? parseFloat(form.promotional_price) : undefined,
@@ -66,6 +66,10 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
       })),
     })
     setLoading(false)
+    if (!result) {
+      toast.error('Erro ao salvar produto. Tente novamente.')
+      return
+    }
     toast.success(mode === 'create' ? 'Produto criado!' : 'Produto atualizado!')
     router.push('/dashboard/products')
   }
