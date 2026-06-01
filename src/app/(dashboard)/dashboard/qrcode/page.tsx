@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { QrCode, Copy, Download, ExternalLink, Lock } from 'lucide-react'
 import QRCode from 'react-qr-code'
-import { mockBusiness } from '@/lib/mock-data'
+import { useBusiness } from '@/lib/hooks/useBusiness'
 import { toast } from '@/components/ui/sonner'
 
 export default function QRCodePage() {
-  const isPro = mockBusiness.plan !== 'free'
-  const menuUrl = `https://cardapioturbo.com/menu/${mockBusiness.slug}`
+  const { business } = useBusiness()
+  const isPro = business?.plan !== 'free'
+  const menuUrl = business ? `${typeof window !== 'undefined' ? window.location.origin : ''}/menu/${business.slug}` : ''
   const [copied, setCopied] = useState(false)
 
   function copyLink() {
@@ -30,7 +31,7 @@ export default function QRCodePage() {
     img.onload = () => {
       ctx?.drawImage(img, 0, 0)
       const a = document.createElement('a')
-      a.download = `cardapio-${mockBusiness.slug}-qr.png`
+      a.download = `cardapio-${business?.slug ?? 'menu'}-qr.png`
       a.href = canvas.toDataURL('image/png')
       a.click()
     }
@@ -53,7 +54,7 @@ export default function QRCodePage() {
               id="qrcode-svg"
               value={menuUrl}
               size={200}
-              fgColor={mockBusiness.primary_color}
+              fgColor={business?.primary_color ?? '#f97316'}
             />
           </div>
 

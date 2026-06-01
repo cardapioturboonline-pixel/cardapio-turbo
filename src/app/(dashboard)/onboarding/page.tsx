@@ -6,6 +6,7 @@ import { ChefHat, Store, Palette, Package, Check, ArrowRight, ArrowLeft } from '
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from '@/components/ui/sonner'
+import { createClient } from '@/lib/supabase/client'
 
 const steps = [
   { title: 'Sua loja', description: 'Informações básicas do seu negócio', icon: Store },
@@ -15,6 +16,11 @@ const steps = [
 
 const businessTypes = ['Hamburgueria', 'Pizzaria', 'Lanchonete', 'Restaurante', 'Cafeteria', 'Sorveteria', 'Bar', 'Outro']
 const colorOptions = ['#f97316', '#ef4444', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#06b6d4', '#84cc16', '#64748b']
+const defaultCategories = ['Destaque', 'Lanches', 'Pizzas', 'Bebidas', 'Sobremesas', 'Porções', 'Combos', 'Promoções']
+
+function slugify(text: string) {
+  return text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -22,18 +28,81 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false)
 
   const [info, setInfo] = useState({ name: '', whatsapp: '', city: '', type: '' })
-  const [visual, setVisual] = useState({ primaryColor: '#f97316', logoUrl: '' })
+  const [visual, setVisual] = useState({ primaryColor: '#f97316', logoUrl: '', logoFile: null as File | null })
   const [product, setProduct] = useState({ name: '', price: '', category: 'Destaque' })
 
   async function handleFinish() {
+    if (!info.name) { toast.error('Digite o nome da loja'); setStep(0); return }
+    if (!info.whatsapp) { toast.error('Digite o WhatsApp'); setStep(0); return }
+    if (!product.name || !product.price) { toast.error('Preencha nome e preço do produto'); return }
+
     setLoading(true)
-    await new Promise(r => setTimeout(r, 1000))
-    setLoading(false)
-    toast.success('Loja configurada com sucesso!')
-    router.push('/dashboard')
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { toast.error('Sessão expirada. Faça login novamente.'); router.push('/login'); return }
+
+      // Generate unique slug
+      const baseSlug = slugify(info.name)
+      const slug = `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`
+
+      // Create business
+      const { data: biz, error: bizErr } = await supabase.from('businesses').insert({
+        user_id: user.id,
+        name: info.name,
+        slug,
+        whatsapp: info.whatsapp.replace(/\D/g, ''),
+        city: info.city,
+        primary_color: visual.primaryColor,
+        plan: 'free',
+        is_active: true,
+        show_watermark: true,
+        description: '',
+        font: 'Inter',
+        theme: 'classic',
+        layout: 'premium',
+      }).select().single()
+
+      if (bizErr) throw bizErr
+
+      // Create category
+      const categoryName = defaultCategories.includes(product.category) ? product.category : (product.category || 'Destaque')
+      const { data: cat } = await supabase.from('categories').insert({
+        business_id: biz.id,
+        name: categoryName,
+        sort_order: 1,
+        is_active: true,
+      }).select().single()
+
+      // Create first product
+      if (product.name && product.price) {
+        await supabase.from('products').insert({
+          business_id: biz.id,
+          category_id: cat?.id ?? null,
+          name: product.name,
+          price: parseFloat(product.price),
+          is_available: true,
+          is_featured: true,
+          is_combo: false,
+          views: 0,
+          orders: 0,
+          sort_order: 1,
+        })
+      }
+
+      toast.success('🎉 Loja configurada com sucesso!')
+      router.push('/dashboard')
+    } catch (err: any) {
+      toast.error('Erro ao salvar: ' + (err?.message || 'tente novamente'))
+      setLoading(false)
+    }
   }
 
   function nextStep() {
+    if (step === 0) {
+      if (!info.name) { toast.error('Digite o nome da loja'); return }
+      if (!info.whatsapp) { toast.error('Digite o WhatsApp'); return }
+    }
     if (step < 2) setStep(s => s + 1)
     else handleFinish()
   }
@@ -130,7 +199,7 @@ export default function OnboardingPage() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label>Logo da loja</Label>
+                <Label>Logo da loja <span className="text-gray-400 font-normal">(opcional)</span></Label>
                 <label className="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 px-6 py-8 cursor-pointer hover:border-orange-300 transition-colors">
                   <input
                     type="file"
@@ -139,12 +208,9 @@ export default function OnboardingPage() {
                     onChange={e => {
                       const file = e.target.files?.[0]
                       if (!file) return
-                      if (file.size > 2 * 1024 * 1024) {
-                        toast.error('Imagem muito grande. Máximo 2MB.')
-                        return
-                      }
+                      if (file.size > 2 * 1024 * 1024) { toast.error('Imagem muito grande. Máximo 2MB.'); return }
                       const url = URL.createObjectURL(file)
-                      setVisual(p => ({ ...p, logoUrl: url }))
+                      setVisual(p => ({ ...p, logoUrl: url, logoFile: file }))
                     }}
                   />
                   {visual.logoUrl ? (
@@ -177,18 +243,18 @@ export default function OnboardingPage() {
               <div className="space-y-1.5">
                 <Label>Categoria</Label>
                 <div className="flex flex-wrap gap-2 mb-2">
-                  {['Destaque', 'Lanches', 'Pizzas', 'Bebidas', 'Sobremesas', 'Porções', 'Combos', 'Promoções'].map(cat => (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setProduct(p => ({ ...p, category: cat }))}
-                      className={`rounded-full px-3 py-1 text-sm border transition-colors ${product.category === cat ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-600 border-gray-200 hover:border-orange-300'}`}
-                    >
+                  {defaultCategories.map(cat => (
+                    <button key={cat} type="button" onClick={() => setProduct(p => ({ ...p, category: cat }))}
+                      className={`rounded-full px-3 py-1 text-sm border transition-colors ${product.category === cat ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-600 border-gray-200 hover:border-orange-300'}`}>
                       {cat}
                     </button>
                   ))}
                 </div>
-                <Input placeholder="Ou digite outra categoria..." value={['Destaque','Lanches','Pizzas','Bebidas','Sobremesas','Porções','Combos','Promoções'].includes(product.category) ? '' : product.category} onChange={e => setProduct(p => ({ ...p, category: e.target.value }))} />
+                <Input
+                  placeholder="Ou digite outra categoria..."
+                  value={defaultCategories.includes(product.category) ? '' : product.category}
+                  onChange={e => setProduct(p => ({ ...p, category: e.target.value }))}
+                />
               </div>
               <div className="rounded-lg bg-orange-50 p-4 text-sm text-orange-700">
                 💡 Você poderá adicionar mais produtos, fotos e detalhes no dashboard!
@@ -198,20 +264,13 @@ export default function OnboardingPage() {
 
           {/* Actions */}
           <div className="mt-8 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => step > 0 ? setStep(s => s - 1) : router.push('/login')}
-              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
-            >
+            <button type="button" onClick={() => step > 0 ? setStep(s => s - 1) : router.push('/login')}
+              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700">
               <ArrowLeft className="h-4 w-4" />
               {step === 0 ? 'Cancelar' : 'Voltar'}
             </button>
-            <button
-              type="button"
-              onClick={nextStep}
-              disabled={loading}
-              className="flex items-center gap-1.5 rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60 transition-colors"
-            >
+            <button type="button" onClick={nextStep} disabled={loading}
+              className="flex items-center gap-1.5 rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60 transition-colors">
               {loading ? 'Salvando...' : step === 2 ? 'Finalizar' : 'Próximo'}
               {!loading && <ArrowRight className="h-4 w-4" />}
             </button>

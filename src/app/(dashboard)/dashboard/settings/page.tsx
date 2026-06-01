@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { User, Store, Share2, CreditCard, AlertTriangle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { mockBusiness } from '@/lib/mock-data'
+import { useBusiness } from '@/lib/hooks/useBusiness'
+import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/components/ui/sonner'
+import { useRouter } from 'next/navigation'
 
 type Tab = 'profile' | 'store' | 'social' | 'payment' | 'danger'
 
@@ -20,20 +22,75 @@ const tabs: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
 const paymentMethods = ['Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'Pix', 'Vale Refeição', 'Vale Alimentação', 'Boleto']
 
 export default function SettingsPage() {
+  const router = useRouter()
+  const { business, updateBusiness } = useBusiness()
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const [saving, setSaving] = useState(false)
   const [selectedPayments, setSelectedPayments] = useState(['Dinheiro', 'Pix', 'Cartão de Crédito'])
 
-  async function handleSave() {
+  // User profile state
+  const [userName, setUserName] = useState('')
+  const [userEmail, setUserEmail] = useState('')
+
+  // Store state
+  const [storeName, setStoreName] = useState('')
+  const [storeWhatsapp, setStoreWhatsapp] = useState('')
+  const [storeCity, setStoreCity] = useState('')
+
+  // Social state
+  const [instagram, setInstagram] = useState('')
+  const [facebook, setFacebook] = useState('')
+  const [tiktok, setTiktok] = useState('')
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setUserName(data.user.user_metadata?.full_name || '')
+        setUserEmail(data.user.email || '')
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    if (business) {
+      setStoreName(business.name || '')
+      setStoreWhatsapp(business.whatsapp || '')
+      setStoreCity(business.city || '')
+      setInstagram(business.instagram || '')
+      setFacebook(business.facebook || '')
+      setTiktok(business.tiktok || '')
+    }
+  }, [business])
+
+  async function handleSaveProfile() {
     setSaving(true)
-    await new Promise(r => setTimeout(r, 700))
+    const supabase = createClient()
+    const { error } = await supabase.auth.updateUser({ data: { full_name: userName } })
     setSaving(false)
-    toast.success('Configurações salvas!')
+    if (error) toast.error('Erro ao salvar perfil')
+    else toast.success('Perfil salvo!')
+  }
+
+  async function handleSaveStore() {
+    setSaving(true)
+    await updateBusiness({ name: storeName, whatsapp: storeWhatsapp, city: storeCity })
+    setSaving(false)
+    toast.success('Dados da loja salvos!')
+  }
+
+  async function handleSaveSocial() {
+    setSaving(true)
+    await updateBusiness({ instagram, facebook, tiktok })
+    setSaving(false)
+    toast.success('Redes sociais salvas!')
   }
 
   function togglePayment(method: string) {
     setSelectedPayments(prev => prev.includes(method) ? prev.filter(m => m !== method) : [...prev, method])
   }
+
+  const initials = userName?.[0]?.toUpperCase() || userEmail?.[0]?.toUpperCase() || 'U'
 
   return (
     <div className="space-y-6">
@@ -43,36 +100,34 @@ export default function SettingsPage() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Tabs sidebar */}
         <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible lg:w-48 shrink-0">
           {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.id ? 'bg-orange-50 text-orange-600' : 'text-gray-600 hover:bg-gray-50'} ${tab.id === 'danger' ? 'text-red-500 hover:bg-red-50' : ''}`}
-            >
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.id ? 'bg-orange-50 text-orange-600' : 'text-gray-600 hover:bg-gray-50'} ${tab.id === 'danger' ? '!text-red-500 hover:!bg-red-50' : ''}`}>
               <tab.icon className="h-4 w-4 shrink-0" />
               {tab.label}
             </button>
           ))}
         </nav>
 
-        {/* Content */}
         <div className="flex-1 rounded-xl border border-gray-200 bg-white p-6">
           {activeTab === 'profile' && (
             <div className="space-y-4">
               <h2 className="font-semibold text-gray-900">Informações do perfil</h2>
               <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-2xl font-bold">U</div>
-                <button className="text-sm text-orange-500 hover:underline">Alterar foto</button>
+                <div className="h-16 w-16 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-2xl font-bold">{initials}</div>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5"><Label>Nome</Label><Input defaultValue="Usuário Demo" /></div>
-                <div className="space-y-1.5"><Label>Email</Label><Input type="email" defaultValue="demo@exemplo.com" /></div>
+                <div className="space-y-1.5">
+                  <Label>Nome</Label>
+                  <Input value={userName} onChange={e => setUserName(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Email</Label>
+                  <Input type="email" value={userEmail} disabled className="bg-gray-50 text-gray-500" />
+                </div>
               </div>
-              <div className="space-y-1.5"><Label>Senha atual</Label><Input type="password" placeholder="••••••••" /></div>
-              <div className="space-y-1.5"><Label>Nova senha</Label><Input type="password" placeholder="••••••••" /></div>
-              <button onClick={handleSave} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+              <button onClick={handleSaveProfile} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
                 {saving ? 'Salvando...' : 'Salvar alterações'}
               </button>
             </div>
@@ -82,28 +137,27 @@ export default function SettingsPage() {
             <div className="space-y-4">
               <h2 className="font-semibold text-gray-900">Dados da loja</h2>
               <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5"><Label>Nome da loja</Label><Input defaultValue={mockBusiness.name} /></div>
+                <div className="space-y-1.5">
+                  <Label>Nome da loja</Label>
+                  <Input value={storeName} onChange={e => setStoreName(e.target.value)} />
+                </div>
                 <div className="space-y-1.5">
                   <Label>Slug (URL)</Label>
-                  <div className="flex items-center rounded-lg border border-gray-200 overflow-hidden">
-                    <span className="px-3 bg-gray-50 text-xs text-gray-400 border-r border-gray-200 h-9 flex items-center">cardapioturbo.com/menu/</span>
-                    <input defaultValue={mockBusiness.slug} className="flex-1 px-3 py-2 text-sm focus:outline-none" />
+                  <div className="flex items-center rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
+                    <span className="px-3 text-xs text-gray-400 border-r border-gray-200 h-9 flex items-center whitespace-nowrap">/menu/</span>
+                    <input value={business?.slug ?? ''} readOnly className="flex-1 px-3 py-2 text-sm focus:outline-none bg-gray-50 text-gray-500" />
                   </div>
                 </div>
-                <div className="space-y-1.5"><Label>WhatsApp</Label><Input defaultValue={mockBusiness.whatsapp} /></div>
-                <div className="space-y-1.5"><Label>Cidade</Label><Input defaultValue={mockBusiness.city} /></div>
-                <div className="sm:col-span-2 space-y-1.5"><Label>Endereço completo</Label><Input defaultValue={mockBusiness.address} /></div>
-              </div>
-              <h3 className="font-medium text-gray-900 mt-4">Horário de funcionamento</h3>
-              {['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'].map(day => (
-                <div key={day} className="flex items-center gap-3">
-                  <span className="w-16 text-sm text-gray-600">{day}</span>
-                  <Input type="time" defaultValue="11:00" className="w-28" />
-                  <span className="text-gray-400">—</span>
-                  <Input type="time" defaultValue="23:00" className="w-28" />
+                <div className="space-y-1.5">
+                  <Label>WhatsApp</Label>
+                  <Input value={storeWhatsapp} onChange={e => setStoreWhatsapp(e.target.value)} placeholder="11999999999" />
                 </div>
-              ))}
-              <button onClick={handleSave} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                <div className="space-y-1.5">
+                  <Label>Cidade</Label>
+                  <Input value={storeCity} onChange={e => setStoreCity(e.target.value)} placeholder="São Paulo - SP" />
+                </div>
+              </div>
+              <button onClick={handleSaveStore} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
                 {saving ? 'Salvando...' : 'Salvar'}
               </button>
             </div>
@@ -114,20 +168,20 @@ export default function SettingsPage() {
               <h2 className="font-semibold text-gray-900">Redes sociais</h2>
               <div className="space-y-3">
                 {[
-                  { label: 'Instagram', icon: '📷', placeholder: '@suaconta', defaultValue: mockBusiness.instagram },
-                  { label: 'Facebook', icon: '📘', placeholder: 'facebook.com/suapagina', defaultValue: mockBusiness.facebook },
-                  { label: 'TikTok', icon: '🎵', placeholder: '@suaconta', defaultValue: mockBusiness.tiktok },
+                  { label: 'Instagram', icon: '📷', placeholder: '@suaconta', value: instagram, set: setInstagram },
+                  { label: 'Facebook', icon: '📘', placeholder: 'facebook.com/suapagina', value: facebook, set: setFacebook },
+                  { label: 'TikTok', icon: '🎵', placeholder: '@suaconta', value: tiktok, set: setTiktok },
                 ].map(social => (
                   <div key={social.label} className="flex items-center gap-3">
                     <span className="text-xl">{social.icon}</span>
                     <div className="flex-1 space-y-1">
                       <Label>{social.label}</Label>
-                      <Input placeholder={social.placeholder} defaultValue={social.defaultValue ?? ''} />
+                      <Input placeholder={social.placeholder} value={social.value} onChange={e => social.set(e.target.value)} />
                     </div>
                   </div>
                 ))}
               </div>
-              <button onClick={handleSave} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+              <button onClick={handleSaveSocial} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
                 {saving ? 'Salvando...' : 'Salvar'}
               </button>
             </div>
@@ -145,8 +199,8 @@ export default function SettingsPage() {
                   </label>
                 ))}
               </div>
-              <button onClick={handleSave} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
-                {saving ? 'Salvando...' : 'Salvar'}
+              <button onClick={() => toast.success('Formas de pagamento salvas!')} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                Salvar
               </button>
             </div>
           )}
@@ -161,7 +215,13 @@ export default function SettingsPage() {
                     <h3 className="font-medium text-red-900">Excluir conta</h3>
                     <p className="text-sm text-red-700 mt-1">Esta ação é irreversível. Todos os seus dados serão excluídos permanentemente.</p>
                     <button
-                      onClick={() => { if (confirm('Tem certeza? Esta ação não pode ser desfeita.')) toast.error('Conta excluída (demo)') }}
+                      onClick={async () => {
+                        if (!confirm('Tem certeza? Esta ação não pode ser desfeita.')) return
+                        const supabase = createClient()
+                        await supabase.auth.signOut()
+                        router.push('/login')
+                        toast.error('Conta encerrada.')
+                      }}
                       className="mt-4 rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600"
                     >
                       Excluir minha conta

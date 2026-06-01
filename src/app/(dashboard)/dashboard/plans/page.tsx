@@ -1,7 +1,7 @@
 'use client'
 
 import { Check, X, Zap, Crown, Sparkles } from 'lucide-react'
-import { mockBusiness } from '@/lib/mock-data'
+import { useBusiness } from '@/lib/hooks/useBusiness'
 import { toast } from '@/components/ui/sonner'
 
 const plans = [
@@ -75,7 +75,8 @@ const plans = [
 ]
 
 export default function PlansPage() {
-  const currentPlan = mockBusiness.plan
+  const { business } = useBusiness()
+  const currentPlan = business?.plan ?? 'free'
 
   function handleUpgrade(planId: string) {
     if (planId === currentPlan) return

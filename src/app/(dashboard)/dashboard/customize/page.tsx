@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Palette, Check, Lock } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
-import { mockBusiness } from '@/lib/mock-data'
+import { useBusiness } from '@/lib/hooks/useBusiness'
 import { toast } from '@/components/ui/sonner'
 
 const colorOptions = ['#f97316', '#ef4444', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#06b6d4', '#84cc16', '#64748b']
@@ -21,16 +21,26 @@ const fonts = [
 ]
 
 export default function CustomizePage() {
-  const isPro = mockBusiness.plan !== 'free'
-  const [color, setColor] = useState(mockBusiness.primary_color)
-  const [theme, setTheme] = useState(mockBusiness.theme)
-  const [font, setFont] = useState(mockBusiness.font)
-  const [layout, setLayout] = useState<'compact' | 'premium'>(mockBusiness.layout)
+  const { business, updateBusiness } = useBusiness()
+  const isPro = business?.plan !== 'free'
+  const [color, setColor] = useState('#f97316')
+  const [theme, setTheme] = useState('classic')
+  const [font, setFont] = useState('Inter')
+  const [layout, setLayout] = useState<'compact' | 'premium'>('premium')
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (business) {
+      setColor(business.primary_color ?? '#f97316')
+      setTheme(business.theme ?? 'classic')
+      setFont(business.font ?? 'Inter')
+      setLayout((business.layout as 'compact' | 'premium') ?? 'premium')
+    }
+  }, [business])
 
   async function handleSave() {
     setSaving(true)
-    await new Promise(r => setTimeout(r, 700))
+    await updateBusiness({ primary_color: color, theme, font, layout })
     setSaving(false)
     toast.success('Personalização salva!')
   }
@@ -138,7 +148,7 @@ export default function CustomizePage() {
                 <p className="text-sm font-medium text-gray-900">Marca d&apos;água</p>
                 <p className="text-xs text-gray-500">Exibir &quot;Powered by Cardápio Turbo&quot;</p>
               </div>
-              <Switch checked={!mockBusiness.show_watermark} onCheckedChange={() => {}} />
+              <Switch checked={!(business?.show_watermark ?? true)} onCheckedChange={() => {}} />
             </div>
           </div>
         </div>
