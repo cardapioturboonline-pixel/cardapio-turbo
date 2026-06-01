@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, Package, Tag, Megaphone, Palette,
   QrCode, BarChart3, CreditCard, Settings, LogOut,
@@ -9,7 +10,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
-import { mockBusiness } from '@/lib/mock-data'
+import { createClient } from '@/lib/supabase/client'
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -30,9 +31,28 @@ interface SidebarProps {
 export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const [user, setUser] = useState<{ name: string; email: string } | null>(null)
 
-  const planLabel = { free: 'Free', pro: 'Pro', business: 'Business' }[mockBusiness.plan]
-  const planColor = { free: 'secondary', pro: 'default', business: 'success' }[mockBusiness.plan] as 'secondary' | 'default' | 'success'
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setUser({
+          name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'Usuário',
+          email: data.user.email || '',
+        })
+      }
+    })
+  }, [])
+
+  async function handleLogout() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
+  const planLabel = 'Free'
+  const planColor = 'secondary' as 'secondary'
 
   return (
     <div className="flex h-full flex-col bg-white border-r border-gray-200">
@@ -81,14 +101,14 @@ export function Sidebar({ onClose }: SidebarProps) {
         </div>
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-semibold text-sm">
-            U
+            {user?.name?.[0]?.toUpperCase() || 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">Usuário Demo</p>
-            <p className="text-xs text-gray-500 truncate">demo@exemplo.com</p>
+            <p className="text-sm font-medium text-gray-900 truncate">{user?.name || '...'}</p>
+            <p className="text-xs text-gray-500 truncate">{user?.email || ''}</p>
           </div>
           <button
-            onClick={() => router.push('/login')}
+            onClick={handleLogout}
             className="rounded-md p-1 text-gray-400 hover:text-red-500 transition-colors"
             title="Sair"
           >
