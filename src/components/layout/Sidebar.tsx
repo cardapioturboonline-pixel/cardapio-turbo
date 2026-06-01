@@ -53,7 +53,7 @@ export function Sidebar({ onClose }: SidebarProps) {
     router.push('/login')
   }
 
-  const isPro = business?.plan !== 'free'
+  const isPro = business !== null && business?.plan !== 'free'
   const planLabel = isPro ? business!.plan.charAt(0).toUpperCase() + business!.plan.slice(1) : 'Free'
   const planColor = isPro ? 'default' : 'secondary' as 'default' | 'secondary'
 
