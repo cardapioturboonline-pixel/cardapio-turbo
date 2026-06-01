@@ -176,7 +176,19 @@ export default function OnboardingPage() {
               </div>
               <div className="space-y-1.5">
                 <Label>Categoria</Label>
-                <Input placeholder="Ex: Hambúrgueres" value={product.category} onChange={e => setProduct(p => ({ ...p, category: e.target.value }))} />
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {['Destaque', 'Lanches', 'Pizzas', 'Bebidas', 'Sobremesas', 'Porções', 'Combos', 'Promoções'].map(cat => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setProduct(p => ({ ...p, category: cat }))}
+                      className={`rounded-full px-3 py-1 text-sm border transition-colors ${product.category === cat ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-600 border-gray-200 hover:border-orange-300'}`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+                <Input placeholder="Ou digite outra categoria..." value={['Destaque','Lanches','Pizzas','Bebidas','Sobremesas','Porções','Combos','Promoções'].includes(product.category) ? '' : product.category} onChange={e => setProduct(p => ({ ...p, category: e.target.value }))} />
               </div>
               <div className="rounded-lg bg-orange-50 p-4 text-sm text-orange-700">
                 💡 Você poderá adicionar mais produtos, fotos e detalhes no dashboard!
