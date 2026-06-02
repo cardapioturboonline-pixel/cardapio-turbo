@@ -247,7 +247,7 @@ export default function LandingPage() {
             </h2>
             <p className="text-gray-500 text-lg">Comece grátis por 7 dias. Sem cartão de crédito.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
             {plans.map((plan, i) => (
               <div key={i} className={`relative rounded-2xl border-2 p-8 ${plan.color}`}>
                 {plan.badge && (
