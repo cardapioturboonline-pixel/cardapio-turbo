@@ -347,7 +347,7 @@ export default function LandingPage() {
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </Link>
-          <p className="mt-4 text-orange-100 text-sm">Sem cartão • Setup em 5 minutos • Suporte via WhatsApp</p>
+          <p className="mt-4 text-orange-100 text-sm">Sem cartão • Setup em 5 minutos • <a href="https://wa.me/5567992741982" target="_blank" rel="noreferrer" className="underline hover:text-white">Suporte via WhatsApp</a></p>
         </div>
       </section>
 
@@ -364,7 +364,7 @@ export default function LandingPage() {
             <div className="flex gap-6 text-sm">
               <Link href="/termos" className="hover:text-white transition-colors">Termos de Uso</Link>
               <Link href="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
-              <a href="mailto:contato@cardapioturbo.com.br" className="hover:text-white transition-colors">Contato</a>
+              <a href="https://wa.me/5567992741982" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Contato</a>
             </div>
             <p className="text-sm">© 2025 Cardápio Turbo. Todos os direitos reservados.</p>
           </div>
