@@ -7,10 +7,24 @@ import { useBusiness } from '@/lib/hooks/useBusiness'
 import { toast } from '@/components/ui/sonner'
 
 export default function QRCodePage() {
-  const { business } = useBusiness()
-  const isPro = business?.plan !== 'free'
+  const { business, updateBusiness } = useBusiness()
+  const isPro = business !== null && business?.plan !== 'free'
   const menuUrl = business ? `${typeof window !== 'undefined' ? window.location.origin : ''}/menu/${business.slug}` : ''
   const [copied, setCopied] = useState(false)
+  const [showCustomize, setShowCustomize] = useState(false)
+  const [qrColor, setQrColor] = useState(business?.primary_color ?? '#f97316')
+  const [saving, setSaving] = useState(false)
+
+  const colorOptions = ['#f97316', '#ef4444', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#000000', '#1a1a2e', '#064e3b']
+
+  async function handleSaveQrColor() {
+    setSaving(true)
+    const ok = await updateBusiness({ primary_color: qrColor })
+    setSaving(false)
+    if (!ok) { toast.error('Erro ao salvar'); return }
+    setShowCustomize(false)
+    toast.success('QR Code personalizado!')
+  }
 
   function copyLink() {
     navigator.clipboard.writeText(menuUrl)
@@ -89,9 +103,9 @@ export default function QRCodePage() {
           <div className="rounded-2xl bg-white p-6 shadow-inner border border-gray-100">
             <QRCode
               id="qrcode-svg"
-              value={menuUrl}
+              value={menuUrl || 'https://cardapioturbo.com.br'}
               size={200}
-              fgColor={business?.primary_color ?? '#f97316'}
+              fgColor={qrColor}
             />
           </div>
 
@@ -156,9 +170,36 @@ export default function QRCodePage() {
               </button>
             )}
             {isPro && (
-              <button className="rounded-lg border border-orange-500 px-4 py-2 text-sm font-semibold text-orange-500 hover:bg-orange-50 transition-colors">
-                Personalizar QR Code
+              <button onClick={() => { setQrColor(business?.primary_color ?? '#f97316'); setShowCustomize(s => !s) }}
+                className="rounded-lg border border-orange-500 px-4 py-2 text-sm font-semibold text-orange-500 hover:bg-orange-50 transition-colors">
+                {showCustomize ? 'Fechar' : 'Personalizar QR Code'}
               </button>
+            )}
+
+            {isPro && showCustomize && (
+              <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 space-y-4">
+                <p className="text-sm font-medium text-gray-900">Escolha a cor do QR Code:</p>
+                <div className="flex flex-wrap gap-3">
+                  {colorOptions.map(c => (
+                    <button key={c} type="button" onClick={() => setQrColor(c)}
+                      className="relative h-9 w-9 rounded-full border-2 transition-transform hover:scale-110"
+                      style={{ backgroundColor: c, borderColor: qrColor === c ? '#f97316' : 'transparent' }}
+                    >
+                      {qrColor === c && <span className="absolute inset-0 flex items-center justify-center text-white text-xs font-bold">✓</span>}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="text-sm text-gray-600">Cor personalizada:</label>
+                  <input type="color" value={qrColor} onChange={e => setQrColor(e.target.value)}
+                    className="h-9 w-16 rounded cursor-pointer border border-gray-200" />
+                  <span className="text-xs text-gray-400">{qrColor}</span>
+                </div>
+                <button onClick={handleSaveQrColor} disabled={saving}
+                  className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                  {saving ? 'Salvando...' : 'Salvar cor'}
+                </button>
+              </div>
             )}
           </div>
         </div>
