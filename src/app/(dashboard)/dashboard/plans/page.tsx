@@ -14,6 +14,7 @@ const plans = [
     color: 'border-gray-200',
     btnClass: 'border border-gray-200 text-gray-700 hover:bg-gray-50',
     features: [
+      { text: '7 dias grátis para testar tudo', included: true },
       { text: 'Até 15 produtos', included: true },
       { text: 'Até 3 categorias', included: true },
       { text: '1 cardápio digital', included: true },
@@ -24,7 +25,6 @@ const plans = [
       { text: 'Relatórios avançados', included: false },
       { text: 'Temas premium', included: false },
       { text: 'QR Code com logo', included: false },
-      { text: 'Domínio personalizado', included: false },
     ],
   },
   {

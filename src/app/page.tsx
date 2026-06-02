@@ -32,6 +32,7 @@ const plans = [
     color: "border-gray-200",
     btnVariant: "outline" as const,
     features: [
+      "7 dias grátis para testar tudo",
       "Até 15 produtos",
       "Até 3 categorias",
       "1 cardápio digital",
@@ -59,7 +60,7 @@ const plans = [
       "Insights de vendas",
       "Sem marca d'água",
     ],
-    cta: "Testar 7 dias grátis",
+    cta: "Assinar Pro",
     href: "https://mpago.la/16GzkN7",
   },
 ];
@@ -244,7 +245,7 @@ export default function LandingPage() {
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
               Comece grátis, cresça quando quiser
             </h2>
-            <p className="text-gray-500 text-lg">7 dias grátis em todos os recursos Pro. Sem compromisso.</p>
+            <p className="text-gray-500 text-lg">Comece grátis por 7 dias. Sem cartão de crédito.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {plans.map((plan, i) => (
