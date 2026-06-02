@@ -62,25 +62,6 @@ const plans = [
     cta: "Testar 7 dias grátis",
     href: "https://mpago.la/16GzkN7",
   },
-  {
-    name: "Business",
-    price: "R$ 79,90",
-    period: "/mês",
-    badge: null,
-    color: "border-purple-500",
-    btnVariant: "outline" as const,
-    features: [
-      "Tudo do Pro",
-      "Múltiplas unidades",
-      "Analytics avançado",
-      "Domínio próprio",
-      "Google Analytics & Meta Pixel",
-      "IA para recomendações",
-      "Relatórios comparativos",
-    ],
-    cta: "Assinar Business",
-    href: "https://mpago.la/2FYjZHP",
-  },
 ];
 
 const testimonials = [

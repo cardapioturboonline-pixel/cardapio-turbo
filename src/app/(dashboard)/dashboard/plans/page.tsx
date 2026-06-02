@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, X, Zap, Crown, Sparkles } from 'lucide-react'
+import { Check, X, Zap, Sparkles } from 'lucide-react'
 import { useBusiness } from '@/lib/hooks/useBusiness'
 import { toast } from '@/components/ui/sonner'
 
@@ -48,28 +48,6 @@ const plans = [
       { text: 'Temas premium', included: true },
       { text: 'Analytics de horário', included: true },
       { text: 'Domínio personalizado', included: false },
-    ],
-  },
-  {
-    id: 'business' as const,
-    name: 'Business',
-    price: 'R$ 79,90',
-    period: '/mês',
-    icon: Crown,
-    color: 'border-purple-500',
-    btnClass: 'bg-purple-600 text-white hover:bg-purple-700',
-    features: [
-      { text: 'Produtos ilimitados', included: true },
-      { text: 'Categorias ilimitadas', included: true },
-      { text: '3 cardápios digitais', included: true },
-      { text: 'QR Code com logo', included: true },
-      { text: 'Pedido por WhatsApp', included: true },
-      { text: 'Personalização completa', included: true },
-      { text: 'Cupons de desconto', included: true },
-      { text: 'Relatórios avançados', included: true },
-      { text: 'Temas premium', included: true },
-      { text: 'Analytics de horário', included: true },
-      { text: 'Domínio personalizado', included: true },
     ],
   },
 ]
