@@ -362,9 +362,9 @@ export default function LandingPage() {
               <span className="font-bold text-white text-lg">Cardápio Turbo</span>
             </div>
             <div className="flex gap-6 text-sm">
-              <a href="#" className="hover:text-white transition-colors">Termos de Uso</a>
-              <a href="#" className="hover:text-white transition-colors">Privacidade</a>
-              <a href="#" className="hover:text-white transition-colors">Contato</a>
+              <Link href="/termos" className="hover:text-white transition-colors">Termos de Uso</Link>
+              <Link href="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
+              <a href="mailto:contato@cardapioturbo.com.br" className="hover:text-white transition-colors">Contato</a>
             </div>
             <p className="text-sm">© 2025 Cardápio Turbo. Todos os direitos reservados.</p>
           </div>

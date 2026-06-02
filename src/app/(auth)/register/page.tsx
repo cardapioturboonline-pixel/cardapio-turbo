@@ -105,9 +105,9 @@ export default function RegisterPage() {
           <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} className="mt-0.5 rounded border-gray-300 text-orange-500" />
           <span className="text-sm text-gray-500">
             Aceito os{' '}
-            <Link href="#" className="text-orange-500 hover:underline">Termos de Uso</Link>
+            <Link href="/termos" className="text-orange-500 hover:underline">Termos de Uso</Link>
             {' '}e a{' '}
-            <Link href="#" className="text-orange-500 hover:underline">Política de Privacidade</Link>
+            <Link href="/privacidade" className="text-orange-500 hover:underline">Política de Privacidade</Link>
           </span>
         </label>
 
