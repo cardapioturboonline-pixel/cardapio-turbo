@@ -12,7 +12,7 @@ import { formatCurrency } from '@/lib/utils/format'
 import { toast } from '@/components/ui/sonner'
 
 export default function ProductsPage() {
-  const { products, toggleAvailability, deleteProduct, duplicateProduct } = useProducts()
+  const { products, atProductLimit, deleteProduct, duplicateProduct, toggleAvailability } = useProducts()
   const { categories } = useCategories()
   const [search, setSearch] = useState('')
   const [filterCat, setFilterCat] = useState('all')
@@ -41,9 +41,15 @@ export default function ProductsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Produtos</h1>
           <p className="text-sm text-gray-500">{products.length} produtos cadastrados</p>
         </div>
-        <Link href="/dashboard/products/new" className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">
-          <Plus className="h-4 w-4" /> Novo produto
-        </Link>
+        {atProductLimit ? (
+          <Link href="/dashboard/plans" className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-500 hover:bg-orange-500 hover:text-white transition-colors">
+            🔒 Limite de 15 produtos — Fazer upgrade
+          </Link>
+        ) : (
+          <Link href="/dashboard/products/new" className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">
+            <Plus className="h-4 w-4" /> Novo produto
+          </Link>
+        )}
       </div>
 
       {/* Filters */}

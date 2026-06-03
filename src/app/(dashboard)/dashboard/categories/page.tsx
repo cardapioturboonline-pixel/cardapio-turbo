@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Plus, ChevronUp, ChevronDown, Edit, Trash2, Tag } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,7 +12,7 @@ import { useProducts } from '@/lib/hooks/useProducts'
 import { toast } from '@/components/ui/sonner'
 
 export default function CategoriesPage() {
-  const { categories, createCategory, updateCategory, deleteCategory, reorderCategory } = useCategories()
+  const { categories, atCategoryLimit, createCategory, updateCategory, deleteCategory, reorderCategory } = useCategories()
   const { products } = useProducts()
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
@@ -38,6 +39,7 @@ export default function CategoriesPage() {
     } else {
       const result = await createCategory({ ...form, sort_order: categories.length + 1 })
       if (!result) { toast.error('Erro ao criar categoria'); return }
+      if ('limitReached' in (result as object)) { toast.error('Limite de 3 categorias atingido. Faça upgrade para Pro!'); return }
       toast.success('Categoria criada!')
     }
     setShowForm(false)
@@ -59,9 +61,15 @@ export default function CategoriesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Categorias</h1>
           <p className="text-sm text-gray-500">{categories.length} categorias cadastradas</p>
         </div>
-        <button onClick={() => { setShowForm(true); setEditId(null) }} className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600">
-          <Plus className="h-4 w-4" /> Nova categoria
-        </button>
+        {atCategoryLimit ? (
+          <Link href="/dashboard/plans" className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-500 hover:bg-orange-500 hover:text-white transition-colors">
+            🔒 Limite de 3 categorias — Fazer upgrade
+          </Link>
+        ) : (
+          <button onClick={() => { setShowForm(true); setEditId(null) }} className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600">
+            <Plus className="h-4 w-4" /> Nova categoria
+          </button>
+        )}
       </div>
 
       {/* Form */}

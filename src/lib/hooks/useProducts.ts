@@ -4,10 +4,13 @@ import { useState, useCallback, useEffect } from 'react'
 import type { Product } from '@/types'
 import { createClient } from '@/lib/supabase/client'
 
+const FREE_PRODUCT_LIMIT = 15
+
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [businessId, setBusinessId] = useState<string | null>(null)
+  const [plan, setPlan] = useState<string>('free')
 
   useEffect(() => {
     async function load() {
@@ -16,11 +19,12 @@ export function useProducts() {
       if (!user) { setLoading(false); return }
       const { data: biz } = await supabase
         .from('businesses')
-        .select('id')
+        .select('id, plan')
         .eq('user_id', user.id)
         .single()
       if (!biz) { setLoading(false); return }
       setBusinessId(biz.id)
+      setPlan(biz.plan ?? 'free')
       const { data } = await supabase
         .from('products')
         .select('*')
@@ -43,6 +47,12 @@ export function useProducts() {
       bizId = biz.id
       setBusinessId(bizId)
     }
+    // Enforce Free plan limit
+    const currentPlan = (await supabase.from('businesses').select('plan').eq('id', bizId).single()).data?.plan ?? 'free'
+    if (currentPlan === 'free' && products.length >= FREE_PRODUCT_LIMIT) {
+      return { limitReached: true }
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { additionals: _additionals, ...insertData } = data as typeof data & { additionals?: unknown }
     const { data: newProduct, error } = await supabase
@@ -84,5 +94,7 @@ export function useProducts() {
     return createProduct({ ...rest, name: `${product.name} (cópia)` })
   }, [products, createProduct])
 
-  return { products, loading, createProduct, updateProduct, deleteProduct, toggleAvailability, duplicateProduct }
+  const atProductLimit = plan === 'free' && products.length >= FREE_PRODUCT_LIMIT
+
+  return { products, loading, plan, atProductLimit, createProduct, updateProduct, deleteProduct, toggleAvailability, duplicateProduct }
 }

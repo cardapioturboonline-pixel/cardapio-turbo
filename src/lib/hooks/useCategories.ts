@@ -4,10 +4,13 @@ import { useState, useCallback, useEffect } from 'react'
 import type { Category } from '@/types'
 import { createClient } from '@/lib/supabase/client'
 
+const FREE_CATEGORY_LIMIT = 3
+
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [businessId, setBusinessId] = useState<string | null>(null)
+  const [plan, setPlan] = useState<string>('free')
 
   useEffect(() => {
     async function load() {
@@ -16,11 +19,12 @@ export function useCategories() {
       if (!user) { setLoading(false); return }
       const { data: biz } = await supabase
         .from('businesses')
-        .select('id')
+        .select('id, plan')
         .eq('user_id', user.id)
         .single()
       if (!biz) { setLoading(false); return }
       setBusinessId(biz.id)
+      setPlan(biz.plan ?? 'free')
       const { data } = await supabase
         .from('categories')
         .select('*')
@@ -43,6 +47,12 @@ export function useCategories() {
       bizId = biz.id
       setBusinessId(bizId)
     }
+    // Enforce Free plan limit
+    const currentPlan = (await supabase.from('businesses').select('plan').eq('id', bizId).single()).data?.plan ?? 'free'
+    if (currentPlan === 'free' && categories.length >= FREE_CATEGORY_LIMIT) {
+      return { limitReached: true }
+    }
+
     const { data: newCat, error } = await supabase
       .from('categories')
       .insert({ ...data, business_id: bizId })
@@ -84,5 +94,7 @@ export function useCategories() {
     })
   }, [])
 
-  return { categories, loading, createCategory, updateCategory, deleteCategory, reorderCategory }
+  const atCategoryLimit = plan === 'free' && categories.length >= FREE_CATEGORY_LIMIT
+
+  return { categories, loading, plan, atCategoryLimit, createCategory, updateCategory, deleteCategory, reorderCategory }
 }
