@@ -22,7 +22,7 @@ const fonts = [
 
 export default function CustomizePage() {
   const { business, updateBusiness } = useBusiness()
-  const isPro = business?.plan !== 'free'
+  const isPro = business !== null && business?.plan !== 'free'
   const [color, setColor] = useState('#f97316')
   const [theme, setTheme] = useState('classic')
   const [font, setFont] = useState('Inter')
@@ -148,10 +148,13 @@ export default function CustomizePage() {
           <div className="space-y-3 pt-2 border-t border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900">Marca d&apos;água</p>
+                <p className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                  Marca d&apos;água
+                  {!isPro && <span className="flex items-center gap-1 text-xs font-medium text-orange-500"><Lock className="h-3 w-3" />Pro</span>}
+                </p>
                 <p className="text-xs text-gray-500">Exibir &quot;Powered by Cardápio Turbo&quot;</p>
               </div>
-              <Switch checked={!showWatermark} onCheckedChange={v => setShowWatermark(!v)} />
+              <Switch checked={!showWatermark} onCheckedChange={v => isPro && setShowWatermark(!v)} disabled={!isPro} />
             </div>
           </div>
         </div>

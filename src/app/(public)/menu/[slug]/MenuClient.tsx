@@ -166,10 +166,12 @@ export function MenuClient({ business, categories, products }: MenuClientProps) 
               </a>
             )}
           </div>
-          <p className="text-xs text-gray-400">
-            Powered by{' '}
-            <a href="https://cardapioturbo.com" className="font-medium text-orange-500 hover:underline">Cardápio Turbo</a>
-          </p>
+          {(business.show_watermark ?? true) && (
+            <p className="text-xs text-gray-400">
+              Powered by{' '}
+              <a href="https://cardapioturbo.com.br" className="font-medium text-orange-500 hover:underline">Cardápio Turbo</a>
+            </p>
+          )}
         </div>
       </footer>
 
