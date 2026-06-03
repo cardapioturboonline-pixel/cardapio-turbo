@@ -57,8 +57,7 @@ export default function PlansPage() {
   const currentPlan = business?.plan ?? 'free'
 
   const checkoutLinks: Record<string, string> = {
-    pro: 'https://mpago.la/16GzkN7',
-    business: 'https://mpago.la/2FYjZHP',
+    pro: 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=cda0003141c949a8976b7fc106bd85ed',
   }
 
   function handleUpgrade(planId: string) {
