@@ -19,13 +19,7 @@ export default async function Image() {
           fontFamily: 'sans-serif',
         }}
       >
-        {/* Logo */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '20px',
-          marginBottom: '40px',
-        }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '40px' }}>
           <div style={{
             width: '80px',
             height: '80px',
@@ -38,54 +32,30 @@ export default async function Image() {
           }}>
             ⚡
           </div>
-          <span style={{
-            fontSize: '56px',
-            fontWeight: 'bold',
-            color: 'white',
-          }}>
+          <span style={{ fontSize: '56px', fontWeight: 'bold', color: 'white', display: 'flex' }}>
             Cardápio Turbo
           </span>
         </div>
 
-        {/* Tagline */}
-        <p style={{
-          fontSize: '32px',
-          color: 'rgba(255,255,255,0.9)',
-          textAlign: 'center',
-          margin: '0 80px',
-          lineHeight: 1.4,
-        }}>
+        <div style={{ display: 'flex', fontSize: '32px', color: 'rgba(255,255,255,0.9)', textAlign: 'center', margin: '0 80px' }}>
           Cardápio digital profissional em menos de 5 minutos
-        </p>
-
-        {/* Features */}
-        <div style={{
-          display: 'flex',
-          gap: '32px',
-          marginTop: '48px',
-        }}>
-          {['QR Code', 'Pedido via WhatsApp', 'Grátis para começar'].map((f) => (
-            <div key={f} style={{
-              background: 'rgba(255,255,255,0.2)',
-              borderRadius: '50px',
-              padding: '12px 28px',
-              color: 'white',
-              fontSize: '22px',
-              fontWeight: '600',
-            }}>
-              ✓ {f}
-            </div>
-          ))}
         </div>
 
-        {/* URL */}
-        <p style={{
-          fontSize: '24px',
-          color: 'rgba(255,255,255,0.7)',
-          marginTop: '48px',
-        }}>
+        <div style={{ display: 'flex', gap: '32px', marginTop: '48px' }}>
+          <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '50px', padding: '12px 28px', color: 'white', fontSize: '22px', fontWeight: '600', display: 'flex' }}>
+            ✓ QR Code
+          </div>
+          <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '50px', padding: '12px 28px', color: 'white', fontSize: '22px', fontWeight: '600', display: 'flex' }}>
+            ✓ Pedido via WhatsApp
+          </div>
+          <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '50px', padding: '12px 28px', color: 'white', fontSize: '22px', fontWeight: '600', display: 'flex' }}>
+            ✓ Grátis para começar
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', fontSize: '24px', color: 'rgba(255,255,255,0.7)', marginTop: '48px' }}>
           cardapioturbo.com.br
-        </p>
+        </div>
       </div>
     ),
     { ...size }
