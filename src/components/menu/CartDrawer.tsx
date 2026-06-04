@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { X, Minus, Plus, Trash2, ShoppingCart, Tag } from 'lucide-react'
 import type { Business } from '@/types'
 import { useCartStore } from '@/lib/stores/cart'
@@ -13,9 +14,12 @@ interface CartDrawerProps {
   business: Business
 }
 
-const paymentOptions = ['Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'Pix', 'Vale Refeição']
+const DEFAULT_PAYMENT_OPTIONS = ['Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'Pix']
 
 export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
+  const paymentOptions = (business.payment_methods && business.payment_methods.length > 0)
+    ? business.payment_methods
+    : DEFAULT_PAYMENT_OPTIONS
   const { items, removeItem, updateQuantity, clearCart, getSubtotal, getTotal, couponCode, couponDiscount, applyCoupon, removeCoupon } = useCartStore()
   const [address, setAddress] = useState('')
   const [payment, setPayment] = useState('')
@@ -28,17 +32,32 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  function applyCouponCode() {
+  const applyCouponCode = useCallback(async () => {
     if (!couponInput) return
-    if (couponInput.toUpperCase() === 'BEMVINDO10') {
-      const discount = getSubtotal() * 0.1
-      applyCoupon('BEMVINDO10', discount)
-      toast.success('Cupom aplicado! 10% de desconto')
-    } else {
-      toast.error('Cupom inválido ou expirado')
+    const supabase = createClient()
+    const { data: coupon } = await supabase
+      .from('coupons')
+      .select('*')
+      .eq('code', couponInput.toUpperCase())
+      .eq('business_id', business.id)
+      .eq('is_active', true)
+      .single()
+
+    if (!coupon) { toast.error('Cupom inválido ou expirado'); setCouponInput(''); return }
+    if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) { toast.error('Cupom expirado'); setCouponInput(''); return }
+    if (coupon.min_order_value && getSubtotal() < coupon.min_order_value) {
+      toast.error(`Pedido mínimo de ${formatCurrency(coupon.min_order_value)} para este cupom`)
+      setCouponInput(''); return
     }
+
+    const discount = coupon.discount_type === 'percentage'
+      ? getSubtotal() * (coupon.discount_value / 100)
+      : coupon.discount_value
+
+    applyCoupon(coupon.code, discount)
+    toast.success(`Cupom aplicado! ${coupon.discount_type === 'percentage' ? `${coupon.discount_value}%` : formatCurrency(coupon.discount_value)} de desconto`)
     setCouponInput('')
-  }
+  }, [couponInput, business.id, getSubtotal, applyCoupon])
 
   function handleSendOrder() {
     if (items.length === 0) return
