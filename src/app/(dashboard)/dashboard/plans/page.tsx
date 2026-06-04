@@ -141,8 +141,28 @@ export default function PlansPage() {
       </div>
 
       <p className="text-center text-xs text-gray-400">
-        Pagamentos processados com segurança via Mercado Pago ou Stripe. Cancele quando quiser.
+        Pagamentos processados com segurança via Mercado Pago. Cancele quando quiser.
       </p>
+
+      {/* Cancel info */}
+      <div className="rounded-xl border border-gray-200 bg-gray-50 p-5 max-w-2xl mx-auto">
+        <h3 className="font-semibold text-gray-700 mb-2">Como cancelar sua assinatura</h3>
+        <ol className="text-sm text-gray-500 space-y-1.5 list-decimal pl-4">
+          <li>Acesse <a href="https://www.mercadopago.com.br" target="_blank" rel="noreferrer" className="text-orange-500 hover:underline">mercadopago.com.br</a> com o e-mail usado na compra</li>
+          <li>Vá em <strong>Minha conta → Assinaturas</strong></li>
+          <li>Encontre <strong>"Cardápio Turbo - Plano Pro"</strong> e clique em <strong>Cancelar</strong></li>
+        </ol>
+        <p className="text-sm text-gray-400 mt-3">
+          Prefere ajuda? Entre em contato via{' '}
+          <a href="https://wa.me/5567992741982" target="_blank" rel="noreferrer" className="text-green-500 hover:underline font-medium">
+            WhatsApp (67) 99274-1982
+          </a>{' '}
+          que cancelamos para você.
+        </p>
+        <p className="text-xs text-gray-400 mt-2">
+          Após o cancelamento, você continua com acesso por mais 30 dias. Seus dados são preservados.
+        </p>
+      </div>
     </div>
   )
 }
