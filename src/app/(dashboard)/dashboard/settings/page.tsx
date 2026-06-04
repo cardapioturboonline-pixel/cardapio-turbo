@@ -49,6 +49,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const [saving, setSaving] = useState(false)
   const [selectedPayments, setSelectedPayments] = useState<string[]>(['Dinheiro', 'Pix', 'Cartão de Crédito'])
+  const [pixKey, setPixKey] = useState('')
   const [openingHours, setOpeningHours] = useState<OpeningHours>(DEFAULT_HOURS)
 
   // User profile state
@@ -84,6 +85,7 @@ export default function SettingsPage() {
       setFacebook(business.facebook || '')
       setTiktok(business.tiktok || '')
       if (business.payment_methods?.length) setSelectedPayments(business.payment_methods)
+      if (business.pix_key) setPixKey(business.pix_key)
       if (business.opening_hours && Object.keys(business.opening_hours).length > 0) {
         setOpeningHours({ ...DEFAULT_HOURS, ...business.opening_hours })
       }
@@ -273,9 +275,23 @@ export default function SettingsPage() {
                   </label>
                 ))}
               </div>
+              {/* Pix key */}
+              <div className="space-y-2 pt-2 border-t border-gray-100">
+                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  🔑 Chave Pix do estabelecimento
+                </label>
+                <input
+                  value={pixKey}
+                  onChange={e => setPixKey(e.target.value)}
+                  placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
+                  className="w-full h-10 rounded-lg border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+                <p className="text-xs text-gray-400">Quando o cliente selecionar Pix no cardápio, sua chave aparecerá para ele copiar.</p>
+              </div>
+
               <button onClick={async () => {
                 setSaving(true)
-                const ok = await updateBusiness({ payment_methods: selectedPayments })
+                const ok = await updateBusiness({ payment_methods: selectedPayments, pix_key: pixKey })
                 setSaving(false)
                 if (!ok) { toast.error('Erro ao salvar formas de pagamento'); return }
                 toast.success('Formas de pagamento salvas!')

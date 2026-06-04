@@ -35,6 +35,7 @@ export interface Business {
   is_active: boolean
   show_watermark: boolean
   payment_methods?: string[]
+  pix_key?: string
   custom_domain?: string
   created_at: string
   updated_at: string

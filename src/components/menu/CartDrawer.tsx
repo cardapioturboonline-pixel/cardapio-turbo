@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { X, Minus, Plus, Trash2, ShoppingCart, Tag, User, Phone, MapPin, Clock, Package } from 'lucide-react'
+import { X, Minus, Plus, Trash2, ShoppingCart, Tag, User, MapPin, Clock, Package, Copy, Check } from 'lucide-react'
 import type { Business } from '@/types'
 import { useCartStore } from '@/lib/stores/cart'
 import { formatCurrency } from '@/lib/utils/format'
@@ -45,6 +45,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
 
   // Coupon
   const [couponInput, setCouponInput] = useState('')
+  const [pixCopied, setPixCopied] = useState(false)
 
   const paymentOptions = (business.payment_methods && business.payment_methods.length > 0)
     ? business.payment_methods
@@ -293,6 +294,31 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                   ))}
                 </div>
               </div>
+
+              {/* Pix key display */}
+              {payment === 'Pix' && business.pix_key && (
+                <div className="rounded-xl border-2 border-green-200 bg-green-50 p-4 space-y-2">
+                  <p className="text-sm font-semibold text-green-800 flex items-center gap-2">
+                    💚 Chave Pix para pagamento
+                  </p>
+                  <div className="flex items-center gap-2 rounded-lg bg-white border border-green-200 px-3 py-2.5">
+                    <span className="flex-1 text-sm font-mono text-gray-800 break-all">{business.pix_key}</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(business.pix_key!)
+                        setPixCopied(true)
+                        setTimeout(() => setPixCopied(false), 2000)
+                        toast.success('Chave Pix copiada!')
+                      }}
+                      className="shrink-0 flex items-center gap-1 rounded-lg bg-green-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-600 transition-colors"
+                    >
+                      {pixCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                      {pixCopied ? 'Copiado!' : 'Copiar'}
+                    </button>
+                  </div>
+                  <p className="text-xs text-green-700">Copie a chave acima e faça o pagamento no seu banco antes de enviar o pedido.</p>
+                </div>
+              )}
 
               {/* Coupon */}
               <div className="space-y-2">
