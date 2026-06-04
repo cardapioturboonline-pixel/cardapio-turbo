@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cardápio Turbo — Cardápio Digital para Lanchonetes",
@@ -35,6 +36,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
+      <head>
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-4H1HX6SQZF" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-4H1HX6SQZF');
+        `}</Script>
+      </head>
       <body className="font-sans antialiased">
         {children}
         <Toaster />
