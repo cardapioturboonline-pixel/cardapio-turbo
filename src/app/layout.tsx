@@ -27,6 +27,9 @@ export const metadata: Metadata = {
     apple: "/icon.svg",
   },
   manifest: "/manifest.json",
+  verification: {
+    google: "kFb03BGpnkiobIHExgY-r2GxlpxzNMxdpc-D8W8i33Y",
+  },
 };
 
 export default function RootLayout({
