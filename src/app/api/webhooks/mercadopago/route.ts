@@ -72,6 +72,25 @@ export async function POST(req: NextRequest) {
 
       console.log(`[MP Webhook] Upgraded business ${businessId} to Pro`)
 
+      // Send Pro welcome email
+      try {
+        const { data: bizOwner } = await supabase
+          .from('businesses')
+          .select('user_id, name')
+          .eq('id', businessId)
+          .single()
+        const recipientEmail = payer_email || (bizOwner?.user_id
+          ? (await supabase.from('users').select('email, name').eq('id', bizOwner.user_id).single()).data?.email
+          : null)
+        const recipientName = bizOwner?.name || 'amigo(a)'
+        if (recipientEmail) {
+          const { sendProWelcomeEmail } = await import('@/lib/email/send')
+          await sendProWelcomeEmail(recipientEmail, recipientName)
+        }
+      } catch (emailErr) {
+        console.error('[MP Webhook] failed to send Pro welcome email:', emailErr)
+      }
+
     } else if (status === 'cancelled' || status === 'paused') {
       // Subscription cancelled or paused — give 30-day grace period
       const graceEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()

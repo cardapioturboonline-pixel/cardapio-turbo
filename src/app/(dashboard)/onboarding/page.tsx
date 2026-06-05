@@ -170,6 +170,9 @@ export default function OnboardingPage() {
         )
       )
 
+      // Send welcome email (fire and forget — don't block onboarding)
+      fetch('/api/emails/welcome', { method: 'POST' }).catch(() => {})
+
       const origin = typeof window !== 'undefined' ? window.location.origin : ''
       setMenuUrl(`${origin}/menu/${slug}`)
       setStep(4)
