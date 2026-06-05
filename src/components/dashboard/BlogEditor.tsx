@@ -2,10 +2,11 @@
 
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Bold, Heading2, Heading3, List, Link2, Eye, Save, ArrowLeft, ImagePlus, X as XIcon, Loader2 } from 'lucide-react'
+import { Eye, Save, ArrowLeft, ImagePlus, X as XIcon, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from '@/components/ui/sonner'
+import { RichTextEditor } from './RichTextEditor'
 
 const EMOJIS = ['📝', '📱', '🍔', '📲', '🍕', '🥤', '🔥', '💡', '🚀', '⭐', '📊', '💬', '🎯', '🍟', '🥗']
 const CATEGORIES = ['Dicas', 'Guias', 'Receitas', 'Marketing', 'Gestão', 'Novidades']
@@ -38,7 +39,6 @@ export function BlogEditor({ initial }: { initial?: Partial<BlogPost> }) {
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
-  const contentRef = useRef<HTMLTextAreaElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   async function handleUpload(file: File) {
@@ -55,16 +55,6 @@ export function BlogEditor({ initial }: { initial?: Partial<BlogPost> }) {
 
   function set<K extends keyof BlogPost>(key: K, value: BlogPost[K]) {
     setForm(f => ({ ...f, [key]: value }))
-  }
-
-  function wrapSelection(before: string, after: string) {
-    const ta = contentRef.current
-    if (!ta) return
-    const start = ta.selectionStart, end = ta.selectionEnd
-    const selected = form.content.slice(start, end) || 'texto'
-    const next = form.content.slice(0, start) + before + selected + after + form.content.slice(end)
-    set('content', next)
-    setTimeout(() => { ta.focus(); ta.setSelectionRange(start + before.length, start + before.length + selected.length) }, 0)
   }
 
   async function handleSave() {
@@ -184,21 +174,11 @@ export function BlogEditor({ initial }: { initial?: Partial<BlogPost> }) {
               placeholder="Resumo curto e atrativo do artigo..." className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none" />
           </div>
 
-          {/* Content with toolbar */}
+          {/* Content — visual editor */}
           <div className="space-y-1.5">
             <Label>Conteúdo do artigo</Label>
-            <div className="flex gap-1 rounded-t-lg border border-b-0 border-gray-200 bg-gray-50 p-1.5">
-              <button type="button" onClick={() => wrapSelection('<h2>', '</h2>')} title="Título" className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-white"><Heading2 className="h-4 w-4" /></button>
-              <button type="button" onClick={() => wrapSelection('<h3>', '</h3>')} title="Subtítulo" className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-white"><Heading3 className="h-4 w-4" /></button>
-              <button type="button" onClick={() => wrapSelection('<strong>', '</strong>')} title="Negrito" className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-white"><Bold className="h-4 w-4" /></button>
-              <button type="button" onClick={() => wrapSelection('<ul>\n<li>', '</li>\n</ul>')} title="Lista" className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-white"><List className="h-4 w-4" /></button>
-              <button type="button" onClick={() => wrapSelection('<a href="/register">', '</a>')} title="Link" className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-white"><Link2 className="h-4 w-4" /></button>
-              <button type="button" onClick={() => wrapSelection('<p>', '</p>')} title="Parágrafo" className="rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-white">¶ Parágrafo</button>
-            </div>
-            <textarea ref={contentRef} value={form.content} onChange={e => set('content', e.target.value)} rows={16}
-              placeholder="<p>Escreva o conteúdo do artigo aqui. Use os botões acima para formatar.</p>"
-              className="w-full rounded-b-lg border border-gray-200 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-500 resize-y" />
-            <p className="text-xs text-gray-400">Dica: selecione um texto e clique nos botões para formatar. O conteúdo usa HTML simples.</p>
+            <RichTextEditor value={form.content} onChange={html => set('content', html)} placeholder="Escreva o conteúdo do artigo aqui. Selecione um texto e use os botões para formatar." />
+            <p className="text-xs text-gray-400">Dica: selecione um trecho e clique nos botões (Título, Negrito, Lista…) para formatar — igual ao Word.</p>
           </div>
 
           {/* SEO */}

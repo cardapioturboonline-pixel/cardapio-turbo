@@ -162,3 +162,13 @@
   text-underline-offset: 2px;
 }
 .blog-content a:hover { color: #ea580c; }
+
+/* Rich text editor placeholder + spacing */
+.rte-editable:empty:before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+}
+.rte-editable:focus { outline: none; }
+.rte-editable h2 { margin-top: 1rem; }
+.rte-editable h3 { margin-top: 0.75rem; }
