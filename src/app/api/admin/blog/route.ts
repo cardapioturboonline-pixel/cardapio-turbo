@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
     content: body.content,
     category: body.category || 'Dicas',
     cover_emoji: body.cover_emoji || '📝',
+    cover_image: body.cover_image || null,
     author: 'Equipe Cardápio Turbo',
     read_minutes: body.read_minutes || 5,
     seo_title: body.seo_title || null,
@@ -67,7 +68,7 @@ export async function PATCH(req: NextRequest) {
 
   const supabase = createAdminClient()
   const updates: Record<string, unknown> = { updated_at: new Date().toISOString() }
-  for (const f of ['title', 'slug', 'excerpt', 'content', 'category', 'cover_emoji', 'read_minutes', 'seo_title', 'seo_description', 'keywords', 'published']) {
+  for (const f of ['title', 'slug', 'excerpt', 'content', 'category', 'cover_emoji', 'cover_image', 'read_minutes', 'seo_title', 'seo_description', 'keywords', 'published']) {
     if (f in body) updates[f] = body[f]
   }
 

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Bold, Heading2, Heading3, List, Link2, Eye, Save, ArrowLeft } from 'lucide-react'
+import { Bold, Heading2, Heading3, List, Link2, Eye, Save, ArrowLeft, ImagePlus, X as XIcon, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from '@/components/ui/sonner'
@@ -18,6 +18,7 @@ interface BlogPost {
   content: string
   category: string
   cover_emoji: string
+  cover_image: string
   read_minutes: number
   seo_title: string
   seo_description: string
@@ -27,7 +28,7 @@ interface BlogPost {
 
 const EMPTY: BlogPost = {
   title: '', slug: '', excerpt: '', content: '', category: 'Dicas',
-  cover_emoji: '📝', read_minutes: 5, seo_title: '', seo_description: '', keywords: '', published: true,
+  cover_emoji: '📝', cover_image: '', read_minutes: 5, seo_title: '', seo_description: '', keywords: '', published: true,
 }
 
 export function BlogEditor({ initial }: { initial?: Partial<BlogPost> }) {
@@ -35,8 +36,22 @@ export function BlogEditor({ initial }: { initial?: Partial<BlogPost> }) {
   const isEdit = !!initial?.id
   const [form, setForm] = useState<BlogPost>({ ...EMPTY, ...initial })
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const contentRef = useRef<HTMLTextAreaElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  async function handleUpload(file: File) {
+    setUploading(true)
+    const fd = new FormData()
+    fd.append('file', file)
+    const res = await fetch('/api/admin/blog/upload', { method: 'POST', body: fd })
+    const data = await res.json()
+    setUploading(false)
+    if (!res.ok) { toast.error(data.error || 'Erro ao enviar imagem'); return }
+    set('cover_image', data.url)
+    toast.success('Imagem enviada!')
+  }
 
   function set<K extends keyof BlogPost>(key: K, value: BlogPost[K]) {
     setForm(f => ({ ...f, [key]: value }))
@@ -91,7 +106,11 @@ export function BlogEditor({ initial }: { initial?: Partial<BlogPost> }) {
           <span className="text-sm font-semibold text-orange-500">{form.category}</span>
           <h1 className="text-3xl font-extrabold text-gray-900 mt-2 mb-3">{form.title || 'Título do artigo'}</h1>
           <p className="text-lg text-gray-500 mb-6">{form.excerpt}</p>
-          <div className="h-48 rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center text-6xl mb-8">{form.cover_emoji}</div>
+          {form.cover_image ? (
+            <img src={form.cover_image} alt="" className="h-64 w-full rounded-xl object-cover mb-8" />
+          ) : (
+            <div className="h-48 rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center text-6xl mb-8">{form.cover_emoji}</div>
+          )}
           <div className="blog-content" dangerouslySetInnerHTML={{ __html: form.content }} />
         </article>
       ) : (
@@ -109,6 +128,30 @@ export function BlogEditor({ initial }: { initial?: Partial<BlogPost> }) {
               <span className="px-3 text-xs text-gray-400 bg-gray-50 h-10 flex items-center border-r border-gray-200 whitespace-nowrap">/blog/</span>
               <input value={form.slug} onChange={e => set('slug', e.target.value)} placeholder="gerado-do-titulo" className="flex-1 px-3 text-sm focus:outline-none h-10" />
             </div>
+          </div>
+
+          {/* Cover image upload */}
+          <div className="space-y-1.5">
+            <Label>Imagem de capa (opcional)</Label>
+            <input ref={fileRef} type="file" accept="image/*" className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleUpload(f) }} />
+            {form.cover_image ? (
+              <div className="relative inline-block">
+                <img src={form.cover_image} alt="" className="h-40 w-full max-w-md rounded-xl object-cover border border-gray-200" />
+                <button type="button" onClick={() => set('cover_image', '')}
+                  className="absolute top-2 right-2 rounded-full bg-white p-1.5 shadow-md text-gray-600 hover:text-red-500" title="Remover imagem">
+                  <XIcon className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading}
+                className="flex flex-col items-center justify-center gap-2 w-full max-w-md h-40 rounded-xl border-2 border-dashed border-gray-200 text-gray-400 hover:border-orange-300 hover:text-orange-500 transition-colors disabled:opacity-60">
+                {uploading ? <Loader2 className="h-7 w-7 animate-spin" /> : <ImagePlus className="h-7 w-7" />}
+                <span className="text-sm font-medium">{uploading ? 'Enviando...' : 'Clique para enviar uma foto'}</span>
+                <span className="text-xs">PNG, JPG até 5MB</span>
+              </button>
+            )}
+            <p className="text-xs text-gray-400">Se não enviar imagem, será usado o emoji de capa abaixo.</p>
           </div>
 
           {/* Meta row */}

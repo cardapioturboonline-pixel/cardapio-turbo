@@ -27,6 +27,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
         content: post.content ?? '',
         category: post.category ?? 'Dicas',
         cover_emoji: post.cover_emoji ?? '📝',
+        cover_image: post.cover_image ?? '',
         read_minutes: post.read_minutes ?? 5,
         seo_title: post.seo_title ?? '',
         seo_description: post.seo_description ?? '',

@@ -54,6 +54,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       publishedTime: post.published_at,
       modifiedTime: post.updated_at,
       authors: [post.author],
+      ...(post.cover_image ? { images: [{ url: post.cover_image }] } : {}),
     },
     twitter: {
       card: 'summary_large_image',
@@ -131,9 +132,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </header>
 
         {/* Cover */}
-        <div className="h-56 sm:h-72 rounded-2xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center text-7xl mb-10">
-          {post.cover_emoji}
-        </div>
+        {post.cover_image ? (
+          <img src={post.cover_image} alt={post.title} className="h-56 sm:h-80 w-full rounded-2xl object-cover mb-10" />
+        ) : (
+          <div className="h-56 sm:h-72 rounded-2xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center text-7xl mb-10">
+            {post.cover_emoji}
+          </div>
+        )}
 
         {/* Content */}
         <div

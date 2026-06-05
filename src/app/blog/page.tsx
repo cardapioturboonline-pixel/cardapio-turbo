@@ -24,6 +24,7 @@ interface Post {
   excerpt: string
   category: string
   cover_emoji: string
+  cover_image: string | null
   read_minutes: number
   published_at: string
 }
@@ -32,7 +33,7 @@ export default async function BlogPage() {
   const supabase = await createClient()
   const { data: posts } = await supabase
     .from('blog_posts')
-    .select('slug, title, excerpt, category, cover_emoji, read_minutes, published_at')
+    .select('slug, title, excerpt, category, cover_emoji, cover_image, read_minutes, published_at')
     .eq('published', true)
     .order('published_at', { ascending: false })
 
@@ -75,9 +76,13 @@ export default async function BlogPage() {
             {list.map(post => (
               <Link key={post.slug} href={`/blog/${post.slug}`}
                 className="group flex flex-col rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg hover:border-orange-200 transition-all">
-                <div className="h-40 bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center text-5xl">
-                  {post.cover_emoji}
-                </div>
+                {post.cover_image ? (
+                  <img src={post.cover_image} alt={post.title} className="h-40 w-full object-cover" />
+                ) : (
+                  <div className="h-40 bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center text-5xl">
+                    {post.cover_emoji}
+                  </div>
+                )}
                 <div className="flex flex-col flex-1 p-5">
                   <span className="text-xs font-semibold text-orange-500 mb-2">{post.category}</span>
                   <h2 className="font-bold text-gray-900 leading-snug mb-2 group-hover:text-orange-600 transition-colors">{post.title}</h2>
