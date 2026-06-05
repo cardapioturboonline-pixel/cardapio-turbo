@@ -58,10 +58,10 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.description && (
             <p className="mt-1 text-xs text-gray-500 line-clamp-2">{product.description}</p>
           )}
-          <div className="mt-3 flex items-center justify-between">
-            <div>
+          <div className="mt-3 flex flex-col gap-2">
+            <div className="min-w-0">
               {product.promotional_price ? (
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0">
                   <span className="text-lg font-bold text-orange-500">{formatCurrency(product.promotional_price)}</span>
                   <span className="text-xs text-gray-400 line-through">{formatCurrency(product.price)}</span>
                 </div>
@@ -70,10 +70,10 @@ export function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
             {product.is_available && (
-              <div className="flex items-center gap-1.5 rounded-lg bg-orange-500 px-3 py-1.5 text-sm font-medium text-white">
-                <ShoppingCart className="h-4 w-4" />
+              <button className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-orange-500 px-3 py-2 text-sm font-medium text-white hover:bg-orange-600 transition-colors">
+                <ShoppingCart className="h-4 w-4 shrink-0" />
                 Adicionar
-              </div>
+              </button>
             )}
           </div>
         </div>
