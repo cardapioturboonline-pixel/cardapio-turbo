@@ -43,9 +43,25 @@ export function MenuClient({ business, categories, products }: MenuClientProps) 
       <div className="bg-white shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-start gap-4">
-            {business.logo_url && (
-              <img src={business.logo_url} alt="Logo" className="h-16 w-16 rounded-xl object-cover border-2 border-white shadow-md shrink-0 -mt-8 relative z-10" />
-            )}
+            {business.logo_url ? (
+              <img
+                src={business.logo_url}
+                alt={business.name}
+                className="h-16 w-16 rounded-xl object-cover border-2 border-white shadow-md shrink-0 -mt-8 relative z-10 bg-white"
+                onError={(e) => {
+                  const img = e.currentTarget
+                  img.style.display = 'none'
+                  const fallback = img.nextElementSibling as HTMLElement | null
+                  if (fallback) fallback.style.display = 'flex'
+                }}
+              />
+            ) : null}
+            <div
+              className="h-16 w-16 rounded-xl border-2 border-white shadow-md shrink-0 -mt-8 relative z-10 bg-orange-500 items-center justify-center text-3xl font-bold text-white"
+              style={{ display: business.logo_url ? 'none' : 'flex' }}
+            >
+              {business.name?.[0]?.toUpperCase() ?? '🍽️'}
+            </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-xl font-bold text-gray-900">{business.name}</h1>
               {business.description && <p className="text-sm text-gray-500 mt-0.5">{business.description}</p>}
