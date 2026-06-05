@@ -10,6 +10,7 @@ const posts = [
   {
     title: 'Como criar um cardápio digital para sua lanchonete em 2026',
     slug: 'como-criar-cardapio-digital-lanchonete',
+    author: 'Equipe Cardápio Turbo',
     excerpt: 'Aprenda o passo a passo completo para digitalizar o cardápio da sua lanchonete, aumentar pedidos pelo WhatsApp e profissionalizar seu negócio sem gastar nada para começar.',
     category: 'Guias',
     read_minutes: 7,
@@ -22,6 +23,7 @@ const posts = [
   {
     title: '5 receitas de hambúrguer artesanal para vender mais na sua lanchonete',
     slug: 'receitas-hamburguer-artesanal-vender-mais',
+    author: 'Equipe Cardápio Turbo',
     excerpt: 'Descubra 5 receitas de hambúrguer artesanal que conquistam clientes e aumentam o ticket médio da sua lanchonete. Ingredientes, montagem e dicas de precificação.',
     category: 'Receitas',
     read_minutes: 8,
@@ -34,6 +36,7 @@ const posts = [
   {
     title: 'QR Code no restaurante: como usar para aumentar suas vendas',
     slug: 'qr-code-restaurante-aumentar-vendas',
+    author: 'Equipe Cardápio Turbo',
     excerpt: 'Entenda como o QR Code revolucionou o atendimento em restaurantes e lanchonetes. Veja onde colocar, como gerar e as melhores práticas para vender mais.',
     category: 'Dicas',
     read_minutes: 6,
