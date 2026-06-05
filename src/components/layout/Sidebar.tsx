@@ -6,12 +6,13 @@ import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, Package, Tag, Megaphone, Palette,
   QrCode, BarChart3, CreditCard, Settings, LogOut,
-  ChefHat, X
+  ChefHat, X, FileText
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
 import { useBusiness } from '@/lib/hooks/useBusiness'
+import { isAdminEmail } from '@/lib/admin'
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -102,6 +103,24 @@ export function Sidebar({ onClose }: SidebarProps) {
             </Link>
           )
         })}
+
+        {/* Admin-only: Blog */}
+        {isAdminEmail(user?.email) && (
+          <Link
+            href="/dashboard/blog"
+            onClick={onClose}
+            className={cn(
+              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+              pathname.startsWith('/dashboard/blog')
+                ? 'bg-orange-50 text-orange-600'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            )}
+          >
+            <FileText className="h-4 w-4 shrink-0" />
+            Blog
+            <span className="ml-auto rounded-full bg-purple-100 px-1.5 py-0.5 text-[10px] font-bold text-purple-600">ADMIN</span>
+          </Link>
+        )}
       </nav>
 
       {/* User footer */}
