@@ -141,13 +141,50 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     return encodeURIComponent(msg)
   }
 
-  function handleSendOrder() {
+  async function saveOrderToDb() {
+    // Salva o pedido no banco (best-effort) para aparecer no painel de pedidos.
+    // Só salva se o negócio tiver acesso Pro (recurso do painel).
+    if (!hasProAccess(business)) return
+    try {
+      const supabase = createClient()
+      const addressParts = [addressStreet, selectedArea?.name || addressDistrict, addressComplement].filter(Boolean)
+      await supabase.from('orders').insert({
+        business_id: business.id,
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        order_type: orderType,
+        delivery_address: orderType === 'delivery' ? addressParts.join(', ') : null,
+        neighborhood: selectedArea?.name || (orderType === 'delivery' ? addressDistrict : null) || null,
+        payment_method: payment,
+        items: items.map(it => ({
+          name: it.product.name,
+          quantity: it.quantity,
+          price: it.product.promotional_price ?? it.product.price,
+          observations: it.observations || null,
+        })),
+        subtotal: getSubtotal(),
+        discount: couponDiscount,
+        delivery_fee: deliveryFee,
+        total: finalTotal,
+        coupon_code: couponCode || null,
+        schedule: scheduleType === 'now' ? 'Agora' : (scheduleTime || 'A combinar'),
+        observations: observations || null,
+        status: 'pending',
+      })
+    } catch (err) {
+      console.error('[saveOrderToDb]', err)
+    }
+  }
+
+  async function handleSendOrder() {
     if (items.length === 0) return
     if (!customerName) { toast.error('Informe seu nome'); return }
     if (!customerPhone) { toast.error('Informe seu telefone'); return }
     if (orderType === 'delivery' && !addressStreet) { toast.error('Informe o endereço de entrega'); return }
     if (orderType === 'delivery' && hasDeliveryAreas && !selectedArea) { toast.error('Selecione seu bairro para calcular a entrega'); return }
     if (!payment) { toast.error('Selecione a forma de pagamento'); return }
+
+    await saveOrderToDb()
 
     const whatsappNumber = business.whatsapp.replace(/\D/g, '')
     const message = buildWhatsAppMessage()

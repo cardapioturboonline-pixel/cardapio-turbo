@@ -13,6 +13,36 @@ export interface DeliveryArea {
   fee: number
 }
 
+export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'delivering' | 'delivered' | 'cancelled'
+
+export interface OrderItemSnapshot {
+  name: string
+  quantity: number
+  price: number
+  observations?: string | null
+}
+
+export interface Order {
+  id: string
+  business_id: string
+  customer_name?: string
+  customer_phone?: string
+  order_type?: 'delivery' | 'pickup'
+  delivery_address?: string
+  neighborhood?: string
+  payment_method?: string
+  status: OrderStatus
+  items?: OrderItemSnapshot[]
+  subtotal: number
+  discount: number
+  delivery_fee?: number
+  total: number
+  coupon_code?: string
+  schedule?: string
+  observations?: string
+  created_at: string
+}
+
 export interface Business {
   id: string
   user_id: string
