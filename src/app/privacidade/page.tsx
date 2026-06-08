@@ -128,7 +128,7 @@ export default function PrivacidadePage() {
       {/* Footer */}
       <footer className="border-t border-gray-100 py-8 mt-8">
         <div className="max-w-3xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-400">
-          <p>© 2025 Cardápio Turbo. Todos os direitos reservados.</p>
+          <p>© 2026 Agência LD Marketing. Todos os direitos reservados.</p>
           <div className="flex gap-4">
             <Link href="/termos" className="hover:text-orange-500 transition-colors">Termos de Uso</Link>
             <Link href="/" className="hover:text-orange-500 transition-colors">Início</Link>

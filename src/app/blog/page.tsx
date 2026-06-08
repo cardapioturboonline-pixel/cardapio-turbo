@@ -112,7 +112,7 @@ export default async function BlogPage() {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-10">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
-          <span>© 2026 Cardápio Turbo</span>
+          <span>© 2026 Agência LD Marketing</span>
           <div className="flex gap-5">
             <Link href="/blog" className="hover:text-white">Blog</Link>
             <Link href="/termos" className="hover:text-white">Termos</Link>
