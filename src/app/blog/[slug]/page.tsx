@@ -179,6 +179,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <span>© 2026 Agência LD Marketing</span>
           <div className="flex gap-5">
             <Link href="/blog" className="hover:text-white">Blog</Link>
+            <a href="https://instagram.com/cardapioturboonline" target="_blank" rel="noreferrer" className="hover:text-white">Instagram</a>
             <Link href="/termos" className="hover:text-white">Termos</Link>
             <Link href="/privacidade" className="hover:text-white">Privacidade</Link>
           </div>
