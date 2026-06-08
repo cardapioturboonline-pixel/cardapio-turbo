@@ -142,7 +142,7 @@ export default function LandingPage() {
               </Button>
             </Link>
           </div>
-          <p className="mt-4 text-sm text-gray-400">Grátis para sempre • Sem cartão de crédito • Setup em 5 minutos</p>
+          <p className="mt-4 text-sm text-gray-400">7 dias grátis • Sem cartão de crédito • Setup em 5 minutos</p>
 
           {/* Hero mockup */}
           <div className="mt-16 relative max-w-4xl mx-auto">
@@ -192,7 +192,7 @@ export default function LandingPage() {
             { value: "5 min", label: "para criar o cardápio" },
             { value: "3x", label: "mais pedidos com foto" },
             { value: "40%", label: "mais ticket com combos" },
-            { value: "R$0", label: "plano gratuito para sempre" },
+            { value: "7 dias", label: "grátis para testar tudo" },
           ].map((stat, i) => (
             <div key={i}>
               <div className="text-3xl font-extrabold text-orange-400">{stat.value}</div>
