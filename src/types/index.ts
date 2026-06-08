@@ -8,6 +8,11 @@ export interface User {
   created_at: string
 }
 
+export interface DeliveryArea {
+  name: string
+  fee: number
+}
+
 export interface Business {
   id: string
   user_id: string
@@ -36,6 +41,7 @@ export interface Business {
   show_watermark: boolean
   payment_methods?: string[]
   pix_key?: string
+  delivery_areas?: DeliveryArea[]
   custom_domain?: string
   created_at: string
   updated_at: string

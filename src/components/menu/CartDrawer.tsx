@@ -31,6 +31,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
   // Address fields
   const [addressStreet, setAddressStreet] = useState('')
   const [addressDistrict, setAddressDistrict] = useState('')
+  const [selectedAreaName, setSelectedAreaName] = useState('')
   const [addressComplement, setAddressComplement] = useState('')
 
   // Schedule
@@ -50,6 +51,12 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
   const paymentOptions = (business.payment_methods && business.payment_methods.length > 0)
     ? business.payment_methods
     : DEFAULT_PAYMENT_OPTIONS
+
+  const deliveryAreas = business.delivery_areas ?? []
+  const hasDeliveryAreas = deliveryAreas.length > 0
+  const selectedArea = deliveryAreas.find(a => a.name === selectedAreaName)
+  const deliveryFee = orderType === 'delivery' ? (selectedArea?.fee ?? 0) : 0
+  const finalTotal = getTotal() + deliveryFee
 
   useEffect(() => {
     if (open) document.body.style.overflow = 'hidden'
@@ -97,7 +104,8 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
 
     if (orderType === 'delivery') {
       if (addressStreet) msg += `📍 *Endereço:* ${addressStreet}\n`
-      if (addressDistrict) msg += `🏘️ *Bairro/Cidade:* ${addressDistrict}\n`
+      if (selectedArea) msg += `🏘️ *Bairro:* ${selectedArea.name}\n`
+      else if (addressDistrict) msg += `🏘️ *Bairro/Cidade:* ${addressDistrict}\n`
       if (addressComplement) msg += `ℹ️ *Complemento:* ${addressComplement}\n`
     }
     msg += '\n'
@@ -118,7 +126,10 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     if (couponDiscount > 0 && couponCode) {
       msg += `*Cupom (${couponCode}):* -${formatCurrency(couponDiscount)}\n`
     }
-    msg += `*Total:* ${formatCurrency(getTotal())}\n\n`
+    if (orderType === 'delivery' && deliveryFee > 0) {
+      msg += `*Taxa de entrega:* ${formatCurrency(deliveryFee)}\n`
+    }
+    msg += `*Total:* ${formatCurrency(finalTotal)}\n\n`
 
     // Payment
     if (payment) msg += `💳 *Forma de pagamento:* ${payment}\n`
@@ -134,6 +145,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     if (!customerName) { toast.error('Informe seu nome'); return }
     if (!customerPhone) { toast.error('Informe seu telefone'); return }
     if (orderType === 'delivery' && !addressStreet) { toast.error('Informe o endereço de entrega'); return }
+    if (orderType === 'delivery' && hasDeliveryAreas && !selectedArea) { toast.error('Selecione seu bairro para calcular a entrega'); return }
     if (!payment) { toast.error('Selecione a forma de pagamento'); return }
 
     const whatsappNumber = business.whatsapp.replace(/\D/g, '')
@@ -252,12 +264,30 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                   <input value={addressStreet} onChange={e => setAddressStreet(e.target.value)}
                     placeholder="Rua e número *"
                     className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                  <input value={addressDistrict} onChange={e => setAddressDistrict(e.target.value)}
-                    placeholder="Bairro e cidade *"
-                    className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+
+                  {hasDeliveryAreas ? (
+                    <select value={selectedAreaName} onChange={e => setSelectedAreaName(e.target.value)}
+                      className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                      <option value="">Selecione seu bairro *</option>
+                      {deliveryAreas.map(a => (
+                        <option key={a.name} value={a.name}>{a.name} — {a.fee > 0 ? formatCurrency(a.fee) : 'Grátis'}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input value={addressDistrict} onChange={e => setAddressDistrict(e.target.value)}
+                      placeholder="Bairro e cidade *"
+                      className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                  )}
+
                   <input value={addressComplement} onChange={e => setAddressComplement(e.target.value)}
                     placeholder="CEP, bloco, complemento (opcional)"
                     className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+
+                  {selectedArea && (
+                    <p className="text-xs text-gray-500">
+                      Taxa de entrega para <strong>{selectedArea.name}</strong>: {selectedArea.fee > 0 ? formatCurrency(selectedArea.fee) : 'Grátis'}
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -362,8 +392,14 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                   <span>Desconto</span><span>-{formatCurrency(couponDiscount)}</span>
                 </div>
               )}
+              {orderType === 'delivery' && deliveryFee > 0 && (
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Taxa de entrega{selectedArea ? ` (${selectedArea.name})` : ''}</span>
+                  <span>{formatCurrency(deliveryFee)}</span>
+                </div>
+              )}
               <div className="flex justify-between font-semibold text-gray-900">
-                <span>Total</span><span className="text-orange-500">{formatCurrency(getTotal())}</span>
+                <span>Total</span><span className="text-orange-500">{formatCurrency(finalTotal)}</span>
               </div>
             </div>
             <button onClick={handleSendOrder}

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { User, Store, Share2, CreditCard, AlertTriangle, Clock } from 'lucide-react'
-import type { OpeningHours, DayHours } from '@/types'
+import { User, Store, Share2, CreditCard, AlertTriangle, Clock, Bike, Plus, Trash2 } from 'lucide-react'
+import type { OpeningHours, DayHours, DeliveryArea } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useBusiness } from '@/lib/hooks/useBusiness'
@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/components/ui/sonner'
 import { useRouter } from 'next/navigation'
 
-type Tab = 'profile' | 'store' | 'social' | 'hours' | 'payment' | 'danger'
+type Tab = 'profile' | 'store' | 'social' | 'hours' | 'delivery' | 'payment' | 'danger'
 
 const DAYS = [
   { key: 'monday', label: 'Segunda-feira' },
@@ -37,6 +37,7 @@ const tabs: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
   { id: 'store', label: 'Loja', icon: Store },
   { id: 'social', label: 'Redes Sociais', icon: Share2 },
   { id: 'hours', label: 'Horários', icon: Clock },
+  { id: 'delivery', label: 'Entrega', icon: Bike },
   { id: 'payment', label: 'Pagamentos', icon: CreditCard },
   { id: 'danger', label: 'Zona de Perigo', icon: AlertTriangle },
 ]
@@ -51,6 +52,7 @@ export default function SettingsPage() {
   const [selectedPayments, setSelectedPayments] = useState<string[]>(['Dinheiro', 'Pix', 'Cartão de Crédito'])
   const [pixKey, setPixKey] = useState('')
   const [openingHours, setOpeningHours] = useState<OpeningHours>(DEFAULT_HOURS)
+  const [deliveryAreas, setDeliveryAreas] = useState<DeliveryArea[]>([])
 
   // User profile state
   const [userName, setUserName] = useState('')
@@ -89,6 +91,7 @@ export default function SettingsPage() {
       if (business.opening_hours && Object.keys(business.opening_hours).length > 0) {
         setOpeningHours({ ...DEFAULT_HOURS, ...business.opening_hours })
       }
+      if (business.delivery_areas?.length) setDeliveryAreas(business.delivery_areas)
     }
   }, [business])
 
@@ -260,6 +263,69 @@ export default function SettingsPage() {
               }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
                 {saving ? 'Salvando...' : 'Salvar horários'}
               </button>
+            </div>
+          )}
+
+          {activeTab === 'delivery' && (
+            <div className="space-y-4">
+              <h2 className="font-semibold text-gray-900">Taxas de entrega por bairro</h2>
+              <p className="text-sm text-gray-500">
+                Cadastre os bairros que você atende e o valor da entrega. No cardápio, o cliente seleciona o bairro e a taxa é calculada automaticamente.
+              </p>
+
+              <div className="space-y-2">
+                {deliveryAreas.length === 0 && (
+                  <p className="text-sm text-gray-400 py-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
+                    Nenhum bairro cadastrado. Adicione abaixo.
+                  </p>
+                )}
+                {deliveryAreas.map((area, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Input
+                      value={area.name}
+                      onChange={e => setDeliveryAreas(prev => prev.map((a, idx) => idx === i ? { ...a, name: e.target.value } : a))}
+                      placeholder="Nome do bairro"
+                      className="flex-1"
+                    />
+                    <div className="flex items-center gap-1 w-32 shrink-0">
+                      <span className="text-sm text-gray-400">R$</span>
+                      <Input
+                        type="number" step="0.01" min="0"
+                        value={area.fee}
+                        onChange={e => setDeliveryAreas(prev => prev.map((a, idx) => idx === i ? { ...a, fee: parseFloat(e.target.value) || 0 } : a))}
+                        placeholder="0,00"
+                      />
+                    </div>
+                    <button onClick={() => setDeliveryAreas(prev => prev.filter((_, idx) => idx !== i))}
+                      className="rounded-md p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 shrink-0">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <button onClick={() => setDeliveryAreas(prev => [...prev, { name: '', fee: 0 }])}
+                className="flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-600">
+                <Plus className="h-4 w-4" /> Adicionar bairro
+              </button>
+
+              <div className="pt-2">
+                <button onClick={async () => {
+                  setSaving(true)
+                  const clean = deliveryAreas.filter(a => a.name.trim())
+                  const ok = await updateBusiness({ delivery_areas: clean })
+                  setSaving(false)
+                  if (!ok) { toast.error('Erro ao salvar taxas de entrega'); return }
+                  setDeliveryAreas(clean)
+                  toast.success('Taxas de entrega salvas!')
+                }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                  {saving ? 'Salvando...' : 'Salvar'}
+                </button>
+              </div>
+
+              <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-sm text-blue-700">
+                💡 Dica: deixe sem bairros se você cobra frete fixo ou combina a taxa direto com o cliente.
+              </div>
             </div>
           )}
 
