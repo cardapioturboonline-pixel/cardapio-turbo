@@ -48,13 +48,18 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
   // Coupon
   const [couponInput, setCouponInput] = useState('')
   const [pixCopied, setPixCopied] = useState(false)
+  const [loyaltyCount, setLoyaltyCount] = useState<number | null>(null)
 
   const paymentOptions = (business.payment_methods && business.payment_methods.length > 0)
     ? business.payment_methods
     : DEFAULT_PAYMENT_OPTIONS
 
-  const deliveryAreas = hasProAccess(business) ? (business.delivery_areas ?? []) : []
+  const proAccess = hasProAccess(business)
+  const deliveryAreas = proAccess ? (business.delivery_areas ?? []) : []
   const hasDeliveryAreas = deliveryAreas.length > 0
+
+  const loyaltyOn = proAccess && !!business.loyalty_enabled && !!business.loyalty_reward
+  const loyaltyGoal = business.loyalty_goal ?? 10
   const selectedArea = deliveryAreas.find(a => a.name === selectedAreaName)
   const deliveryFee = orderType === 'delivery' ? (selectedArea?.fee ?? 0) : 0
   const finalTotal = getTotal() + deliveryFee
@@ -64,6 +69,21 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     else document.body.style.overflow = ''
     return () => { document.body.style.overflow = '' }
   }, [open])
+
+  // Fidelidade: busca a contagem de pedidos do cliente (com debounce no telefone)
+  useEffect(() => {
+    if (!loyaltyOn) { setLoyaltyCount(null); return }
+    const digits = customerPhone.replace(/\D/g, '')
+    if (digits.length < 10) { setLoyaltyCount(null); return }
+    const t = setTimeout(async () => {
+      try {
+        const supabase = createClient()
+        const { data } = await supabase.rpc('get_customer_order_count', { p_business_id: business.id, p_phone: customerPhone })
+        if (typeof data === 'number') setLoyaltyCount(data)
+      } catch { /* ignore */ }
+    }, 600)
+    return () => clearTimeout(t)
+  }, [customerPhone, loyaltyOn, business.id])
 
   const applyCouponCode = useCallback(async () => {
     if (!couponInput) return
@@ -274,6 +294,30 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                 <input value={customerPhone} onChange={e => setCustomerPhone(e.target.value)}
                   placeholder="Seu telefone/WhatsApp *" type="tel"
                   className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+
+                {/* Cartão fidelidade */}
+                {loyaltyOn && loyaltyCount !== null && (() => {
+                  const inCycle = loyaltyCount % loyaltyGoal
+                  const earnedReward = loyaltyCount > 0 && inCycle === 0
+                  const remaining = loyaltyGoal - inCycle
+                  return (
+                    <div className="rounded-xl border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 p-3 space-y-2">
+                      {earnedReward ? (
+                        <p className="text-sm font-semibold text-orange-700">🎉 Parabéns! Você ganhou: <strong>{business.loyalty_reward}</strong>. Avise na observação do pedido!</p>
+                      ) : (
+                        <p className="text-sm font-medium text-orange-700">
+                          🎁 Faltam <strong>{remaining}</strong> {remaining === 1 ? 'pedido' : 'pedidos'} para ganhar <strong>{business.loyalty_reward}</strong>
+                        </p>
+                      )}
+                      <div className="flex gap-1">
+                        {Array.from({ length: loyaltyGoal }).map((_, i) => (
+                          <div key={i} className={`h-2 flex-1 rounded-full ${i < (earnedReward ? loyaltyGoal : inCycle) ? 'bg-orange-500' : 'bg-orange-200'}`} />
+                        ))}
+                      </div>
+                      <p className="text-xs text-orange-600">{earnedReward ? loyaltyGoal : inCycle}/{loyaltyGoal} pedidos concluídos</p>
+                    </div>
+                  )
+                })()}
               </div>
 
               {/* Order type */}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { User, Store, Share2, CreditCard, AlertTriangle, Clock, Bike, Plus, Trash2 } from 'lucide-react'
+import { User, Store, Share2, CreditCard, AlertTriangle, Clock, Bike, Plus, Trash2, Gift } from 'lucide-react'
 import type { OpeningHours, DayHours, DeliveryArea } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { hasProAccess, isOnTrial } from '@/lib/plan'
 
-type Tab = 'profile' | 'store' | 'social' | 'hours' | 'delivery' | 'payment' | 'danger'
+type Tab = 'profile' | 'store' | 'social' | 'hours' | 'delivery' | 'loyalty' | 'payment' | 'danger'
 
 const DAYS = [
   { key: 'monday', label: 'Segunda-feira' },
@@ -40,6 +40,7 @@ const tabs: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
   { id: 'social', label: 'Redes Sociais', icon: Share2 },
   { id: 'hours', label: 'Horários', icon: Clock },
   { id: 'delivery', label: 'Entrega', icon: Bike },
+  { id: 'loyalty', label: 'Fidelidade', icon: Gift },
   { id: 'payment', label: 'Pagamentos', icon: CreditCard },
   { id: 'danger', label: 'Zona de Perigo', icon: AlertTriangle },
 ]
@@ -57,6 +58,9 @@ export default function SettingsPage() {
   const [pixKey, setPixKey] = useState('')
   const [openingHours, setOpeningHours] = useState<OpeningHours>(DEFAULT_HOURS)
   const [deliveryAreas, setDeliveryAreas] = useState<DeliveryArea[]>([])
+  const [loyaltyEnabled, setLoyaltyEnabled] = useState(false)
+  const [loyaltyGoal, setLoyaltyGoal] = useState(10)
+  const [loyaltyReward, setLoyaltyReward] = useState('')
 
   // User profile state
   const [userName, setUserName] = useState('')
@@ -96,6 +100,9 @@ export default function SettingsPage() {
         setOpeningHours({ ...DEFAULT_HOURS, ...business.opening_hours })
       }
       if (business.delivery_areas?.length) setDeliveryAreas(business.delivery_areas)
+      setLoyaltyEnabled(business.loyalty_enabled ?? false)
+      setLoyaltyGoal(business.loyalty_goal ?? 10)
+      setLoyaltyReward(business.loyalty_reward ?? '')
     }
   }, [business])
 
@@ -353,6 +360,61 @@ export default function SettingsPage() {
 
               <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-sm text-blue-700">
                 💡 Dica: deixe sem bairros se você cobra frete fixo ou combina a taxa direto com o cliente.
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'loyalty' && !proAccess && (
+            <div className="space-y-4">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">Programa de fidelidade <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-bold text-orange-600">PRO</span></h2>
+              <div className="rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 p-6 text-white">
+                <div className="flex items-center gap-3 mb-3"><Gift className="h-6 w-6" /><h3 className="font-semibold">Fidelize seus clientes com um cartão digital</h3></div>
+                <p className="text-sm text-orange-100 mb-4">"A cada X pedidos, 1 grátis." O cliente acompanha o progresso direto no cardápio. Recurso do plano Pro (R$ 29,90/mês).</p>
+                <Link href="/dashboard/plans" className="inline-block rounded-lg bg-white px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">Ver plano Pro</Link>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'loyalty' && proAccess && (
+            <div className="space-y-4">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                Programa de fidelidade
+                {onTrial && <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-bold text-purple-600">TESTE GRÁTIS</span>}
+              </h2>
+              <p className="text-sm text-gray-500">Crie um cartão fidelidade digital. O cliente acompanha o progresso pelo telefone no cardápio.</p>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={loyaltyEnabled} onChange={e => setLoyaltyEnabled(e.target.checked)} className="rounded border-gray-300 text-orange-500" />
+                <span className="text-sm font-medium text-gray-900">Ativar programa de fidelidade</span>
+              </label>
+
+              {loyaltyEnabled && (
+                <div className="space-y-4 rounded-xl border border-orange-100 bg-orange-50 p-4">
+                  <div className="space-y-1.5">
+                    <Label>A cada quantos pedidos o cliente ganha o brinde?</Label>
+                    <Input type="number" min={2} max={50} value={loyaltyGoal} onChange={e => setLoyaltyGoal(parseInt(e.target.value) || 10)} className="w-32 bg-white" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Qual é o brinde?</Label>
+                    <Input value={loyaltyReward} onChange={e => setLoyaltyReward(e.target.value)} placeholder="Ex: 1 lanche grátis, 1 refrigerante, 50% de desconto..." className="bg-white" />
+                  </div>
+                  <p className="text-xs text-gray-500">Prévia: "A cada <strong>{loyaltyGoal}</strong> pedidos, ganhe <strong>{loyaltyReward || '...'}</strong>"</p>
+                </div>
+              )}
+
+              <button onClick={async () => {
+                if (loyaltyEnabled && !loyaltyReward.trim()) { toast.error('Descreva o brinde do programa'); return }
+                setSaving(true)
+                const ok = await updateBusiness({ loyalty_enabled: loyaltyEnabled, loyalty_goal: loyaltyGoal, loyalty_reward: loyaltyReward })
+                setSaving(false)
+                if (!ok) { toast.error('Erro ao salvar'); return }
+                toast.success('Programa de fidelidade salvo!')
+              }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                {saving ? 'Salvando...' : 'Salvar'}
+              </button>
+
+              <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-sm text-blue-700">
+                💡 O progresso conta os pedidos <strong>concluídos</strong> (marcados como entregue no painel de Pedidos). Quando o cliente atingir a meta, ele vê o aviso do brinde no cardápio.
               </div>
             </div>
           )}
