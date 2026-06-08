@@ -113,7 +113,9 @@ export default async function BlogPage() {
       <footer className="bg-gray-900 text-gray-400 py-10">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
           <span>© 2026 Agência LD Marketing</span>
-          <div className="flex gap-5">
+          <div className="flex gap-5 flex-wrap justify-center">
+            <Link href="/sobre" className="hover:text-white">Sobre</Link>
+            <Link href="/contato" className="hover:text-white">Contato</Link>
             <Link href="/blog" className="hover:text-white">Blog</Link>
             <a href="https://instagram.com/cardapioturboonline" target="_blank" rel="noreferrer" className="hover:text-white">Instagram</a>
             <Link href="/termos" className="hover:text-white">Termos</Link>

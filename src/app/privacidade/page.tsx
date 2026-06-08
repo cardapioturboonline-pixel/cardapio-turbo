@@ -129,7 +129,9 @@ export default function PrivacidadePage() {
       <footer className="border-t border-gray-100 py-8 mt-8">
         <div className="max-w-3xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-400">
           <p>© 2026 Agência LD Marketing. Todos os direitos reservados.</p>
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap justify-center">
+            <Link href="/sobre" className="hover:text-orange-500 transition-colors">Sobre</Link>
+            <Link href="/contato" className="hover:text-orange-500 transition-colors">Contato</Link>
             <Link href="/termos" className="hover:text-orange-500 transition-colors">Termos de Uso</Link>
             <Link href="/" className="hover:text-orange-500 transition-colors">Início</Link>
           </div>
