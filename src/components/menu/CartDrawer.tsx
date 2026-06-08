@@ -196,7 +196,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     }
   }
 
-  async function handleSendOrder() {
+  function handleSendOrder() {
     if (items.length === 0) return
     if (!customerName) { toast.error('Informe seu nome'); return }
     if (!customerPhone) { toast.error('Informe seu telefone'); return }
@@ -204,11 +204,14 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     if (orderType === 'delivery' && hasDeliveryAreas && !selectedArea) { toast.error('Selecione seu bairro para calcular a entrega'); return }
     if (!payment) { toast.error('Selecione a forma de pagamento'); return }
 
-    await saveOrderToDb()
-
+    // Abre o WhatsApp IMEDIATAMENTE (dentro do gesto do clique) para não ser bloqueado pelo navegador
     const whatsappNumber = business.whatsapp.replace(/\D/g, '')
     const message = buildWhatsAppMessage()
     window.open(`https://wa.me/55${whatsappNumber}?text=${message}`, '_blank')
+
+    // Salva o pedido no painel em segundo plano (sem bloquear o envio)
+    saveOrderToDb()
+
     clearCart()
     onClose()
     toast.success('Pedido enviado pelo WhatsApp! 🎉')
