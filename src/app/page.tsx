@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   QrCode, Smartphone, Zap, TrendingUp, Star, CheckCircle2,
   ArrowRight, MessageCircle, ShoppingCart, BarChart3, Sparkles,
-  Clock, MapPin, CreditCard, Palette, Package, Users, Bell, Bike, Gift
+  Clock, MapPin, CreditCard, Palette, Package, Users, Bell, Bike, Gift, X as XIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,13 @@ const plans = [
       "QR Code básico",
       "Pedido por WhatsApp",
       "Personalização básica",
+    ],
+    locked: [
+      "Painel de pedidos em tempo real",
+      "Frete automático por bairro",
+      "Programa de fidelidade",
+      "Avaliações dos clientes",
+      "Cupons de desconto",
     ],
     cta: "Começar grátis",
     href: "/register",
@@ -273,6 +280,12 @@ export default function LandingPage() {
                   {plan.features.map((f, j) => (
                     <li key={j} className="flex items-center gap-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                  {(plan as { locked?: string[] }).locked?.map((f, j) => (
+                    <li key={`l${j}`} className="flex items-center gap-2 text-sm text-gray-400">
+                      <XIcon className="w-4 h-4 text-gray-300 flex-shrink-0" />
                       {f}
                     </li>
                   ))}
