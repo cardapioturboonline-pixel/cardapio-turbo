@@ -1,6 +1,7 @@
 'use client'
 
-import { Eye, MessageCircle, Package, TrendingUp, Copy, ExternalLink, Sparkles, ArrowRight } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Eye, MessageCircle, Package, TrendingUp, Copy, ExternalLink, Sparkles, ArrowRight, Bell, DollarSign, Activity } from 'lucide-react'
 import Link from 'next/link'
 import { StatsCard } from '@/components/shared/StatsCard'
 import { UpgradeBanner } from '@/components/shared/UpgradeBanner'
@@ -9,6 +10,8 @@ import { useProducts } from '@/lib/hooks/useProducts'
 import { useCategories } from '@/lib/hooks/useCategories'
 import { formatCurrency } from '@/lib/utils/format'
 import { toast } from '@/components/ui/sonner'
+import { createClient } from '@/lib/supabase/client'
+import { hasProAccess } from '@/lib/plan'
 
 const insights = [
   { type: 'no_photo', icon: '📸', title: 'Adicione fotos aos produtos', description: 'Produtos com foto vendem até 3x mais. Acesse Produtos e adicione imagens.', action: 'Adicionar' },
@@ -20,6 +23,27 @@ export default function DashboardPage() {
   const { business, loading: bizLoading } = useBusiness()
   const { products } = useProducts()
   const { categories } = useCategories()
+  const proAccess = hasProAccess(business)
+  const [todayCount, setTodayCount] = useState(0)
+  const [todayRevenue, setTodayRevenue] = useState(0)
+  const [inProgress, setInProgress] = useState(0)
+
+  useEffect(() => {
+    if (!business?.id || !proAccess) return
+    const supabase = createClient()
+    const since = new Date(); since.setHours(0, 0, 0, 0)
+    supabase.from('orders')
+      .select('total, status, created_at')
+      .eq('business_id', business.id)
+      .gte('created_at', since.toISOString())
+      .then(({ data }) => {
+        const rows = (data ?? []) as { total: number; status: string }[]
+        const valid = rows.filter(o => o.status !== 'cancelled')
+        setTodayCount(valid.length)
+        setTodayRevenue(valid.reduce((a, o) => a + (o.total || 0), 0))
+        setInProgress(rows.filter(o => ['pending', 'preparing', 'delivering'].includes(o.status)).length)
+      })
+  }, [business?.id, proAccess])
 
   const menuUrl = business
     ? `${typeof window !== 'undefined' ? window.location.origin : ''}/menu/${business.slug}`
@@ -68,6 +92,21 @@ export default function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Resumo de pedidos do dia (Pro) */}
+      {proAccess && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-gray-900 flex items-center gap-2"><Bell className="h-4 w-4 text-orange-500" /> Pedidos de hoje</h2>
+            <Link href="/dashboard/orders" className="text-sm font-medium text-orange-500 hover:text-orange-600 flex items-center gap-1">Ver painel <ArrowRight className="h-3.5 w-3.5" /></Link>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <StatsCard title="Pedidos hoje" value={todayCount} description="Recebidos pelo cardápio" icon={Bell} />
+            <StatsCard title="Faturamento" value={formatCurrency(todayRevenue)} description="Hoje" icon={DollarSign} />
+            <StatsCard title="Em andamento" value={inProgress} description="A preparar/entregar" icon={Activity} />
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
