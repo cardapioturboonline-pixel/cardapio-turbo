@@ -9,6 +9,8 @@ import { useBusiness } from '@/lib/hooks/useBusiness'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from '@/components/ui/sonner'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { hasProAccess, isOnTrial } from '@/lib/plan'
 
 type Tab = 'profile' | 'store' | 'social' | 'hours' | 'delivery' | 'payment' | 'danger'
 
@@ -47,6 +49,8 @@ const paymentMethods = ['Dinheiro', 'Cartão de Crédito', 'Cartão de Débito',
 export default function SettingsPage() {
   const router = useRouter()
   const { business, updateBusiness } = useBusiness()
+  const proAccess = hasProAccess(business)
+  const onTrial = isOnTrial(business)
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const [saving, setSaving] = useState(false)
   const [selectedPayments, setSelectedPayments] = useState<string[]>(['Dinheiro', 'Pix', 'Cartão de Crédito'])
@@ -266,9 +270,33 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {activeTab === 'delivery' && (
+          {activeTab === 'delivery' && !proAccess && (
             <div className="space-y-4">
-              <h2 className="font-semibold text-gray-900">Taxas de entrega por bairro</h2>
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                Taxas de entrega por bairro
+                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-bold text-orange-600">PRO</span>
+              </h2>
+              <div className="rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 p-6 text-white">
+                <div className="flex items-center gap-3 mb-3">
+                  <Bike className="h-6 w-6" />
+                  <h3 className="font-semibold">Frete automático por bairro é um recurso Pro</h3>
+                </div>
+                <p className="text-sm text-orange-100 mb-4">
+                  Cadastre cada bairro com sua taxa e o cliente vê o valor da entrega automaticamente no carrinho. Disponível no plano Pro (R$ 29,90/mês).
+                </p>
+                <Link href="/dashboard/plans" className="inline-block rounded-lg bg-white px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+                  Ver plano Pro
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'delivery' && proAccess && (
+            <div className="space-y-4">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                Taxas de entrega por bairro
+                {onTrial && <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-bold text-purple-600">TESTE GRÁTIS</span>}
+              </h2>
               <p className="text-sm text-gray-500">
                 Cadastre os bairros que você atende e o valor da entrega. No cardápio, o cliente seleciona o bairro e a taxa é calculada automaticamente.
               </p>

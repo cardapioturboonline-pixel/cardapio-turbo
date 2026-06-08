@@ -7,6 +7,7 @@ import { useCartStore } from '@/lib/stores/cart'
 import { formatCurrency } from '@/lib/utils/format'
 import { toast } from '@/components/ui/sonner'
 import { createClient } from '@/lib/supabase/client'
+import { hasProAccess } from '@/lib/plan'
 
 interface CartDrawerProps {
   open: boolean
@@ -52,7 +53,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     ? business.payment_methods
     : DEFAULT_PAYMENT_OPTIONS
 
-  const deliveryAreas = business.delivery_areas ?? []
+  const deliveryAreas = hasProAccess(business) ? (business.delivery_areas ?? []) : []
   const hasDeliveryAreas = deliveryAreas.length > 0
   const selectedArea = deliveryAreas.find(a => a.name === selectedAreaName)
   const deliveryFee = orderType === 'delivery' ? (selectedArea?.fee ?? 0) : 0
