@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   QrCode, Smartphone, Zap, TrendingUp, Star, CheckCircle2,
   ArrowRight, MessageCircle, ShoppingCart, BarChart3, Sparkles,
-  Clock, MapPin, CreditCard, Palette, Package, Users
+  Clock, MapPin, CreditCard, Palette, Package, Users, Bell, Bike, Gift
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,10 +10,13 @@ import { Badge } from "@/components/ui/badge";
 const features = [
   { icon: QrCode, title: "QR Code Profissional", desc: "Gere e baixe QR Codes personalizados com a logo da sua marca" },
   { icon: MessageCircle, title: "Pedido via WhatsApp", desc: "Carrinho inteligente que monta o pedido e envia direto pro seu WhatsApp" },
-  { icon: Smartphone, title: "100% Mobile First", desc: "Design responsivo otimizado para celular, onde seus clientes estão" },
+  { icon: Bell, title: "Painel de Pedidos ao Vivo", desc: "Receba e gerencie os pedidos em tempo real, com aviso sonoro a cada novo pedido" },
+  { icon: Bike, title: "Frete por Bairro", desc: "Cadastre as taxas e o cliente vê o valor da entrega automaticamente no carrinho" },
+  { icon: Gift, title: "Programa de Fidelidade", desc: "Cartão fidelidade digital: a cada X pedidos, seu cliente ganha um brinde e volta mais" },
+  { icon: Star, title: "Avaliações dos Clientes", desc: "Receba estrelas e comentários — prova social que atrai novos clientes" },
   { icon: Palette, title: "Personalização Total", desc: "Cores, fontes, temas e layout da sua marca em minutos" },
-  { icon: BarChart3, title: "Dashboard de Vendas", desc: "Acompanhe visualizações, cliques e conversões em tempo real" },
-  { icon: Sparkles, title: "IA Comercial", desc: "Sugestões automáticas de combos, promoções e aumento de ticket médio" },
+  { icon: TrendingUp, title: "Cupons e Relatórios", desc: "Crie cupons de desconto e acompanhe vendas, faturamento e ticket médio" },
+  { icon: Smartphone, title: "100% Mobile First", desc: "Design responsivo otimizado para celular, onde seus clientes estão" },
 ];
 
 const steps = [
