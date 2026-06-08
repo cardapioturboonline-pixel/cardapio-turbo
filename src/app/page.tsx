@@ -87,9 +87,10 @@ export default function LandingPage() {
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
             <a href="#features" className="hover:text-orange-500 transition-colors">Funcionalidades</a>
-            <a href="#how" className="hover:text-orange-500 transition-colors">Como funciona</a>
             <a href="#plans" className="hover:text-orange-500 transition-colors">Planos</a>
             <Link href="/blog" className="hover:text-orange-500 transition-colors">Blog</Link>
+            <Link href="/sobre" className="hover:text-orange-500 transition-colors">Sobre</Link>
+            <Link href="/contato" className="hover:text-orange-500 transition-colors">Contato</Link>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login">
@@ -346,12 +347,13 @@ export default function LandingPage() {
               </div>
               <span className="font-bold text-white text-lg">Cardápio Turbo</span>
             </div>
-            <div className="flex gap-6 text-sm">
+            <div className="flex gap-6 text-sm flex-wrap justify-center">
+              <Link href="/sobre" className="hover:text-white transition-colors">Sobre</Link>
+              <Link href="/contato" className="hover:text-white transition-colors">Contato</Link>
               <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
+              <a href="https://instagram.com/cardapioturboonline" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Instagram</a>
               <Link href="/termos" className="hover:text-white transition-colors">Termos de Uso</Link>
               <Link href="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
-              <a href="https://instagram.com/cardapioturboonline" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Instagram</a>
-              <a href="https://wa.me/5567992741982" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Contato</a>
             </div>
             <p className="text-sm">© 2026 Agência LD Marketing. Todos os direitos reservados.</p>
           </div>
