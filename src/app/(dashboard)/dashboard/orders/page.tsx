@@ -128,6 +128,35 @@ export default function OrdersPage() {
         </div>
       </div>
 
+      {/* Resumo do dia */}
+      {(() => {
+        const todayStr = new Date().toDateString()
+        const todays = orders.filter(o => new Date(o.created_at).toDateString() === todayStr && o.status !== 'cancelled')
+        const revenue = todays.reduce((a, o) => a + (o.total || 0), 0)
+        const inProgress = orders.filter(o => ['pending', 'preparing', 'delivering'].includes(o.status)).length
+        const avg = todays.length ? revenue / todays.length : 0
+        return (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="rounded-xl border border-gray-200 bg-white p-4">
+              <p className="text-xs text-gray-500">Pedidos hoje</p>
+              <p className="text-2xl font-bold text-gray-900">{todays.length}</p>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-white p-4">
+              <p className="text-xs text-gray-500">Faturamento hoje</p>
+              <p className="text-2xl font-bold text-orange-500">{formatCurrency(revenue)}</p>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-white p-4">
+              <p className="text-xs text-gray-500">Ticket médio</p>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(avg)}</p>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-white p-4">
+              <p className="text-xs text-gray-500">Em andamento</p>
+              <p className="text-2xl font-bold text-blue-500">{inProgress}</p>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Status tabs */}
       <div className="flex gap-2 overflow-x-auto pb-1">
         {FLOW.map(f => (
