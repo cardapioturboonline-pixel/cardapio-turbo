@@ -14,9 +14,10 @@ export default async function MenuPage({ params }: { params: Promise<{ slug: str
 
   if (!business) notFound()
 
-  const [{ data: categories }, { data: products }] = await Promise.all([
+  const [{ data: categories }, { data: products }, { data: reviews }] = await Promise.all([
     supabase.from('categories').select('*').eq('business_id', business.id).eq('is_active', true).order('sort_order'),
     supabase.from('products').select('*').eq('business_id', business.id).eq('is_available', true).order('sort_order'),
+    supabase.from('reviews').select('*').eq('business_id', business.id).eq('approved', true).order('created_at', { ascending: false }).limit(50),
   ])
 
   return (
@@ -24,6 +25,7 @@ export default async function MenuPage({ params }: { params: Promise<{ slug: str
       business={business}
       categories={categories ?? []}
       products={products ?? []}
+      reviews={reviews ?? []}
     />
   )
 }

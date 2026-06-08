@@ -1,20 +1,25 @@
 'use client'
 
 import { useState } from 'react'
-import { MessageCircle, Search, ShoppingCart, Link as LinkIcon, MapPin, Clock } from 'lucide-react'
-import type { Business, Category, Product } from '@/types'
+import { MessageCircle, Search, ShoppingCart, Link as LinkIcon, MapPin, Clock, Star } from 'lucide-react'
+import type { Business, Category, Product, Review } from '@/types'
 import { ProductCard } from '@/components/shared/ProductCard'
 import { CartDrawer } from '@/components/menu/CartDrawer'
+import { Reviews } from '@/components/menu/Reviews'
 import { useCartStore } from '@/lib/stores/cart'
 import { isOpenNow } from '@/lib/utils/format'
+import { hasProAccess } from '@/lib/plan'
 
 interface MenuClientProps {
   business: Business
   categories: Category[]
   products: Product[]
+  reviews?: Review[]
 }
 
-export function MenuClient({ business, categories, products }: MenuClientProps) {
+export function MenuClient({ business, categories, products, reviews = [] }: MenuClientProps) {
+  const showReviews = hasProAccess(business)
+  const avgRating = reviews.length ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length : 0
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
   const [cartOpen, setCartOpen] = useState(false)
@@ -73,6 +78,11 @@ export function MenuClient({ business, categories, products }: MenuClientProps) 
                 {business.city && (
                   <span className="flex items-center gap-1 text-xs text-gray-500">
                     <MapPin className="h-3 w-3" /> {business.city}
+                  </span>
+                )}
+                {showReviews && reviews.length > 0 && (
+                  <span className="flex items-center gap-1 text-xs font-medium text-gray-700">
+                    <Star className="h-3 w-3 fill-orange-400 text-orange-400" /> {avgRating.toFixed(1)} ({reviews.length})
                   </span>
                 )}
                 <a
@@ -165,6 +175,11 @@ export function MenuClient({ business, categories, products }: MenuClientProps) 
             {totalItems}
           </span>
         </button>
+      )}
+
+      {/* Reviews (Pro) */}
+      {showReviews && (
+        <Reviews businessId={business.id} initialReviews={reviews} />
       )}
 
       {/* Footer */}

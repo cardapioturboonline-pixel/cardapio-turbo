@@ -13,6 +13,15 @@ export interface DeliveryArea {
   fee: number
 }
 
+export interface Review {
+  id: string
+  business_id: string
+  customer_name?: string
+  rating: number
+  comment?: string
+  created_at: string
+}
+
 export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'delivering' | 'delivered' | 'cancelled'
 
 export interface OrderItemSnapshot {
