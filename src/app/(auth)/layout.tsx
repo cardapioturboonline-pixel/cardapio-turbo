@@ -18,7 +18,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           {children}
         </div>
         <p className="mt-6 text-center text-sm text-orange-100">
-          © 2024 Cardápio Turbo. Todos os direitos reservados.
+          © 2026 Agência LD Marketing. Todos os direitos reservados.
         </p>
       </div>
     </div>
