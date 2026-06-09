@@ -185,6 +185,18 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Na imprensa */}
+      <section className="py-8 bg-white border-y border-gray-100">
+        <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left">
+          <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">Na imprensa</span>
+          <a href="https://www.correiodoestado.com.br" target="_blank" rel="noreferrer"
+            className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors">
+            <Star className="w-4 h-4 fill-orange-400 text-orange-400" />
+            <span className="font-bold">Como visto no <span className="text-orange-500">Correio do Estado</span></span>
+          </a>
+        </div>
+      </section>
+
       {/* Stats */}
       <section className="py-12 bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
