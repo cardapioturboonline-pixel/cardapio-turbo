@@ -47,7 +47,7 @@ function baseLayout(content: string, preheader: string): string {
             </td>
           </tr>
         </table>
-        <p style="color:#9ca3af;font-size:11px;margin-top:16px;">© 2026 Cardápio Turbo. Todos os direitos reservados.</p>
+        <p style="color:#9ca3af;font-size:11px;margin-top:16px;">© 2026 Agência LD Marketing. Todos os direitos reservados.</p>
       </td>
     </tr>
   </table>
