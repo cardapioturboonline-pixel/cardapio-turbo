@@ -59,6 +59,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
+    // Snapshot current state (plano/cidade/estado) antes de atualizar — para o histórico
+    const { data: snapshot } = await supabase
+      .from('businesses')
+      .select('plan, city, state')
+      .eq('id', businessId)
+      .single()
+    const prevPlan = snapshot?.plan ?? 'free'
+
+    // Loga um evento de assinatura (best-effort; nunca quebra o webhook se a tabela não existir)
+    async function logEvent(eventType: string, toPlan: string) {
+      try {
+        await supabase.from('subscription_events').insert({
+          business_id: businessId,
+          event_type: eventType,
+          from_plan: prevPlan,
+          to_plan: toPlan,
+          mp_subscription_id: String(subscriptionId),
+          mp_status: status,
+          city: snapshot?.city ?? null,
+          state: snapshot?.state ?? null,
+          amount: subscription?.auto_recurring?.transaction_amount ?? null,
+        })
+      } catch (e) {
+        console.error('[MP Webhook] failed to log subscription_event:', e)
+      }
+    }
+
     // Update plan based on subscription status
     if (status === 'authorized') {
       // Payment successful — upgrade to Pro
@@ -71,6 +98,7 @@ export async function POST(req: NextRequest) {
         .eq('id', businessId)
 
       console.log(`[MP Webhook] Upgraded business ${businessId} to Pro`)
+      await logEvent(prevPlan === 'free' ? 'converted' : 'renewed', 'pro')
 
       // Send Pro welcome email
       try {
@@ -103,6 +131,7 @@ export async function POST(req: NextRequest) {
         .eq('id', businessId)
 
       console.log(`[MP Webhook] Downgraded business ${businessId} to Free with 30-day grace until ${graceEnd}`)
+      await logEvent(status === 'cancelled' ? 'cancelled' : 'paused', 'free')
 
     } else if (status === 'pending') {
       // Payment pending — keep current plan, no action needed

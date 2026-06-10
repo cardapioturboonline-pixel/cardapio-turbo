@@ -142,6 +142,15 @@ export default function OnboardingPage() {
       if (bizErr) throw bizErr
       setBizId(biz.id)
 
+      /* registra inicio do trial no histórico (best-effort) */
+      supabase.from('subscription_events').insert({
+        business_id: biz.id,
+        event_type: 'trial_started',
+        from_plan: null,
+        to_plan: 'free',
+        city: info.city.trim() || null,
+      }).then(() => {}, () => {})
+
       /* categories */
       const catRecords = await Promise.all(
         cats.map((name, i) =>
