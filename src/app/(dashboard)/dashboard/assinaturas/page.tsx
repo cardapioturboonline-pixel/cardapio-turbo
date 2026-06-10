@@ -104,6 +104,24 @@ export default async function AssinaturasPage() {
   const totalCancelled = events.filter(e => e.event_type === 'cancelled').length
   const churnRate = totalConverted > 0 ? Math.round((totalCancelled / totalConverted) * 100) : 0
 
+  // Conversões x cancelamentos por mês (últimos 6 meses)
+  const monthKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+  const monthLabel = (d: Date) => d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })
+  const months: { key: string; label: string; conv: number; cancel: number }[] = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date()
+    d.setMonth(d.getMonth() - i, 1)
+    months.push({ key: monthKey(d), label: monthLabel(d), conv: 0, cancel: 0 })
+  }
+  for (const e of events) {
+    const k = monthKey(new Date(e.created_at))
+    const m = months.find(x => x.key === k)
+    if (!m) continue
+    if (e.event_type === 'converted') m.conv++
+    else if (e.event_type === 'cancelled' || e.event_type === 'paused') m.cancel++
+  }
+  const monthMax = Math.max(1, ...months.map(m => Math.max(m.conv, m.cancel)))
+
   // Agregação por estado e cidade (apenas assinantes Pro = quem fechou)
   const byState = new Map<string, number>()
   const byCity = new Map<string, number>()
@@ -202,6 +220,34 @@ export default async function AssinaturasPage() {
               <p className="text-xs text-gray-500 mt-0.5">{c.label}</p>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Gráfico: conversões x cancelamentos por mês */}
+      {!eventsTableMissing && (
+        <div className="rounded-xl border border-gray-200 bg-white p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-900">Conversões x cancelamentos por mês</h2>
+            <div className="flex items-center gap-4 text-xs">
+              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-green-500" /> Conversões</span>
+              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-red-400" /> Cancelamentos</span>
+            </div>
+          </div>
+          <div className="flex items-end justify-between gap-3 h-40">
+            {months.map(m => (
+              <div key={m.key} className="flex-1 flex flex-col items-center gap-1.5">
+                <div className="flex items-end gap-1 h-32 w-full justify-center">
+                  <div className="w-1/3 max-w-[26px] rounded-t bg-green-500 relative group" style={{ height: `${(m.conv / monthMax) * 100}%` }}>
+                    {m.conv > 0 && <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-green-700">{m.conv}</span>}
+                  </div>
+                  <div className="w-1/3 max-w-[26px] rounded-t bg-red-400 relative" style={{ height: `${(m.cancel / monthMax) * 100}%` }}>
+                    {m.cancel > 0 && <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-red-600">{m.cancel}</span>}
+                  </div>
+                </div>
+                <span className="text-[11px] text-gray-500 capitalize">{m.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
