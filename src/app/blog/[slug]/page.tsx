@@ -81,20 +81,37 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   // Increment views (fire and forget)
   supabase.rpc('increment_post_views', { p_slug: post.slug }).then(() => {}, () => {})
 
+  const postUrl = `https://cardapioturbo.com.br/blog/${post.slug}`
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: post.title,
-    description: post.excerpt,
-    author: { '@type': 'Organization', name: post.author },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Cardápio Turbo',
-      logo: { '@type': 'ImageObject', url: 'https://cardapioturbo.com.br/icon.png' },
-    },
-    datePublished: post.published_at,
-    dateModified: post.updated_at,
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `https://cardapioturbo.com.br/blog/${post.slug}` },
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: post.title,
+        description: post.seo_description || post.excerpt,
+        image: post.cover_image ? [post.cover_image] : undefined,
+        articleSection: post.category,
+        keywords: post.keywords || undefined,
+        inLanguage: 'pt-BR',
+        author: { '@type': 'Organization', name: post.author, url: 'https://cardapioturbo.com.br' },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Cardápio Turbo',
+          logo: { '@type': 'ImageObject', url: 'https://cardapioturbo.com.br/icon.png' },
+        },
+        datePublished: post.published_at,
+        dateModified: post.updated_at,
+        mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://cardapioturbo.com.br' },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://cardapioturbo.com.br/blog' },
+          { '@type': 'ListItem', position: 3, name: post.title, item: postUrl },
+        ],
+      },
+    ],
   }
 
   return (
@@ -117,6 +134,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       </nav>
 
       <article className="max-w-3xl mx-auto px-4 py-10">
+        <nav aria-label="Breadcrumb" className="mb-6">
+          <ol className="flex flex-wrap items-center gap-1.5 text-sm text-gray-400">
+            <li><Link href="/" className="hover:text-orange-500">Início</Link></li>
+            <li aria-hidden="true">›</li>
+            <li><Link href="/blog" className="hover:text-orange-500">Blog</Link></li>
+            <li aria-hidden="true">›</li>
+            <li className="text-gray-600 font-medium truncate max-w-[60vw]" aria-current="page">{post.title}</li>
+          </ol>
+        </nav>
         <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-orange-500 mb-6">
           <ArrowLeft className="h-4 w-4" /> Voltar ao blog
         </Link>
