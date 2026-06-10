@@ -39,8 +39,42 @@ export default async function BlogPage() {
 
   const list = (posts ?? []) as Post[]
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Blog',
+        '@id': 'https://cardapioturbo.com.br/blog',
+        name: 'Blog Cardápio Turbo',
+        description: 'Dicas, receitas e guias para o seu negócio de alimentação vender mais.',
+        inLanguage: 'pt-BR',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Cardápio Turbo',
+          logo: { '@type': 'ImageObject', url: 'https://cardapioturbo.com.br/icon.png' },
+        },
+        blogPost: list.slice(0, 20).map(p => ({
+          '@type': 'BlogPosting',
+          headline: p.title,
+          url: `https://cardapioturbo.com.br/blog/${p.slug}`,
+          datePublished: p.published_at,
+          image: p.cover_image || undefined,
+          articleSection: p.category,
+        })),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://cardapioturbo.com.br' },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://cardapioturbo.com.br/blog' },
+        ],
+      },
+    ],
+  }
+
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Nav */}
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
