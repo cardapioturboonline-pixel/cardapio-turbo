@@ -379,6 +379,7 @@ export default function LandingPage() {
               <Link href="/sobre" className="hover:text-white transition-colors">Sobre</Link>
               <Link href="/contato" className="hover:text-white transition-colors">Contato</Link>
               <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
+              <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
               <a href="https://instagram.com/cardapioturboonline" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Instagram</a>
               <Link href="/termos" className="hover:text-white transition-colors">Termos de Uso</Link>
               <Link href="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>

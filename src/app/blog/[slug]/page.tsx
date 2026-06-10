@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Zap, Clock, ArrowLeft, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { FAQ_BY_SLUG } from '@/lib/blog-faqs'
 
 export const revalidate = 3600
 
@@ -82,9 +83,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   supabase.rpc('increment_post_views', { p_slug: post.slug }).then(() => {}, () => {})
 
   const postUrl = `https://cardapioturbo.com.br/blog/${post.slug}`
+  const faqs = FAQ_BY_SLUG[post.slug] ?? []
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
+      ...(faqs.length ? [{
+        '@type': 'FAQPage',
+        mainEntity: faqs.map(f => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      }] : []),
       {
         '@type': 'Article',
         headline: post.title,
@@ -171,6 +181,24 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           className="blog-content"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
+
+        {/* FAQ */}
+        {faqs.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-2xl font-extrabold text-gray-900 mb-5">Perguntas frequentes</h2>
+            <div className="divide-y divide-gray-100 rounded-2xl border border-gray-100">
+              {faqs.map((f, i) => (
+                <details key={i} className="group px-5 py-4">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-gray-900">
+                    {f.q}
+                    <span className="text-orange-500 transition-transform group-open:rotate-45 text-xl leading-none">+</span>
+                  </summary>
+                  <p className="mt-3 text-gray-600 leading-relaxed">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Inline CTA */}
         <div className="mt-12 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 p-8 text-center">
