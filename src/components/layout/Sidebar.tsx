@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, Package, Tag, Megaphone, Palette,
   QrCode, BarChart3, CreditCard, Settings, LogOut,
-  ChefHat, X, FileText, Bell
+  ChefHat, X, FileText, Bell, Crown
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -104,6 +104,24 @@ export function Sidebar({ onClose }: SidebarProps) {
             </Link>
           )
         })}
+
+        {/* Admin-only: Assinaturas */}
+        {isAdminEmail(user?.email) && (
+          <Link
+            href="/dashboard/assinaturas"
+            onClick={onClose}
+            className={cn(
+              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+              pathname.startsWith('/dashboard/assinaturas')
+                ? 'bg-orange-50 text-orange-600'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            )}
+          >
+            <Crown className="h-4 w-4 shrink-0" />
+            Assinaturas
+            <span className="ml-auto rounded-full bg-purple-100 px-1.5 py-0.5 text-[10px] font-bold text-purple-600">ADMIN</span>
+          </Link>
+        )}
 
         {/* Admin-only: Blog */}
         {isAdminEmail(user?.email) && (
