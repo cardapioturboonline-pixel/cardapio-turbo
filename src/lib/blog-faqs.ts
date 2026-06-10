@@ -4,6 +4,24 @@
 export interface FaqItem { q: string; a: string }
 
 export const FAQ_BY_SLUG: Record<string, FaqItem[]> = {
+  'cardapio-digital-vs-ifood': [
+    {
+      q: 'Cardápio digital é melhor que o iFood?',
+      a: 'Depende do objetivo. O iFood ajuda a ser descoberto por novos clientes, mas cobra comissão por pedido. O cardápio digital próprio recebe o pedido direto no WhatsApp, sem comissão, e mantém o cliente como seu. A estratégia ideal é usar os dois: o marketplace para aquisição e o canal próprio para reter e fidelizar.',
+    },
+    {
+      q: 'Quanto de comissão o iFood cobra por pedido?',
+      a: 'As taxas variam conforme o plano e o modelo de entrega, podendo chegar a cerca de 30% do valor do pedido somando comissão e taxas. No cardápio digital próprio, a venda é 100% sua, sem comissão por pedido.',
+    },
+    {
+      q: 'Posso usar o cardápio digital e o iFood ao mesmo tempo?',
+      a: 'Sim. O recomendado é usar o iFood para alcançar novos clientes e o cardápio digital para fidelizar quem já te conhece. O convite para pedir direto deve acontecer fora da plataforma de delivery, como na loja física, na embalagem de pedidos próprios e nas redes sociais.',
+    },
+    {
+      q: 'Como faço o cliente migrar do iFood para o meu WhatsApp?',
+      a: 'Incentive o pedido direto fora do aplicativo: QR Code na mesa e no balcão, adesivo na embalagem dos pedidos próprios, link na bio do Instagram e no status do WhatsApp, e um cupom exclusivo para quem pede pelo seu cardápio digital.',
+    },
+  ],
   'como-montar-cardapio-digital': [
     {
       q: 'Quanto custa para montar um cardápio digital?',
