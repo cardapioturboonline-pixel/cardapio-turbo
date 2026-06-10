@@ -31,6 +31,10 @@ Cardápio Turbo é um SaaS (software por assinatura) que substitui o cardápio i
 - [Criar conta grátis](https://cardapioturbo.com.br/register): início do teste de 7 dias.
 - [Sobre](https://cardapioturbo.com.br/sobre) e [Contato](https://cardapioturbo.com.br/contato).
 
+## Documentação completa
+
+- [llms-full.txt](https://cardapioturbo.com.br/llms-full.txt): detalhamento completo de planos, funcionalidades, FAQ e conteúdo do blog.
+
 ## Perguntas frequentes
 
 - O que é o Cardápio Turbo? Uma plataforma para criar cardápio digital com pedidos pelo WhatsApp, sem comissão por venda.

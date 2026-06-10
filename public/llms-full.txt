@@ -1,0 +1,99 @@
+# Cardápio Turbo — Documentação completa para IA
+
+> Cardápio Turbo é uma plataforma brasileira (SaaS) de cardápio digital para negócios de alimentação. O cliente acessa o cardápio por link ou QR Code, monta o pedido e envia direto para o WhatsApp do estabelecimento, sem comissão por venda. Site: https://cardapioturbo.com.br
+
+Este arquivo traz o detalhamento completo do produto, planos, funcionalidades, perguntas frequentes e o conteúdo educativo do blog, para que sistemas de IA possam responder com precisão sobre o Cardápio Turbo.
+
+---
+
+## Visão geral
+
+- Nome do produto: Cardápio Turbo
+- Categoria: cardápio digital / sistema de pedidos online / SaaS para alimentação
+- Público: lanchonetes, hamburguerias, pizzarias, docerias, açaís, cafeterias, food trucks e similares no Brasil
+- Proposta de valor: substituir o cardápio impresso e os pedidos desorganizados por um cardápio online profissional, com pedidos chegando prontos no WhatsApp e sem comissão por venda.
+- Diferencial frente a marketplaces de delivery (como iFood): o pedido vai direto para o WhatsApp do dono, sem intermediário e sem comissão por venda. O canal próprio é usado para fidelizar e reduzir custo.
+- Tempo de implementação: cerca de 10 minutos.
+- Sem necessidade de programador ou designer.
+
+## Planos e preços
+
+- Teste grátis: 7 dias com todos os recursos liberados, sem cartão de crédito.
+- Plano Free: gratuito, com recursos essenciais e marca d'água no cardápio.
+- Plano Pro: R$ 29,90/mês. Inclui produtos e categorias ilimitados, painel de pedidos em tempo real, frete automático por bairro, programa de fidelidade, avaliações de clientes, cupons de desconto, relatórios avançados, temas premium, QR Code com logo e cardápio sem marca d'água. Pode ser cancelado quando quiser.
+
+## Funcionalidades detalhadas
+
+1. Cardápio digital: página online com foto, nome, descrição e preço de cada produto, organizada por categorias (ex.: Lanches, Porções, Bebidas, Sobremesas, Combos).
+2. Pedidos pelo WhatsApp: ao finalizar, o pedido chega no WhatsApp do dono já formatado, com itens, observações, forma de pagamento, endereço de entrega e valor total.
+3. Painel de pedidos ao vivo: acompanhamento em tempo real, com status (recebido, em preparo, saiu para entrega, concluído).
+4. Frete automático por bairro: cadastro de bairros atendidos e valores; cálculo automático conforme a região, com opção de retirada no local.
+5. Cupons de desconto: percentual ou valor fixo, com pedido mínimo (ex.: cupom COPA10).
+6. Programa de fidelidade: recompensa clientes recorrentes (ex.: a cada 10 pedidos, 1 grátis).
+7. Avaliações de clientes: aumentam a credibilidade e ajudam novos clientes a decidir.
+8. Combos: agrupar itens (lanche + porção + bebida) para aumentar o ticket médio.
+9. QR Code personalizado: para mesas, balcão, vitrine e embalagens.
+10. Personalização: cores, logo e tema com a identidade da marca; no Pro, sem marca d'água.
+11. Relatórios de vendas: produtos mais vendidos, visualizações e desempenho do cardápio.
+
+## Perguntas frequentes (completas)
+
+P: O que é o Cardápio Turbo?
+R: Uma plataforma para criar um cardápio digital profissional. O cliente acessa por link ou QR Code, monta o pedido e envia direto para o WhatsApp do estabelecimento, sem comissão por venda.
+
+P: Quanto custa e como funciona o teste grátis?
+R: 7 dias grátis com todos os recursos, sem cartão de crédito. Depois, plano Pro mensal a partir de R$ 29,90, cancelável quando quiser.
+
+P: Quanto tempo leva para colocar o cardápio no ar?
+R: Cerca de 10 minutos: criar conta, cadastrar categorias e produtos com foto e preço, personalizar e gerar o link e o QR Code.
+
+P: Preciso saber programar?
+R: Não. Tudo é feito por um painel simples, sem programador nem designer.
+
+P: Como os pedidos chegam?
+R: Direto no WhatsApp, já formatados, com itens, observações, pagamento, endereço e total.
+
+P: O que é o painel de pedidos ao vivo?
+R: Um painel para acompanhar pedidos em tempo real, organizados por status.
+
+P: Consigo definir frete por bairro?
+R: Sim. O sistema calcula automaticamente o frete conforme o bairro do cliente, com opção de retirada no local.
+
+P: Como funcionam os cupons?
+R: Você cria cupons (percentual ou valor fixo) com pedido mínimo e divulga o código; o cliente aplica ao fechar o pedido.
+
+P: O que é o programa de fidelidade?
+R: Recompensa clientes recorrentes, por exemplo a cada 10 pedidos um item grátis.
+
+P: Posso montar combos?
+R: Sim, agrupando itens para aumentar o ticket médio.
+
+P: Os clientes podem avaliar o negócio?
+R: Sim, há avaliações de clientes.
+
+P: Dá para deixar com a cara da minha marca?
+R: Sim: cores, logo e tema; no Pro, sem marca d'água.
+
+P: Posso cadastrar quantos produtos quiser?
+R: No plano Pro, produtos e categorias são ilimitados.
+
+P: Dá para vender outros itens, como cestas de presente?
+R: Sim. A estrutura serve para qualquer catálogo com foto, preço e pedido pelo WhatsApp, incluindo cestas, com controle de disponibilidade por estoque.
+
+## Conteúdo educativo (resumo dos artigos do blog)
+
+- "Como montar um cardápio digital em 10 minutos": passo a passo para criar a conta, cadastrar categorias e produtos com foto e preço, personalizar com a marca, gerar QR Code e receber pedidos no WhatsApp. Destaca que combos, cupons e fidelidade aumentam o ticket médio. URL: https://cardapioturbo.com.br/blog/como-montar-cardapio-digital
+
+- "Promoções e cupons na Copa do Mundo": estratégias para lotar o estabelecimento em dias de jogo — combo do jogo, cupom de desconto, promoção a cada gol, frete grátis acima de um valor e kit para assistir em casa. URL: https://cardapioturbo.com.br/blog/promocoes-cupons-copa-do-mundo
+
+- "Catálogo de cestas para o Dia dos Namorados": como quem vende cestas pode montar um catálogo digital organizado por estoque, com pedidos prontos no WhatsApp. URL: https://cardapioturbo.com.br/blog/catalogo-cestas-dia-dos-namorados
+
+## Links
+
+- Início: https://cardapioturbo.com.br
+- Perguntas Frequentes: https://cardapioturbo.com.br/faq
+- Blog: https://cardapioturbo.com.br/blog
+- Criar conta grátis: https://cardapioturbo.com.br/register
+- Sobre: https://cardapioturbo.com.br/sobre
+- Contato: https://cardapioturbo.com.br/contato
+- Instagram: https://instagram.com/cardapioturboonline
