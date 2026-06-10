@@ -17,6 +17,7 @@ interface BizRow {
   plan: string
   trial_ends_at: string | null
   created_at: string
+  updated_at: string | null
 }
 interface UserRow { id: string; email: string | null; name: string | null }
 
@@ -42,7 +43,7 @@ export default async function AssinaturasPage() {
   const admin = createAdminClient()
   const [{ data: bizData }, { data: userData }] = await Promise.all([
     admin.from('businesses')
-      .select('id, user_id, name, slug, city, state, whatsapp, plan, trial_ends_at, created_at')
+      .select('id, user_id, name, slug, city, state, whatsapp, plan, trial_ends_at, created_at, updated_at')
       .order('created_at', { ascending: false }),
     admin.from('users').select('id, email, name'),
   ])
@@ -139,17 +140,21 @@ export default async function AssinaturasPage() {
       {/* Tabela: Fecharam o Pro */}
       <Section title={`Fecharam o Pro — saíram do trial e assinaram (${pro.length})`} accent="amber">
         <Table
-          headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Plano', 'Cadastro']}
+          headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Plano', 'Cadastro', 'Assinou em (aprox.)']}
           rows={pro.map(b => [
             b.name, localStr(b), emailOf(b), b.whatsapp || '—',
             <span key="p" className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-700 uppercase">{b.plan}</span>,
             fmtDate(b.created_at),
+            fmtDate(b.updated_at),
           ])}
           empty="Ninguém converteu para o Pro ainda."
         />
       </Section>
 
       {/* Tabela: Em trial ativo */}
+      <p className="rounded-lg bg-blue-50 border border-blue-100 px-4 py-2.5 text-xs text-blue-700">
+        ℹ️ Observação: quem cancela o Pro recebe 30 dias de carência (volta para Free com acesso temporário) e pode aparecer aqui como &quot;trial ativo&quot; com muitos dias restantes. Para rastreio 100% preciso de conversões e cancelamentos, dá para criar um registro de eventos de assinatura — me avise.
+      </p>
       <Section title={`Em trial ativo — ainda testando (${trialActive.length})`} accent="blue">
         <Table
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Dias restantes', 'Início']}
