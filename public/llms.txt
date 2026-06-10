@@ -1,0 +1,39 @@
+# Cardápio Turbo
+
+> Plataforma brasileira de cardápio digital para negócios de alimentação (lanchonetes, pizzarias, hamburguerias, docerias, açaís e similares). O cliente acessa o cardápio por link ou QR Code, monta o pedido e envia direto para o WhatsApp do estabelecimento — sem comissão por venda. Setup em cerca de 10 minutos, sem precisar de programador.
+
+## O que é
+
+Cardápio Turbo é um SaaS (software por assinatura) que substitui o cardápio impresso e os pedidos desorganizados por um cardápio online profissional. Foco em pequenos e médios negócios de alimentação no Brasil.
+
+- Site: https://cardapioturbo.com.br
+- Modelo: 7 dias grátis (sem cartão de crédito) e plano Pro a partir de R$ 29,90/mês.
+- Diferencial: pedidos direto no WhatsApp, sem comissão por venda (ao contrário de marketplaces de delivery).
+
+## Principais funcionalidades
+
+- Cardápio digital com foto, descrição e preço de cada produto.
+- Pedidos recebidos direto no WhatsApp, já formatados (itens, observações, pagamento, endereço e total).
+- Painel de pedidos ao vivo, com status em tempo real.
+- Frete automático por bairro (e opção de retirada no local).
+- Cupons de desconto (percentual ou valor fixo, com pedido mínimo).
+- Programa de fidelidade (ex.: a cada 10 pedidos, 1 grátis).
+- Avaliações de clientes.
+- QR Code personalizado para mesas, balcão, vitrine e embalagens.
+- Relatórios de vendas e produtos mais pedidos.
+- Personalização de cores, logo e tema; plano Pro sem marca d'água e com produtos ilimitados.
+
+## Páginas principais
+
+- [Início](https://cardapioturbo.com.br): visão geral, funcionalidades e planos.
+- [Perguntas Frequentes](https://cardapioturbo.com.br/faq): dúvidas sobre todas as funcionalidades, preços e como funciona.
+- [Blog](https://cardapioturbo.com.br/blog): guias sobre cardápio digital, promoções, cupons e gestão de negócios de alimentação.
+- [Criar conta grátis](https://cardapioturbo.com.br/register): início do teste de 7 dias.
+- [Sobre](https://cardapioturbo.com.br/sobre) e [Contato](https://cardapioturbo.com.br/contato).
+
+## Perguntas frequentes
+
+- O que é o Cardápio Turbo? Uma plataforma para criar cardápio digital com pedidos pelo WhatsApp, sem comissão por venda.
+- Quanto custa? 7 dias grátis sem cartão; depois plano Pro mensal a partir de R$ 29,90.
+- Como recebo os pedidos? Direto no WhatsApp, já formatados.
+- Preciso saber programar? Não; o cardápio é montado em cerca de 10 minutos por um painel simples.

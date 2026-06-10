@@ -83,9 +83,81 @@ const testimonials = [
   { name: "Fernanda Lima", role: "Cafeteria", text: "Os insights me mostraram quais produtos precisavam de foto. Depois que adicionei, as vendas dobraram!", avatar: "F" },
 ];
 
+const homeFaqs = [
+  { q: 'O que é o Cardápio Turbo?', a: 'O Cardápio Turbo é uma plataforma para criar um cardápio digital profissional para lanchonetes, pizzarias, hamburguerias e outros negócios de alimentação. O cliente acessa por link ou QR Code e envia o pedido direto para o seu WhatsApp, sem comissão por venda.' },
+  { q: 'Quanto custa o Cardápio Turbo?', a: 'Você testa todos os recursos gratuitamente por 7 dias, sem cartão de crédito. Após o período de teste há um plano Pro mensal, que pode ser cancelado quando quiser.' },
+  { q: 'Como os pedidos chegam para mim?', a: 'Os pedidos chegam no seu WhatsApp já formatados, com os itens, observações, forma de pagamento, endereço e valor total. Você só confirma e prepara.' },
+  { q: 'Preciso saber programar para usar?', a: 'Não. O cardápio é montado em cerca de 10 minutos por um painel simples, direto do celular ou computador, sem precisar de programador nem designer.' },
+  { q: 'Quais recursos o Cardápio Turbo oferece?', a: 'Cardápio digital com foto e preço, pedidos no WhatsApp, painel de pedidos ao vivo, frete automático por bairro, cupons de desconto, programa de fidelidade, avaliações de clientes, QR Code personalizado e relatórios de vendas.' },
+]
+
+const homeJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://cardapioturbo.com.br/#organization',
+      name: 'Cardápio Turbo',
+      url: 'https://cardapioturbo.com.br',
+      logo: 'https://cardapioturbo.com.br/icon.png',
+      description: 'Plataforma de cardápio digital com pedidos pelo WhatsApp para negócios de alimentação.',
+      sameAs: ['https://instagram.com/cardapioturboonline'],
+    },
+    {
+      '@type': 'SoftwareApplication',
+      '@id': 'https://cardapioturbo.com.br/#software',
+      name: 'Cardápio Turbo',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      url: 'https://cardapioturbo.com.br',
+      description: 'Crie um cardápio digital profissional em minutos e receba pedidos direto no WhatsApp. Inclui painel de pedidos ao vivo, frete por bairro, cupons, programa de fidelidade, QR Code e relatórios.',
+      featureList: [
+        'Cardápio digital com foto e preço',
+        'Pedidos direto no WhatsApp',
+        'Painel de pedidos ao vivo',
+        'Frete automático por bairro',
+        'Cupons de desconto',
+        'Programa de fidelidade',
+        'Avaliações de clientes',
+        'QR Code personalizado',
+        'Relatórios de vendas',
+      ],
+      offers: [
+        {
+          '@type': 'Offer',
+          name: 'Teste grátis',
+          category: 'free trial',
+          price: '0',
+          priceCurrency: 'BRL',
+          description: '7 dias grátis para testar todos os recursos, sem cartão de crédito.',
+        },
+        {
+          '@type': 'Offer',
+          name: 'Plano Pro',
+          price: '29.90',
+          priceCurrency: 'BRL',
+          description: 'Plano Pro mensal: produtos ilimitados, painel de pedidos ao vivo, cupons, fidelidade, relatórios, QR com logo e sem marca d’água.',
+          url: 'https://cardapioturbo.com.br/#plans',
+          availability: 'https://schema.org/InStock',
+        },
+      ],
+      publisher: { '@id': 'https://cardapioturbo.com.br/#organization' },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: homeFaqs.map(f => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
+}
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
       {/* Nav */}
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -363,6 +435,25 @@ export default function LandingPage() {
             </Button>
           </Link>
           <p className="mt-4 text-orange-100 text-sm">Sem cartão • Setup em 5 minutos • <a href="https://wa.me/5567992741982" target="_blank" rel="noreferrer" className="underline hover:text-white">Suporte via WhatsApp</a></p>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="py-24 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 text-center mb-3">Perguntas frequentes</h2>
+          <p className="text-gray-500 text-center mb-10">Tudo o que você precisa saber sobre o Cardápio Turbo. <Link href="/faq" className="text-orange-500 hover:underline">Ver todas as perguntas</Link>.</p>
+          <div className="divide-y divide-gray-200 rounded-2xl border border-gray-200 bg-white">
+            {homeFaqs.map((f, i) => (
+              <details key={i} className="group px-6 py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-gray-900">
+                  {f.q}
+                  <span className="text-orange-500 transition-transform group-open:rotate-45 text-2xl leading-none">+</span>
+                </summary>
+                <p className="mt-3 text-gray-600 leading-relaxed">{f.a}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
