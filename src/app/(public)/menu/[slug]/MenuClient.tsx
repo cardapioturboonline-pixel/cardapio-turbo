@@ -27,11 +27,27 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
 
   const isOpen = isOpenNow(business.opening_hours as Record<string, { open: string; close: string; closed: boolean }> | undefined)
 
-  // Personalização do dono: cor principal e fonte aplicadas via CSS no cardápio.
-  // A variável --brand é herdada pelos componentes filhos (ProductCard, etc.).
+  // Personalização do dono: cor principal, fonte e tema aplicados via CSS.
+  // As variáveis são herdadas pelos componentes filhos (ProductCard, CartDrawer).
   const brand = business.primary_color || '#f97316'
   const fontFamily = business.font ? `'${business.font}', system-ui, sans-serif` : undefined
-  const rootStyle = { '--brand': brand, ...(fontFamily ? { fontFamily } : {}) } as CSSProperties
+  const isDark = business.theme === 'dark'
+  const isCompact = business.layout === 'compact'
+  const palette = isDark
+    ? { bg: '#0f1115', surface: '#1a1d24', surface2: '#242832', text: '#f3f4f6', muted: '#9ca3af', border: '#2d323c' }
+    : { bg: '#f9fafb', surface: '#ffffff', surface2: '#ffffff', text: '#111827', muted: '#6b7280', border: '#e5e7eb' }
+  const rootStyle = {
+    '--brand': brand,
+    '--bg': palette.bg,
+    '--surface': palette.surface,
+    '--surface-2': palette.surface2,
+    '--text': palette.text,
+    '--muted': palette.muted,
+    '--border': palette.border,
+    backgroundColor: palette.bg,
+    color: palette.text,
+    ...(fontFamily ? { fontFamily } : {}),
+  } as CSSProperties
 
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -41,7 +57,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
   })
 
   return (
-    <div className="pb-24" style={rootStyle}>
+    <div className="pb-24 min-h-screen" style={rootStyle}>
       {/* Banner */}
       {business.banner_url && (
         <div className="relative h-48 sm:h-64 overflow-hidden">
@@ -51,7 +67,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
       )}
 
       {/* Business header */}
-      <div className="bg-white shadow-sm">
+      <div className="bg-[var(--surface)] shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-start gap-4">
             {business.logo_url ? (
@@ -74,8 +90,8 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
               {business.name?.[0]?.toUpperCase() ?? '🍽️'}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold text-gray-900">{business.name}</h1>
-              {business.description && <p className="text-sm text-gray-500 mt-0.5">{business.description}</p>}
+              <h1 className="text-xl font-bold text-[var(--text)]">{business.name}</h1>
+              {business.description && <p className="text-sm text-[var(--muted)] mt-0.5">{business.description}</p>}
               <div className="flex items-center gap-3 mt-2 flex-wrap">
                 <span className={`flex items-center gap-1 text-xs font-medium ${isOpen ? 'text-green-600' : 'text-red-500'}`}>
                   <Clock className="h-3 w-3" />
@@ -113,7 +129,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar no cardápio..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
           />
         </div>
 
@@ -121,7 +137,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           <button
             onClick={() => setActiveCategory('all')}
-            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${activeCategory === 'all' ? 'bg-[var(--brand)] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-orange-300'}`}
+            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${activeCategory === 'all' ? 'bg-[var(--brand)] text-white' : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--muted)] hover:border-[var(--brand)]'}`}
           >
             Tudo
           </button>
@@ -129,7 +145,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`shrink-0 flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${activeCategory === cat.id ? 'bg-[var(--brand)] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-orange-300'}`}
+              className={`shrink-0 flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${activeCategory === cat.id ? 'bg-[var(--brand)] text-white' : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--muted)] hover:border-[var(--brand)]'}`}
             >
               {cat.icon && <span>{cat.icon}</span>}
               {cat.name}
@@ -144,27 +160,27 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
             if (catProducts.length === 0) return null
             return (
               <div key={cat.id} id={`cat-${cat.id}`}>
-                <h2 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <h2 className="font-bold text-[var(--text)] mb-3 flex items-center gap-2">
                   {cat.icon && <span>{cat.icon}</span>}
                   {cat.name}
                 </h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {catProducts.map(p => <ProductCard key={p.id} product={p} />)}
+                <div className={isCompact ? "space-y-2" : "grid grid-cols-2 gap-3"}>
+                  {catProducts.map(p => <ProductCard key={p.id} product={p} compact={isCompact} />)}
                 </div>
               </div>
             )
           })
         ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {filtered.map(p => <ProductCard key={p.id} product={p} />)}
+          <div className={isCompact ? "space-y-2" : "grid grid-cols-2 gap-3"}>
+            {filtered.map(p => <ProductCard key={p.id} product={p} compact={isCompact} />)}
           </div>
         )}
 
         {filtered.length === 0 && (
           <div className="text-center py-12">
             <p className="text-2xl mb-2">🔍</p>
-            <p className="font-medium text-gray-900">Nenhum produto encontrado</p>
-            <p className="text-sm text-gray-500">Tente outra busca</p>
+            <p className="font-medium text-[var(--text)]">Nenhum produto encontrado</p>
+            <p className="text-sm text-[var(--muted)]">Tente outra busca</p>
           </div>
         )}
       </div>
@@ -189,7 +205,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
       )}
 
       {/* Footer */}
-      <footer className="mt-12 border-t border-gray-200 bg-white py-6">
+      <footer className="mt-12 border-t border-[var(--border)] bg-[var(--surface)] py-6">
         <div className="max-w-2xl mx-auto px-4 text-center space-y-3">
           <div className="flex items-center justify-center gap-4">
             {business.instagram && (
