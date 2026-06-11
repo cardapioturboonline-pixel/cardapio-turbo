@@ -103,9 +103,9 @@ export default function ProductsPage() {
                   {product.is_combo && <Badge variant="secondary">Combo</Badge>}
                   {!product.is_available && <Badge variant="destructive">Indisponível</Badge>}
                 </div>
-                <div className="flex items-center gap-3 mt-1">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
                   {category && <span className="text-xs text-gray-500">{category.name}</span>}
-                  <span className="text-sm font-semibold text-gray-900">
+                  <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">
                     {product.promotional_price ? (
                       <>
                         <span className="text-orange-500">{formatCurrency(product.promotional_price)}</span>
@@ -113,7 +113,7 @@ export default function ProductsPage() {
                       </>
                     ) : formatCurrency(product.price)}
                   </span>
-                  <span className="text-xs text-gray-400">{product.views} views</span>
+                  <span className="text-xs text-gray-400 whitespace-nowrap">{product.views} views</span>
                 </div>
               </div>
 
