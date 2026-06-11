@@ -259,7 +259,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                   {item.observations && (
                     <p className="text-xs text-orange-500 truncate">📝 {item.observations}</p>
                   )}
-                  <p className="text-sm font-semibold text-orange-500 mt-1">
+                  <p className="text-sm font-semibold text-[var(--brand)] mt-1">
                     {formatCurrency((item.product.promotional_price ?? item.product.price) * item.quantity)}
                   </p>
                 </div>
@@ -270,7 +270,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                   </button>
                   <span className="w-6 text-center text-sm font-medium">{item.quantity}</span>
                   <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full bg-orange-500 text-white hover:bg-orange-600">
+                    className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--brand)] text-white hover:opacity-90">
                     <Plus className="h-3 w-3" />
                   </button>
                   <button onClick={() => removeItem(item.product.id)} className="ml-1 text-gray-300 hover:text-red-500 transition-colors">
@@ -314,7 +314,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                       )}
                       <div className="flex gap-1">
                         {Array.from({ length: loyaltyGoal }).map((_, i) => (
-                          <div key={i} className={`h-2 flex-1 rounded-full ${i < (earnedReward ? loyaltyGoal : inCycle) ? 'bg-orange-500' : 'bg-orange-200'}`} />
+                          <div key={i} className={`h-2 flex-1 rounded-full ${i < (earnedReward ? loyaltyGoal : inCycle) ? 'bg-[var(--brand)]' : 'bg-orange-200'}`} />
                         ))}
                       </div>
                       <p className="text-xs text-orange-600">{earnedReward ? loyaltyGoal : inCycle}/{loyaltyGoal} pedidos concluídos</p>
@@ -330,11 +330,11 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
                   <button onClick={() => setOrderType('delivery')}
-                    className={`flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-medium transition-colors ${orderType === 'delivery' ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
+                    className={`flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-medium transition-colors ${orderType === 'delivery' ? 'border-[var(--brand)] bg-orange-50 text-[var(--brand)]' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
                     🛵 Delivery
                   </button>
                   <button onClick={() => setOrderType('pickup')}
-                    className={`flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-medium transition-colors ${orderType === 'pickup' ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
+                    className={`flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-medium transition-colors ${orderType === 'pickup' ? 'border-[var(--brand)] bg-orange-50 text-[var(--brand)]' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
                     🏪 Retirar no local
                   </button>
                 </div>

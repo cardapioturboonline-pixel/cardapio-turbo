@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { MessageCircle, Search, ShoppingCart, Link as LinkIcon, MapPin, Clock, Star } from 'lucide-react'
 import type { Business, Category, Product, Review } from '@/types'
 import { ProductCard } from '@/components/shared/ProductCard'
@@ -27,6 +27,12 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
 
   const isOpen = isOpenNow(business.opening_hours as Record<string, { open: string; close: string; closed: boolean }> | undefined)
 
+  // Personalização do dono: cor principal e fonte aplicadas via CSS no cardápio.
+  // A variável --brand é herdada pelos componentes filhos (ProductCard, etc.).
+  const brand = business.primary_color || '#f97316'
+  const fontFamily = business.font ? `'${business.font}', system-ui, sans-serif` : undefined
+  const rootStyle = { '--brand': brand, ...(fontFamily ? { fontFamily } : {}) } as CSSProperties
+
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
       (p.description?.toLowerCase().includes(search.toLowerCase()) ?? false)
@@ -35,7 +41,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
   })
 
   return (
-    <div className="pb-24">
+    <div className="pb-24" style={rootStyle}>
       {/* Banner */}
       {business.banner_url && (
         <div className="relative h-48 sm:h-64 overflow-hidden">
@@ -62,7 +68,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
               />
             ) : null}
             <div
-              className={`h-16 w-16 rounded-xl border-2 border-white shadow-md shrink-0 relative z-10 bg-orange-500 items-center justify-center text-3xl font-bold text-white ${business.banner_url ? '-mt-8' : ''}`}
+              className={`h-16 w-16 rounded-xl border-2 border-white shadow-md shrink-0 relative z-10 bg-[var(--brand)] items-center justify-center text-3xl font-bold text-white ${business.banner_url ? '-mt-8' : ''}`}
               style={{ display: business.logo_url ? 'none' : 'flex' }}
             >
               {business.name?.[0]?.toUpperCase() ?? '🍽️'}
@@ -115,7 +121,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           <button
             onClick={() => setActiveCategory('all')}
-            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${activeCategory === 'all' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-orange-300'}`}
+            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${activeCategory === 'all' ? 'bg-[var(--brand)] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-orange-300'}`}
           >
             Tudo
           </button>
@@ -123,7 +129,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`shrink-0 flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${activeCategory === cat.id ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-orange-300'}`}
+              className={`shrink-0 flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${activeCategory === cat.id ? 'bg-[var(--brand)] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-orange-300'}`}
             >
               {cat.icon && <span>{cat.icon}</span>}
               {cat.name}
@@ -167,11 +173,11 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
       {totalItems > 0 && (
         <button
           onClick={() => setCartOpen(true)}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-full bg-orange-500 px-6 py-3 text-white shadow-lg hover:bg-orange-600 transition-colors z-40"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-full bg-[var(--brand)] px-6 py-3 text-white shadow-lg hover:opacity-90 transition-opacity z-40"
         >
           <ShoppingCart className="h-5 w-5" />
           <span className="font-semibold">Ver carrinho</span>
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-orange-500">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-[var(--brand)]">
             {totalItems}
           </span>
         </button>

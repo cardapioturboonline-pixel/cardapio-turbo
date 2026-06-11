@@ -44,7 +44,7 @@ export function ProductCard({ product }: ProductCardProps) {
               </div>
             )}
             {product.is_featured && (
-              <span className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-orange-500 px-2 py-0.5 text-xs font-medium text-white">
+              <span className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-[var(--brand)] px-2 py-0.5 text-xs font-medium text-white">
                 <Star className="h-3 w-3" /> Destaque
               </span>
             )}
@@ -62,7 +62,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="min-w-0">
               {product.promotional_price ? (
                 <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0">
-                  <span className="text-lg font-bold text-orange-500">{formatCurrency(product.promotional_price)}</span>
+                  <span className="text-lg font-bold text-[var(--brand)]">{formatCurrency(product.promotional_price)}</span>
                   <span className="text-xs text-gray-400 line-through">{formatCurrency(product.price)}</span>
                 </div>
               ) : (
@@ -70,7 +70,7 @@ export function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
             {product.is_available && (
-              <button className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-orange-500 px-3 py-2 text-sm font-medium text-white hover:bg-orange-600 transition-colors">
+              <button className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-[var(--brand)] px-3 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
                 <ShoppingCart className="h-4 w-4 shrink-0" />
                 Adicionar
               </button>
@@ -123,7 +123,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   </button>
                   <span className="w-8 text-center text-lg font-semibold">{quantity}</span>
                   <button onClick={() => setQuantity(q => q + 1)}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-white hover:bg-orange-600">
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--brand)] text-white hover:opacity-90">
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
@@ -131,7 +131,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
               {/* Add button */}
               <button onClick={handleAdd}
-                className="w-full flex items-center justify-between rounded-xl bg-orange-500 px-5 py-3.5 font-semibold text-white hover:bg-orange-600 transition-colors">
+                className="w-full flex items-center justify-between rounded-xl bg-[var(--brand)] px-5 py-3.5 font-semibold text-white hover:opacity-90 transition-opacity">
                 <span>Adicionar ao carrinho</span>
                 <span>{formatCurrency(price * quantity)}</span>
               </button>
