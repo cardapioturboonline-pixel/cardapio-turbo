@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Plus, Trash2, ImageIcon } from 'lucide-react'
+import { ArrowLeft, Plus, Trash2, ImageIcon, Loader2, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -34,6 +34,36 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
     business_id: initialData?.business_id ?? 'biz-001',
   })
   const [additionals, setAdditionals] = useState<Partial<Additional>[]>(initialData?.additionals ?? [])
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function handleFileUpload(file: File) {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Selecione um arquivo de imagem')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Imagem muito grande (máx. 5MB)')
+      return
+    }
+    setUploading(true)
+    try {
+      const data = new FormData()
+      data.append('file', file)
+      const res = await fetch('/api/products/upload', { method: 'POST', body: data })
+      const json = await res.json()
+      if (!res.ok || !json.url) {
+        toast.error(json.error || 'Erro ao enviar imagem')
+        return
+      }
+      setForm(p => ({ ...p, image_url: json.url }))
+      toast.success('Imagem enviada!')
+    } catch {
+      toast.error('Erro ao enviar imagem. Tente novamente.')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   function addAdditional() {
     setAdditionals(prev => [...prev, { name: '', price: 0, is_required: false, max_qty: 1 }])
@@ -141,16 +171,55 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
           {/* Image */}
           <div className="rounded-xl border border-gray-200 bg-white p-6 space-y-3">
             <h2 className="font-semibold text-gray-900">Foto do produto</h2>
-            {form.image_url && (
-              <img src={form.image_url} alt="preview" className="w-full h-40 object-cover rounded-lg" />
-            )}
-            <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 px-4 py-8 cursor-pointer hover:border-orange-300 transition-colors">
-              <div className="text-center">
-                <ImageIcon className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">Upload de imagem</p>
-                <p className="text-xs text-gray-400">PNG, JPG até 2MB</p>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={e => {
+                const f = e.target.files?.[0]
+                if (f) handleFileUpload(f)
+                e.target.value = ''
+              }}
+            />
+
+            {form.image_url ? (
+              <div className="relative">
+                <img src={form.image_url} alt="preview" className="w-full h-40 object-cover rounded-lg" />
+                <button
+                  type="button"
+                  onClick={() => setForm(p => ({ ...p, image_url: '' }))}
+                  className="absolute top-2 right-2 rounded-full bg-black/60 p-1 text-white hover:bg-black/80"
+                  title="Remover imagem"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-            </div>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="w-full flex items-center justify-center rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 px-4 py-8 cursor-pointer hover:border-orange-300 transition-colors disabled:opacity-60"
+            >
+              <div className="text-center">
+                {uploading ? (
+                  <>
+                    <Loader2 className="h-8 w-8 text-orange-400 mx-auto mb-2 animate-spin" />
+                    <p className="text-sm text-gray-500">Enviando...</p>
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">{form.image_url ? 'Trocar imagem' : 'Enviar imagem'}</p>
+                    <p className="text-xs text-gray-400">PNG, JPG até 5MB</p>
+                  </>
+                )}
+              </div>
+            </button>
+
             <div className="space-y-1">
               <Label className="text-xs">Ou cole a URL da imagem</Label>
               <Input value={form.image_url} onChange={e => setForm(p => ({ ...p, image_url: e.target.value }))} placeholder="https://..." className="text-xs" />
