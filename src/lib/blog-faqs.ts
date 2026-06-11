@@ -4,6 +4,24 @@
 export interface FaqItem { q: string; a: string }
 
 export const FAQ_BY_SLUG: Record<string, FaqItem[]> = {
+  'bares-restaurantes-faturamento-copa-do-mundo': [
+    {
+      q: 'Bares e restaurantes faturam mais durante a Copa do Mundo?',
+      a: 'Sim. A Copa reúne grupos de pessoas assistindo ao mesmo evento ao mesmo tempo, o que aumenta o número de clientes por mesa, o tempo de permanência e o consumo de bebidas e porções. Os picos são previsíveis, pois você sabe a data e o horário dos jogos.',
+    },
+    {
+      q: 'Quais negócios mais se beneficiam da Copa?',
+      a: 'Bares e pubs com TV, hamburguerias e petiscarias, pizzarias e delivery, além de açaís, sorveterias e docerias que entram como sobremesa do grupo e em pedidos para assistir em casa.',
+    },
+    {
+      q: 'Como lucrar de verdade e não só encher a casa na Copa?',
+      a: 'Encher a casa é a parte fácil. Para lucrar, organize os pedidos para não perder venda, crie combos e cupons pensados para o dia de jogo e capture o cliente em um canal próprio para vender novamente depois. Um cardápio digital com painel de pedidos ao vivo ajuda em todas essas frentes.',
+    },
+    {
+      q: 'Como me preparar para a Copa do Mundo no meu estabelecimento?',
+      a: 'Defina o cardápio do jogo, monte combos, crie cupons de desconto, organize a equipe e deixe o cardápio digital pronto para receber os pedidos pelo WhatsApp antes da primeira partida.',
+    },
+  ],
   'cardapio-digital-vs-ifood': [
     {
       q: 'Cardápio digital é melhor que o iFood?',
