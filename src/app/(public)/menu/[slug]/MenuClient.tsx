@@ -52,7 +52,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
               <img
                 src={business.logo_url}
                 alt={business.name}
-                className="h-16 w-16 rounded-xl object-cover border-2 border-white shadow-md shrink-0 -mt-8 relative z-10 bg-white"
+                className={`h-16 w-16 rounded-xl object-cover border-2 border-white shadow-md shrink-0 relative z-10 bg-white ${business.banner_url ? '-mt-8' : ''}`}
                 onError={(e) => {
                   const img = e.currentTarget
                   img.style.display = 'none'
@@ -62,7 +62,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
               />
             ) : null}
             <div
-              className="h-16 w-16 rounded-xl border-2 border-white shadow-md shrink-0 -mt-8 relative z-10 bg-orange-500 items-center justify-center text-3xl font-bold text-white"
+              className={`h-16 w-16 rounded-xl border-2 border-white shadow-md shrink-0 relative z-10 bg-orange-500 items-center justify-center text-3xl font-bold text-white ${business.banner_url ? '-mt-8' : ''}`}
               style={{ display: business.logo_url ? 'none' : 'flex' }}
             >
               {business.name?.[0]?.toUpperCase() ?? '🍽️'}

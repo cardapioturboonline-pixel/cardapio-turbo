@@ -226,25 +226,25 @@ export default async function AssinaturasPage() {
       {/* Gráfico: conversões x cancelamentos por mês */}
       {!eventsTableMissing && (
         <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-5">
             <h2 className="text-sm font-semibold text-gray-900">Conversões x cancelamentos por mês</h2>
             <div className="flex items-center gap-4 text-xs">
               <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-green-500" /> Conversões</span>
               <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-red-400" /> Cancelamentos</span>
             </div>
           </div>
-          <div className="flex items-end justify-between gap-3 h-40">
+          <div className="flex items-end justify-between gap-1.5 sm:gap-3 h-44 pt-4">
             {months.map(m => (
-              <div key={m.key} className="flex-1 flex flex-col items-center gap-1.5">
+              <div key={m.key} className="flex-1 min-w-0 flex flex-col items-center gap-1.5">
                 <div className="flex items-end gap-1 h-32 w-full justify-center">
-                  <div className="w-1/3 max-w-[26px] rounded-t bg-green-500 relative group" style={{ height: `${(m.conv / monthMax) * 100}%` }}>
+                  <div className="w-1/2 max-w-[26px] rounded-t bg-green-500 relative" style={{ height: `${(m.conv / monthMax) * 100}%` }}>
                     {m.conv > 0 && <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-green-700">{m.conv}</span>}
                   </div>
-                  <div className="w-1/3 max-w-[26px] rounded-t bg-red-400 relative" style={{ height: `${(m.cancel / monthMax) * 100}%` }}>
+                  <div className="w-1/2 max-w-[26px] rounded-t bg-red-400 relative" style={{ height: `${(m.cancel / monthMax) * 100}%` }}>
                     {m.cancel > 0 && <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-red-600">{m.cancel}</span>}
                   </div>
                 </div>
-                <span className="text-[11px] text-gray-500 capitalize">{m.label}</span>
+                <span className="text-[10px] sm:text-[11px] text-gray-500 capitalize truncate max-w-full">{m.label}</span>
               </div>
             ))}
           </div>
