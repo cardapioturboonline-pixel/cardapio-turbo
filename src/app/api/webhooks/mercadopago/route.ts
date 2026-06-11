@@ -88,12 +88,16 @@ export async function POST(req: NextRequest) {
 
     // Update plan based on subscription status
     if (status === 'authorized') {
-      // Payment successful — upgrade to Pro
+      // Payment successful: upgrade to Pro.
+      // IMPORTANTE: este update deve permanecer cirúrgico (apenas plan + trial_ends_at).
+      // NÃO adicione outros campos aqui. Produtos, categorias, cores/tema/layout,
+      // áreas de entrega, fidelidade, cupons e demais configurações ficam em outras
+      // colunas/tabelas e PRECISAM ser preservadas ao migrar de Free para Pro.
       await supabase
         .from('businesses')
         .update({
           plan: 'pro',
-          trial_ends_at: null, // clear trial, subscription is active
+          trial_ends_at: null, // limpa o trial, assinatura ativa
         })
         .eq('id', businessId)
 
