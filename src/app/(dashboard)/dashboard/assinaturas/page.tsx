@@ -274,7 +274,7 @@ export default async function AssinaturasPage() {
       )}
 
       {/* Tabela: Fecharam o Pro */}
-      <Section title={`Fecharam o Pro — saíram do trial e assinaram (${pro.length})`} accent="amber">
+      <Section title={`Fecharam o Pro: saíram do trial e assinaram (${pro.length})`} accent="amber">
         <Table
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Plano', 'Cadastro', 'Assinou em (aprox.)']}
           rows={pro.map(b => [
@@ -289,9 +289,9 @@ export default async function AssinaturasPage() {
 
       {/* Tabela: Em trial ativo */}
       <p className="rounded-lg bg-blue-50 border border-blue-100 px-4 py-2.5 text-xs text-blue-700">
-        ℹ️ Observação: quem cancela o Pro recebe 30 dias de carência (volta para Free com acesso temporário) e pode aparecer aqui como &quot;trial ativo&quot; com muitos dias restantes. Para rastreio 100% preciso de conversões e cancelamentos, dá para criar um registro de eventos de assinatura — me avise.
+        ℹ️ Observação: quem cancela o Pro recebe 30 dias de carência (volta para Free com acesso temporário) e pode aparecer aqui como &quot;trial ativo&quot; com muitos dias restantes. Para rastreio 100% preciso de conversões e cancelamentos, dá para criar um registro de eventos de assinatura. Me avise.
       </p>
-      <Section title={`Em trial ativo — ainda testando (${trialActive.length})`} accent="blue">
+      <Section title={`Em trial ativo: ainda testando (${trialActive.length})`} accent="blue">
         <Table
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Dias restantes', 'Início']}
           rows={trialActive
@@ -309,7 +309,7 @@ export default async function AssinaturasPage() {
       </Section>
 
       {/* Tabela: Trial expirado */}
-      <Section title={`Trial expirado sem converter — oportunidade de reativação (${trialExpired.length})`} accent="red">
+      <Section title={`Trial expirado sem converter: oportunidade de reativação (${trialExpired.length})`} accent="red">
         <Table
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Trial terminou em']}
           rows={trialExpired.map(b => [

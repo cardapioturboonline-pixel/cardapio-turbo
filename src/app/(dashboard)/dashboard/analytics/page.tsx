@@ -83,7 +83,7 @@ export default function AnalyticsPage() {
 
       {/* Views chart */}
       <div className="rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="font-semibold text-gray-900 mb-4">Acessos — últimos 7 dias</h2>
+        <h2 className="font-semibold text-gray-900 mb-4">Acessos nos últimos 7 dias</h2>
         {loading ? (
           <div className="flex items-center justify-center h-40">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
@@ -111,7 +111,7 @@ export default function AnalyticsPage() {
         {loading ? (
           <p className="text-sm text-gray-400 text-center py-4">Carregando...</p>
         ) : topProducts.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-4">Nenhum dado ainda — compartilhe seu cardápio para começar!</p>
+          <p className="text-sm text-gray-400 text-center py-4">Nenhum dado ainda. Compartilhe seu cardápio para começar!</p>
         ) : (
           <div className="space-y-3">
             {topProducts.map((p, i) => (
@@ -141,7 +141,7 @@ export default function AnalyticsPage() {
             <Clock className="h-5 w-5 text-orange-500" />
             <h2 className="font-semibold text-gray-900">Horários de pico</h2>
           </div>
-          <p className="text-sm text-gray-400 text-center py-6">Em breve — dados insuficientes para análise de pico</p>
+          <p className="text-sm text-gray-400 text-center py-6">Em breve: dados insuficientes para análise de pico</p>
         </div>
       </PlanGate>
     </div>

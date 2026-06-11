@@ -63,7 +63,7 @@ export default function CategoriesPage() {
         </div>
         {atCategoryLimit ? (
           <Link href="/dashboard/plans" className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-500 hover:bg-orange-500 hover:text-white transition-colors">
-            🔒 Limite de 3 categorias — Fazer upgrade
+            🔒 Limite de 3 categorias · Fazer upgrade
           </Link>
         ) : (
           <button onClick={() => { setShowForm(true); setEditId(null) }} className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600">
@@ -110,7 +110,7 @@ export default function CategoriesPage() {
             <div key={cat.id} className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-4">
               <span className="text-2xl">{cat.icon ?? '🍽'}</span>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <h3 className="font-medium text-gray-900">{cat.name}</h3>
                   <Badge variant="secondary">{productCount(cat.id)} produtos</Badge>
                   {!cat.is_active && <Badge variant="destructive">Inativa</Badge>}

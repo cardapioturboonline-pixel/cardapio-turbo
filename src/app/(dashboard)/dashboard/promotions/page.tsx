@@ -130,8 +130,8 @@ export default function PromotionsPage() {
             {coupons.map(coupon => (
               <div key={coupon.id} className="flex items-center gap-4 rounded-lg border border-gray-200 p-4">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-semibold text-gray-900">{coupon.code}</span>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="font-mono font-semibold text-gray-900 break-all">{coupon.code}</span>
                     <Badge variant={coupon.is_active ? 'success' : 'secondary'}>{coupon.is_active ? 'Ativo' : 'Inativo'}</Badge>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">

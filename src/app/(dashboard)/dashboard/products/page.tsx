@@ -43,7 +43,7 @@ export default function ProductsPage() {
         </div>
         {atProductLimit ? (
           <Link href="/dashboard/plans" className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-500 hover:bg-orange-500 hover:text-white transition-colors">
-            🔒 Limite de 15 produtos — Fazer upgrade
+            🔒 Limite de 15 produtos · Fazer upgrade
           </Link>
         ) : (
           <Link href="/dashboard/products/new" className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">

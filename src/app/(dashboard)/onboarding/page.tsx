@@ -378,7 +378,7 @@ export default function OnboardingPage() {
                           <Package className="h-6 w-6 text-orange-500" />
                         </div>
                         <p className="text-sm font-medium text-gray-700">Clique para fazer upload</p>
-                        <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP — até 2MB</p>
+                        <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP. Até 2MB</p>
                       </div>
                     )}
                   </label>
