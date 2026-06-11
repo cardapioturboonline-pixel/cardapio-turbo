@@ -100,7 +100,7 @@ export default function DashboardPage() {
             <h2 className="font-semibold text-gray-900 flex items-center gap-2"><Bell className="h-4 w-4 text-orange-500" /> Pedidos de hoje</h2>
             <Link href="/dashboard/orders" className="text-sm font-medium text-orange-500 hover:text-orange-600 flex items-center gap-1">Ver painel <ArrowRight className="h-3.5 w-3.5" /></Link>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <StatsCard title="Pedidos hoje" value={todayCount} description="Recebidos pelo cardápio" icon={Bell} />
             <StatsCard title="Faturamento" value={formatCurrency(todayRevenue)} description="Hoje" icon={DollarSign} />
             <StatsCard title="Em andamento" value={inProgress} description="A preparar/entregar" icon={Activity} />
@@ -118,7 +118,7 @@ export default function DashboardPage() {
 
       {/* Chart placeholder */}
       <div className="rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="font-semibold text-gray-900 mb-4">Visualizações — últimos 7 dias</h2>
+        <h2 className="font-semibold text-gray-900 mb-4">Visualizações nos últimos 7 dias</h2>
         {products.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-center">
             <p className="text-sm text-gray-400">Nenhum dado ainda. Compartilhe seu cardápio para ver as estatísticas!</p>
