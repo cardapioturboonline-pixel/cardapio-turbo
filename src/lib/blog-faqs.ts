@@ -4,6 +4,24 @@
 export interface FaqItem { q: string; a: string }
 
 export const FAQ_BY_SLUG: Record<string, FaqItem[]> = {
+  'como-montar-cupons-cardapio-digital-dia-dos-namorados': [
+    {
+      q: 'Como criar um cupom de desconto para o Dia dos Namorados?',
+      a: 'No painel do Cardápio Turbo, em Promoções, clique em criar cupom, escolha um código com a cara da data (como AMOR10), defina o tipo de desconto (percentual ou valor fixo) e um pedido mínimo. Ao ativar, o cupom já passa a valer no cardápio e o cliente aplica o código ao fechar o pedido.',
+    },
+    {
+      q: 'Percentual ou valor fixo: qual desconto usar?',
+      a: 'O desconto percentual (ex.: 10 por cento) funciona melhor em pedidos maiores. O valor fixo (ex.: 10 reais) passa uma sensação clara de economia em pedidos menores. Para o Dia dos Namorados, combine com um pedido mínimo para proteger a margem.',
+    },
+    {
+      q: 'Quais ideias de cupom vendem mais no Dia dos Namorados?',
+      a: 'Combo do casal com cupom exclusivo, frete grátis acima de um valor, vantagem na sobremesa e cupom de retorno para a próxima compra. Defina sempre uma data limite para criar senso de urgência.',
+    },
+    {
+      q: 'Onde divulgar o cupom para ele funcionar?',
+      a: 'Coloque o código na bio do Instagram, no status do WhatsApp e nos stories, e faça um post mostrando o desconto e o prazo. Quanto mais gente souber do cupom, mais pedidos ele gera.',
+    },
+  ],
   'bares-restaurantes-faturamento-copa-do-mundo': [
     {
       q: 'Bares e restaurantes faturam mais durante a Copa do Mundo?',
