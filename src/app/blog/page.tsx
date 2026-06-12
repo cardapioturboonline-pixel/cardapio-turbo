@@ -35,6 +35,7 @@ export default async function BlogPage() {
     .from('blog_posts')
     .select('slug, title, excerpt, category, cover_emoji, cover_image, read_minutes, published_at')
     .eq('published', true)
+    .lte('published_at', new Date().toISOString())
     .order('published_at', { ascending: false })
 
   const list = (posts ?? []) as Post[]

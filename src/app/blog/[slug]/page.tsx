@@ -32,6 +32,7 @@ async function getPost(slug: string): Promise<Post | null> {
     .select('*')
     .eq('slug', slug)
     .eq('published', true)
+    .lte('published_at', new Date().toISOString())
     .single()
   return (data as Post) ?? null
 }
@@ -76,6 +77,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     .from('blog_posts')
     .select('slug, title, category, cover_emoji, read_minutes')
     .eq('published', true)
+    .lte('published_at', new Date().toISOString())
     .neq('slug', post.slug)
     .limit(3)
 

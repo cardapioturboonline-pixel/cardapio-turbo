@@ -4,6 +4,48 @@
 export interface FaqItem { q: string; a: string }
 
 export const FAQ_BY_SLUG: Record<string, FaqItem[]> = {
+  'festa-junina-cardapio-digital-arraia': [
+    {
+      q: 'Como vender comidas típicas de festa junina no cardápio digital?',
+      a: 'Crie uma categoria especial de festa junina no Cardápio Turbo com os itens da data (quentão, canjica, pamonha, milho, espetinho, cachorro-quente e doces), com foto e preço. O cliente escolhe e o pedido chega no seu WhatsApp.',
+    },
+    {
+      q: 'Vale a pena montar combos para a festa junina?',
+      a: 'Sim. Combos como kit festa junina para 4 pessoas elevam o ticket médio e facilitam a vida de quem vai receber gente em casa. Deixe os combos em destaque no cardápio.',
+    },
+    {
+      q: 'Que cupom usar na temporada junina?',
+      a: 'Cupons temáticos como ARRAIA10 atraem pedidos. Defina um pedido mínimo para proteger a margem e uma data limite para criar senso de urgência.',
+    },
+  ],
+  'ferias-julho-cardapio-digital-pedidos': [
+    {
+      q: 'Por que os pedidos aumentam nas férias de julho?',
+      a: 'Com as crianças em casa e mais tempo livre, cresce a procura por comida pronta, delivery e programas em família. Os picos costumam acontecer à noite e nos fins de semana.',
+    },
+    {
+      q: 'Como dar conta do aumento de pedidos sem perder venda?',
+      a: 'Deixe combos para família em destaque, use o painel de pedidos ao vivo para acompanhar tudo em tempo real e ative o frete automático por bairro para agilizar o atendimento nos horários de pico.',
+    },
+    {
+      q: 'Como aproveitar as férias para fidelizar clientes?',
+      a: 'Quem pede pelo seu cardápio digital entra no seu canal. Use o programa de fidelidade e um cupom de férias (como FERIAS10) para transformar o cliente do período em cliente o ano todo.',
+    },
+  ],
+  'dia-dos-pais-combos-cardapio-digital': [
+    {
+      q: 'Como montar um combo para o Dia dos Pais?',
+      a: 'Crie um combo especial no Cardápio Turbo, por exemplo um prato principal generoso com acompanhamento e bebida, e deixe ele em destaque. Para famílias, ofereça também combos para 4 ou 6 pessoas.',
+    },
+    {
+      q: 'Que cupom usar no Dia dos Pais?',
+      a: 'Cupons como PAIS10 incentivam o pedido. Combine com um pedido mínimo para aumentar o ticket médio e divulgue com alguns dias de antecedência.',
+    },
+    {
+      q: 'Quando começar a divulgar a promoção de Dia dos Pais?',
+      a: 'Comece alguns dias antes, nos stories, no feed e no status do WhatsApp. Quem se planeja recebe encomendas com folga e evita o sufoco de última hora.',
+    },
+  ],
   'como-montar-cupons-cardapio-digital-dia-dos-namorados': [
     {
       q: 'Como criar um cupom de desconto para o Dia dos Namorados?',
