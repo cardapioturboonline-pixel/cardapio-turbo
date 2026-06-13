@@ -63,6 +63,7 @@ const plans = [
     features: [
       "Tudo do plano Free",
       "Produtos e categorias ilimitados",
+      "Modo pizzaria (meio a meio)",
       "Painel de pedidos em tempo real",
       "Frete automático por bairro",
       "Programa de fidelidade",
@@ -113,6 +114,7 @@ const homeJsonLd = {
       description: 'Crie um cardápio digital profissional em minutos e receba pedidos direto no WhatsApp. Inclui painel de pedidos ao vivo, frete por bairro, cupons, programa de fidelidade, QR Code e relatórios.',
       featureList: [
         'Cardápio digital com foto e preço',
+        'Modo pizzaria com meio a meio (preço proporcional)',
         'Pedidos direto no WhatsApp',
         'Painel de pedidos ao vivo',
         'Frete automático por bairro',

@@ -42,6 +42,7 @@ const plans = [
     features: [
       { text: 'Tudo do plano Free', included: true },
       { text: 'Produtos e categorias ilimitados', included: true },
+      { text: 'Modo pizzaria (meio a meio)', included: true },
       { text: 'Painel de pedidos em tempo real', included: true },
       { text: 'Frete automático por bairro', included: true },
       { text: 'Programa de fidelidade', included: true },
