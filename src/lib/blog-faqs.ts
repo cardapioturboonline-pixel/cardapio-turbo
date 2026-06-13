@@ -4,6 +4,24 @@
 export interface FaqItem { q: string; a: string }
 
 export const FAQ_BY_SLUG: Record<string, FaqItem[]> = {
+  'pizza-meio-a-meio-preco-cardapio-digital': [
+    {
+      q: 'Como é calculado o preço da pizza meio a meio?',
+      a: 'No método proporcional, soma-se metade do preço de cada sabor escolhido, ou seja, a média dos dois. Exemplo: Calabresa (R$ 60) e Quatro Queijos (R$ 80) resultam em (60 + 80) / 2 = R$ 70. O Cardápio Turbo faz esse cálculo automaticamente.',
+    },
+    {
+      q: 'Cobrar a média ou o sabor mais caro?',
+      a: 'Existem os dois métodos no mercado. O Cardápio Turbo usa a média dos dois sabores, que costuma ser o mais justo para o cliente. Cobrar o sabor mais caro também é comum, mas pode passar a impressão de preço alto.',
+    },
+    {
+      q: 'Como ativar o modo pizzaria no Cardápio Turbo?',
+      a: 'Crie uma categoria de Pizzas, cadastre cada sabor ativando o Modo pizza com os tamanhos e preços, e escolha permitir meio a meio (2 sabores). O recurso está disponível no plano Pro.',
+    },
+    {
+      q: 'O cliente consegue montar a pizza sozinho?',
+      a: 'Sim. No cardápio, o cliente escolhe o tamanho, seleciona inteira ou meio a meio e, no meio a meio, escolhe o segundo sabor. O preço aparece na hora e o pedido chega no seu WhatsApp com o valor correto.',
+    },
+  ],
   'festa-junina-cardapio-digital-arraia': [
     {
       q: 'Como vender comidas típicas de festa junina no cardápio digital?',
