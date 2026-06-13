@@ -16,6 +16,12 @@ export async function GET(req: Request) {
   const { data: biz } = await supabase.from('businesses').select('id').eq('slug', 'dogao-do-denis-ikir').single()
   if (!biz) return NextResponse.json({ error: 'business not found' }, { status: 404 })
 
+  if (url.searchParams.get('clean') === '1') {
+    await supabase.from('products').delete().eq('business_id', biz.id).like('name', 'Pizza %')
+    await supabase.from('categories').delete().eq('business_id', biz.id).eq('name', 'Pizzas')
+    return NextResponse.json({ ok: true, cleaned: true })
+  }
+
   // upload pizza image
   await supabase.storage.createBucket('menu', { public: true }).catch(()=>{})
   const buffer = Buffer.from(PIZZA_B64, 'base64')
