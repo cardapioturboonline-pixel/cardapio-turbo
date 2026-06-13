@@ -134,6 +134,9 @@ export default function PlansPage() {
                     )}
                     <span className={`text-sm ${feature.included ? 'text-gray-700' : 'text-gray-400'}`}>
                       {feature.text}
+                      {feature.text.includes('Modo pizzaria') && (
+                        <span className="ml-1.5 rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-600 align-middle">NOVO</span>
+                      )}
                     </span>
                   </li>
                 ))}

@@ -368,6 +368,9 @@ export default function LandingPage() {
                     <li key={j} className="flex items-center gap-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                       {f}
+                      {f.includes('Modo pizzaria') && (
+                        <span className="ml-1 rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-600">NOVO</span>
+                      )}
                     </li>
                   ))}
                   {(plan as { locked?: string[] }).locked?.map((f, j) => (
