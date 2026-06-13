@@ -137,7 +137,11 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     // Items
     msg += `*🛒 Itens do Pedido:*\n`
     items.forEach(item => {
-      msg += `▪ ${item.quantity}x ${item.product.name} — ${formatCurrency((item.product.promotional_price ?? item.product.price) * item.quantity)}\n`
+      const title = item.pizza
+        ? `Pizza ${item.pizza.sizeName} (${item.pizza.flavors.map(f => f.name).join(' / ')})`
+        : item.product.name
+      const unit = item.pizza ? item.pizza.unitPrice : (item.product.promotional_price ?? item.product.price)
+      msg += `▪ ${item.quantity}x ${title} — ${formatCurrency(unit * item.quantity)}\n`
       if (item.observations) msg += `  📝 _Obs: ${item.observations}_\n`
     })
     msg += '\n'
@@ -177,9 +181,9 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
         neighborhood: selectedArea?.name || (orderType === 'delivery' ? addressDistrict : null) || null,
         payment_method: payment,
         items: items.map(it => ({
-          name: it.product.name,
+          name: it.pizza ? `Pizza ${it.pizza.sizeName} (${it.pizza.flavors.map(f => f.name).join(' / ')})` : it.product.name,
           quantity: it.quantity,
-          price: it.product.promotional_price ?? it.product.price,
+          price: it.pizza ? it.pizza.unitPrice : (it.product.promotional_price ?? it.product.price),
           observations: it.observations || null,
         })),
         subtotal: getSubtotal(),
@@ -249,36 +253,43 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
               </div>
             )}
 
-            {items.map(item => (
-              <div key={item.product.id} className="flex items-center gap-3 rounded-xl border border-gray-200 p-3">
+            {items.map(item => {
+              const key = item.lineId ?? item.product.id
+              const unit = item.pizza ? item.pizza.unitPrice : (item.product.promotional_price ?? item.product.price)
+              const title = item.pizza ? `Pizza ${item.pizza.sizeName}` : item.product.name
+              const subtitle = item.pizza ? item.pizza.flavors.map(f => f.name).join(' / ') : null
+              return (
+              <div key={key} className="flex items-center gap-3 rounded-xl border border-gray-200 p-3">
                 {item.product.image_url && (
                   <img src={item.product.image_url} alt={item.product.name} className="h-14 w-14 rounded-lg object-cover shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 text-sm truncate">{item.product.name}</p>
+                  <p className="font-medium text-gray-900 text-sm truncate">{title}</p>
+                  {subtitle && <p className="text-xs text-gray-500 truncate">{subtitle}</p>}
                   {item.observations && (
                     <p className="text-xs text-orange-500 truncate">📝 {item.observations}</p>
                   )}
                   <p className="text-sm font-semibold text-[var(--brand)] mt-1">
-                    {formatCurrency((item.product.promotional_price ?? item.product.price) * item.quantity)}
+                    {formatCurrency(unit * item.quantity)}
                   </p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                  <button onClick={() => updateQuantity(key, item.quantity - 1)}
                     className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50">
                     <Minus className="h-3 w-3" />
                   </button>
                   <span className="w-6 text-center text-sm font-medium">{item.quantity}</span>
-                  <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                  <button onClick={() => updateQuantity(key, item.quantity + 1)}
                     className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--brand)] text-white hover:opacity-90">
                     <Plus className="h-3 w-3" />
                   </button>
-                  <button onClick={() => removeItem(item.product.id)} className="ml-1 text-gray-300 hover:text-red-500 transition-colors">
+                  <button onClick={() => removeItem(key)} className="ml-1 text-gray-300 hover:text-red-500 transition-colors">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
 
           {items.length > 0 && (

@@ -1,6 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { CartItem, Product, Additional } from '@/types'
+import type { CartItem, Product, Additional, PizzaSelection } from '@/types'
+
+// Identidade da linha do carrinho: pizzas usam lineId (nunca agrupam),
+// produtos normais usam o id do produto (agrupam quantidade).
+const lineKey = (i: CartItem) => i.lineId ?? i.product.id
 
 interface CartStore {
   items: CartItem[]
@@ -8,8 +12,9 @@ interface CartStore {
   couponCode: string | null
   couponDiscount: number
   addItem: (product: Product, additionals?: Additional[], observations?: string) => void
-  removeItem: (productId: string) => void
-  updateQuantity: (productId: string, quantity: number) => void
+  addPizzaItem: (product: Product, pizza: PizzaSelection, observations?: string) => void
+  removeItem: (key: string) => void
+  updateQuantity: (key: string, quantity: number) => void
   clearCart: () => void
   setBusinessSlug: (slug: string) => void
   applyCoupon: (code: string, discount: number) => void
@@ -29,7 +34,7 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (product, additionals = [], observations) => {
         set((state) => {
-          const existing = state.items.find(i => i.product.id === product.id)
+          const existing = state.items.find(i => i.product.id === product.id && !i.lineId)
           if (existing) {
             return {
               items: state.items.map(i =>
@@ -45,20 +50,27 @@ export const useCartStore = create<CartStore>()(
         })
       },
 
-      removeItem: (productId) => {
+      addPizzaItem: (product, pizza, observations) => {
+        const lineId = `pizza-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
         set((state) => ({
-          items: state.items.filter(i => i.product.id !== productId)
+          items: [...state.items, { product, quantity: 1, additionals: [], observations, lineId, pizza }]
         }))
       },
 
-      updateQuantity: (productId, quantity) => {
+      removeItem: (key) => {
+        set((state) => ({
+          items: state.items.filter(i => lineKey(i) !== key)
+        }))
+      },
+
+      updateQuantity: (key, quantity) => {
         if (quantity <= 0) {
-          get().removeItem(productId)
+          get().removeItem(key)
           return
         }
         set((state) => ({
           items: state.items.map(i =>
-            i.product.id === productId ? { ...i, quantity } : i
+            lineKey(i) === key ? { ...i, quantity } : i
           )
         }))
       },
@@ -75,7 +87,7 @@ export const useCartStore = create<CartStore>()(
         const { items } = get()
         return items.reduce((total, item) => {
           const additionalsTotal = item.additionals.reduce((a, add) => a + add.price, 0)
-          const price = item.product.promotional_price ?? item.product.price
+          const price = item.pizza ? item.pizza.unitPrice : (item.product.promotional_price ?? item.product.price)
           return total + (price + additionalsTotal) * item.quantity
         }, 0)
       },

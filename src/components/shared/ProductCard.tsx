@@ -6,17 +6,26 @@ import { formatCurrency } from '@/lib/utils/format'
 import { useCartStore } from '@/lib/stores/cart'
 import { ShoppingCart, Star, Plus, Minus, X } from 'lucide-react'
 import { toast } from '@/components/ui/sonner'
+import { PizzaOrderModal } from '@/components/menu/PizzaOrderModal'
 
 interface ProductCardProps {
   product: Product
   compact?: boolean
+  pizzaFlavors?: Product[]
 }
 
-export function ProductCard({ product, compact = false }: ProductCardProps) {
+export function ProductCard({ product, compact = false, pizzaFlavors = [] }: ProductCardProps) {
   const addItem = useCartStore(s => s.addItem)
   const [showModal, setShowModal] = useState(false)
+  const [showPizza, setShowPizza] = useState(false)
   const [quantity, setQuantity] = useState(1)
   const [observation, setObservation] = useState('')
+  const isPizza = !!product.pizza
+  function openProduct() {
+    if (!product.is_available) return
+    if (isPizza) setShowPizza(true)
+    else setShowModal(true)
+  }
 
   function handleAdd() {
     for (let i = 0; i < quantity; i++) {
@@ -31,7 +40,9 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
   const price = product.promotional_price ?? product.price
 
   const priceBlock = (
-    product.promotional_price ? (
+    isPizza ? (
+      <span className="text-base font-bold text-[var(--text)]">a partir de <span className="text-[var(--brand)]">{formatCurrency(product.price)}</span></span>
+    ) : product.promotional_price ? (
       <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0">
         <span className="text-lg font-bold text-[var(--brand)]">{formatCurrency(product.promotional_price)}</span>
         <span className="text-xs text-[var(--muted)] line-through">{formatCurrency(product.price)}</span>
@@ -46,7 +57,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
       {compact ? (
         /* ---- Layout compacto: linha horizontal ---- */
         <div
-          onClick={() => product.is_available && setShowModal(true)}
+          onClick={openProduct}
           className={`relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer ${!product.is_available ? 'opacity-60 cursor-not-allowed' : ''}`}
         >
           <div className="h-16 w-16 shrink-0 rounded-lg overflow-hidden bg-orange-50 flex items-center justify-center text-2xl">
@@ -69,7 +80,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
       ) : (
         /* ---- Layout premium: card com imagem ---- */
         <div
-          onClick={() => product.is_available && setShowModal(true)}
+          onClick={openProduct}
           className={`relative rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer ${!product.is_available ? 'opacity-60 cursor-not-allowed' : ''}`}
         >
           {product.image_url ? (
@@ -167,6 +178,11 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Pizza Modal */}
+      {showPizza && (
+        <PizzaOrderModal product={product} flavors={pizzaFlavors} onClose={() => setShowPizza(false)} />
       )}
     </>
   )

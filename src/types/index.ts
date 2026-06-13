@@ -132,8 +132,26 @@ export interface Product {
   views: number
   orders: number
   additionals?: Additional[]
+  pizza?: PizzaConfig | null
   created_at: string
   updated_at: string
+}
+
+// Configuração de pizza (modo pizzaria, Pro). Cada sabor (produto) guarda
+// seus tamanhos com preço. maxFlavors define quantos sabores cabem (2 = meio a meio).
+export interface PizzaSize {
+  name: string
+  price: number
+}
+export interface PizzaConfig {
+  sizes: PizzaSize[]
+  maxFlavors: number
+}
+// Seleção feita pelo cliente ao montar a pizza no cardápio.
+export interface PizzaSelection {
+  sizeName: string
+  flavors: { id: string; name: string }[]
+  unitPrice: number
 }
 
 export interface Additional {
@@ -150,6 +168,8 @@ export interface CartItem {
   quantity: number
   additionals: Additional[]
   observations?: string
+  lineId?: string            // id único da linha (pizzas não se agrupam)
+  pizza?: PizzaSelection     // presente quando o item é uma pizza montada
 }
 
 export interface Coupon {

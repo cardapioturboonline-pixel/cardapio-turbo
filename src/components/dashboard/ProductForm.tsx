@@ -7,8 +7,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
-import type { Product, Category, Additional } from '@/types'
+import { Pizza, Lock } from 'lucide-react'
+import type { Product, Category, Additional, PizzaSize } from '@/types'
 import { toast } from '@/components/ui/sonner'
+import { useBusiness } from '@/lib/hooks/useBusiness'
+import { hasProAccess } from '@/lib/plan'
 
 interface ProductFormProps {
   categories: Category[]
@@ -36,6 +39,17 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
   const [additionals, setAdditionals] = useState<Partial<Additional>[]>(initialData?.additionals ?? [])
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { business } = useBusiness()
+  const isPro = hasProAccess(business)
+
+  // Modo pizza
+  const [isPizza, setIsPizza] = useState<boolean>(!!initialData?.pizza)
+  const [sizes, setSizes] = useState<PizzaSize[]>(initialData?.pizza?.sizes ?? [{ name: 'Grande', price: 0 }])
+  const [maxFlavors, setMaxFlavors] = useState<number>(initialData?.pizza?.maxFlavors ?? 2)
+  const addSize = () => setSizes(prev => [...prev, { name: '', price: 0 }])
+  const removeSize = (i: number) => setSizes(prev => prev.filter((_, idx) => idx !== i))
+  const updateSize = (i: number, field: keyof PizzaSize, value: string) =>
+    setSizes(prev => prev.map((s, idx) => idx === i ? { ...s, [field]: field === 'price' ? (parseFloat(value) || 0) : value } : s))
 
   async function handleFileUpload(file: File) {
     if (!file.type.startsWith('image/')) {
@@ -77,16 +91,34 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!form.name || !form.price) {
-      toast.error('Preencha nome e preço')
+    if (!form.name) {
+      toast.error('Preencha o nome')
       return
     }
+    const cleanSizes = sizes.filter(s => s.name.trim() && s.price > 0)
+    if (isPizza) {
+      if (cleanSizes.length === 0) {
+        toast.error('Cadastre ao menos um tamanho com preço para a pizza')
+        return
+      }
+    } else if (!form.price) {
+      toast.error('Preencha o preço')
+      return
+    }
+    // Preço base: pizza usa o menor tamanho (exibido como "a partir de")
+    const basePrice = isPizza ? Math.min(...cleanSizes.map(s => s.price)) : parseFloat(form.price)
+    // Só inclui o campo pizza quando há config ou quando precisa limpar uma config anterior.
+    // Produtos normais (sem pizza) não enviam a chave, evitando erro se a coluna não existir.
+    const pizzaField = isPizza
+      ? { pizza: { sizes: cleanSizes, maxFlavors } }
+      : (initialData?.pizza ? { pizza: null } : {})
     setLoading(true)
     const result = await onSave({
       ...form,
-      price: parseFloat(form.price),
-      promotional_price: form.promotional_price ? parseFloat(form.promotional_price) : undefined,
-      additionals: additionals.map((a, i) => ({
+      price: basePrice,
+      promotional_price: !isPizza && form.promotional_price ? parseFloat(form.promotional_price) : undefined,
+      ...pizzaField,
+      additionals: isPizza ? [] : additionals.map((a, i) => ({
         id: `add-new-${i}`,
         product_id: initialData?.id ?? '',
         name: a.name ?? '',
@@ -126,16 +158,18 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
               <Label>Descrição</Label>
               <Textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Ingredientes, modo de preparo..." rows={3} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Preço (R$) *</Label>
-                <Input type="number" step="0.01" min="0" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))} placeholder="29.90" required />
+            {!isPizza && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Preço (R$) *</Label>
+                  <Input type="number" step="0.01" min="0" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))} placeholder="29.90" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Preço promocional</Label>
+                  <Input type="number" step="0.01" min="0" value={form.promotional_price} onChange={e => setForm(p => ({ ...p, promotional_price: e.target.value }))} placeholder="24.90" />
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <Label>Preço promocional</Label>
-                <Input type="number" step="0.01" min="0" value={form.promotional_price} onChange={e => setForm(p => ({ ...p, promotional_price: e.target.value }))} placeholder="24.90" />
-              </div>
-            </div>
+            )}
             <div className="space-y-1.5">
               <Label>Categoria</Label>
               <select value={form.category_id ?? ''} onChange={e => setForm(p => ({ ...p, category_id: e.target.value || null }))}
@@ -146,7 +180,59 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
             </div>
           </div>
 
+          {/* Modo Pizza (Pro) */}
+          <div className="rounded-xl border border-gray-200 bg-white p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                <Pizza className="h-5 w-5 text-orange-500" /> Modo pizza
+                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-600">PRO</span>
+              </h2>
+              <Switch
+                checked={isPizza}
+                disabled={!isPro}
+                onCheckedChange={(v) => {
+                  if (!isPro) { toast.error('O modo pizza está disponível no plano Pro'); return }
+                  setIsPizza(v)
+                }}
+              />
+            </div>
+            {!isPro && (
+              <p className="flex items-center gap-1.5 text-sm text-gray-400"><Lock className="h-3.5 w-3.5" /> Disponível no plano Pro</p>
+            )}
+            {isPizza && (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-500">Cadastre os <strong>tamanhos com preço</strong> deste sabor. No cardápio, o cliente escolhe o tamanho e pode montar <strong>meio a meio</strong> (o preço é a média dos dois sabores).</p>
+                <div className="space-y-2">
+                  {sizes.map((s, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <Input placeholder="Tamanho (ex: Grande)" value={s.name} onChange={e => updateSize(i, 'name', e.target.value)} className="flex-1" />
+                      <div className="flex items-center gap-1 w-32 shrink-0">
+                        <span className="text-sm text-gray-400">R$</span>
+                        <Input type="number" step="0.01" min="0" placeholder="0,00" value={s.price || ''} onChange={e => updateSize(i, 'price', e.target.value)} />
+                      </div>
+                      <button type="button" onClick={() => removeSize(i)} className="rounded-md p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 shrink-0">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button type="button" onClick={addSize} className="flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-600">
+                    <Plus className="h-4 w-4" /> Adicionar tamanho
+                  </button>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Sabores por pizza</Label>
+                  <select value={maxFlavors} onChange={e => setMaxFlavors(parseInt(e.target.value))}
+                    className="h-9 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    <option value={1}>Apenas inteira (1 sabor)</option>
+                    <option value={2}>Permitir meio a meio (2 sabores)</option>
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Additionals */}
+          {!isPizza && (
           <div className="rounded-xl border border-gray-200 bg-white p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-gray-900">Adicionais</h2>
@@ -165,6 +251,7 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
               </div>
             ))}
           </div>
+          )}
         </div>
 
         <div className="space-y-6">

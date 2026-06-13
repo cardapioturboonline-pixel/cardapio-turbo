@@ -49,6 +49,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
     ...(fontFamily ? { fontFamily } : {}),
   } as CSSProperties
 
+  const pizzaFlavors = products.filter(p => p.pizza)
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
       (p.description?.toLowerCase().includes(search.toLowerCase()) ?? false)
@@ -165,14 +166,14 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
                   {cat.name}
                 </h2>
                 <div className={isCompact ? "space-y-2" : "grid grid-cols-2 gap-3"}>
-                  {catProducts.map(p => <ProductCard key={p.id} product={p} compact={isCompact} />)}
+                  {catProducts.map(p => <ProductCard key={p.id} product={p} compact={isCompact} pizzaFlavors={pizzaFlavors} />)}
                 </div>
               </div>
             )
           })
         ) : (
           <div className={isCompact ? "space-y-2" : "grid grid-cols-2 gap-3"}>
-            {filtered.map(p => <ProductCard key={p.id} product={p} compact={isCompact} />)}
+            {filtered.map(p => <ProductCard key={p.id} product={p} compact={isCompact} pizzaFlavors={pizzaFlavors} />)}
           </div>
         )}
 
