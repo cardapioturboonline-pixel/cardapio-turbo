@@ -120,3 +120,32 @@ export function proWelcomeEmail(name: string): { subject: string; html: string }
     html: baseLayout(content, 'Sua assinatura Pro foi confirmada. Aproveite todos os recursos!'),
   }
 }
+
+export function winbackEmail(name: string): { subject: string; html: string } {
+  const firstName = name?.split(' ')[0] || 'amigo(a)'
+  const content = `
+    <h1 style="margin:0 0 16px;color:#1a1a1a;font-size:26px;font-weight:bold;">Sentimos sua falta, ${firstName}! 🧡</h1>
+    <p style="margin:0 0 16px;color:#4b5563;font-size:16px;line-height:1.6;">
+      Seu período de teste no <strong>Cardápio Turbo</strong> terminou e percebemos que você ainda não ativou o Plano Pro. Que tal voltar e deixar seu cardápio trabalhando por você de novo?
+    </p>
+    <p style="margin:0 0 8px;color:#4b5563;font-size:16px;line-height:1.6;"><strong>Com o Pro você tem:</strong></p>
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 8px;">
+      <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">📲 &nbsp;Pedidos direto no WhatsApp, sem comissão</td></tr>
+      <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">🛍️ &nbsp;Produtos e categorias ilimitados</td></tr>
+      <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">🔔 &nbsp;Painel de pedidos em tempo real</td></tr>
+      <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">🎟️ &nbsp;Cupons, fidelidade e relatórios</td></tr>
+      <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">🍕 &nbsp;Modo pizzaria com meio a meio automático</td></tr>
+    </table>
+    <p style="margin:16px 0 0;color:#4b5563;font-size:16px;line-height:1.6;">
+      Seus dados continuam salvos. É só reativar e seu cardápio volta no ar na hora.
+    </p>
+    ${button('Reativar meu Pro', SITE_URL + '/dashboard/plans')}
+    <p style="margin:8px 0 0;color:#9ca3af;font-size:14px;text-align:center;line-height:1.6;">
+      Ficou com alguma dúvida? Estamos no <a href="${SUPPORT_WHATSAPP}" style="color:${BRAND};">WhatsApp</a> pra te ajudar.
+    </p>
+  `
+  return {
+    subject: `${firstName}, seu cardápio digital está te esperando 🧡`,
+    html: baseLayout(content, 'Volte ao Cardápio Turbo Pro e reative seu cardápio.'),
+  }
+}

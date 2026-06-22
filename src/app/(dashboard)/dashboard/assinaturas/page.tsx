@@ -3,6 +3,7 @@ import { Users, Crown, Clock, TrendingDown, Percent, MapPin, History, RefreshCw,
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { isAdminEmail } from '@/lib/admin'
+import { WinbackButton } from './WinbackButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -310,6 +311,10 @@ export default async function AssinaturasPage() {
 
       {/* Tabela: Trial expirado */}
       <Section title={`Trial expirado sem converter: oportunidade de reativação (${trialExpired.length})`} accent="red">
+        <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3">
+          <p className="text-sm text-red-700">Envie um e-mail de reativação para quem testou e não assinou o Pro.</p>
+          <WinbackButton count={trialExpired.length} />
+        </div>
         <Table
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Trial terminou em']}
           rows={trialExpired.map(b => [
