@@ -8,7 +8,7 @@ export function WinbackButton({ count }: { count: number }) {
   const [loading, setLoading] = useState(false)
 
   async function handleSend() {
-    if (count === 0) { toast.info('Nenhum trial expirado para enviar.'); return }
+    if (count === 0) { toast.error('Nenhum trial expirado para enviar.'); return }
     if (!confirm(`Enviar e-mail de reativação para ${count} negócio(s) com trial expirado?`)) return
     setLoading(true)
     try {
