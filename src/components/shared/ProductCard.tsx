@@ -7,6 +7,7 @@ import { useCartStore } from '@/lib/stores/cart'
 import { ShoppingCart, Star, Plus, Minus, X } from 'lucide-react'
 import { toast } from '@/components/ui/sonner'
 import { PizzaOrderModal } from '@/components/menu/PizzaOrderModal'
+import { ProductOptionsModal } from '@/components/menu/ProductOptionsModal'
 
 interface ProductCardProps {
   product: Product
@@ -18,12 +19,15 @@ export function ProductCard({ product, compact = false, pizzaFlavors = [] }: Pro
   const addItem = useCartStore(s => s.addItem)
   const [showModal, setShowModal] = useState(false)
   const [showPizza, setShowPizza] = useState(false)
+  const [showOptions, setShowOptions] = useState(false)
   const [quantity, setQuantity] = useState(1)
   const [observation, setObservation] = useState('')
   const isPizza = !!product.pizza
+  const hasOptions = !!product.option_groups && product.option_groups.length > 0
   function openProduct() {
     if (!product.is_available) return
     if (isPizza) setShowPizza(true)
+    else if (hasOptions) setShowOptions(true)
     else setShowModal(true)
   }
 
@@ -183,6 +187,11 @@ export function ProductCard({ product, compact = false, pizzaFlavors = [] }: Pro
       {/* Pizza Modal */}
       {showPizza && (
         <PizzaOrderModal product={product} flavors={pizzaFlavors} onClose={() => setShowPizza(false)} />
+      )}
+
+      {/* Options Modal */}
+      {showOptions && (
+        <ProductOptionsModal product={product} onClose={() => setShowOptions(false)} />
       )}
     </>
   )

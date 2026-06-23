@@ -140,8 +140,11 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
       const title = item.pizza
         ? `Pizza ${item.pizza.sizeName} (${item.pizza.flavors.map(f => f.name).join(' / ')})`
         : item.product.name
-      const unit = item.pizza ? item.pizza.unitPrice : (item.product.promotional_price ?? item.product.price)
+      const base = item.pizza ? item.pizza.unitPrice : (item.product.promotional_price ?? item.product.price)
+      const addTotal = item.additionals.reduce((a, x) => a + x.price, 0)
+      const unit = base + addTotal
       msg += `▪ ${item.quantity}x ${title} — ${formatCurrency(unit * item.quantity)}\n`
+      for (const a of item.additionals) msg += `  + ${a.name}${a.price > 0 ? ` (${formatCurrency(a.price)})` : ''}\n`
       if (item.observations) msg += `  📝 _Obs: ${item.observations}_\n`
     })
     msg += '\n'
@@ -181,9 +184,13 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
         neighborhood: selectedArea?.name || (orderType === 'delivery' ? addressDistrict : null) || null,
         payment_method: payment,
         items: items.map(it => ({
-          name: it.pizza ? `Pizza ${it.pizza.sizeName} (${it.pizza.flavors.map(f => f.name).join(' / ')})` : it.product.name,
+          name: it.pizza
+            ? `Pizza ${it.pizza.sizeName} (${it.pizza.flavors.map(f => f.name).join(' / ')})`
+            : it.additionals.length > 0
+              ? `${it.product.name} (${it.additionals.map(a => a.name).join(', ')})`
+              : it.product.name,
           quantity: it.quantity,
-          price: it.pizza ? it.pizza.unitPrice : (it.product.promotional_price ?? it.product.price),
+          price: (it.pizza ? it.pizza.unitPrice : (it.product.promotional_price ?? it.product.price)) + it.additionals.reduce((a, x) => a + x.price, 0),
           observations: it.observations || null,
         })),
         subtotal: getSubtotal(),
@@ -255,9 +262,12 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
 
             {items.map(item => {
               const key = item.lineId ?? item.product.id
-              const unit = item.pizza ? item.pizza.unitPrice : (item.product.promotional_price ?? item.product.price)
+              const addTotal = item.additionals.reduce((a, x) => a + x.price, 0)
+              const unit = (item.pizza ? item.pizza.unitPrice : (item.product.promotional_price ?? item.product.price)) + addTotal
               const title = item.pizza ? `Pizza ${item.pizza.sizeName}` : item.product.name
-              const subtitle = item.pizza ? item.pizza.flavors.map(f => f.name).join(' / ') : null
+              const subtitle = item.pizza
+                ? item.pizza.flavors.map(f => f.name).join(' / ')
+                : item.additionals.length > 0 ? item.additionals.map(a => a.name).join(', ') : null
               return (
               <div key={key} className="flex items-center gap-3 rounded-xl border border-gray-200 p-3">
                 {item.product.image_url && (
@@ -265,7 +275,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-900 text-sm truncate">{title}</p>
-                  {subtitle && <p className="text-xs text-gray-500 truncate">{subtitle}</p>}
+                  {subtitle && <p className="text-xs text-gray-500 line-clamp-2">{subtitle}</p>}
                   {item.observations && (
                     <p className="text-xs text-orange-500 truncate">📝 {item.observations}</p>
                   )}

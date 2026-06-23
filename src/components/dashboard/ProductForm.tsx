@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Pizza, Lock } from 'lucide-react'
-import type { Product, Category, Additional, PizzaSize } from '@/types'
+import type { Product, Category, PizzaSize, OptionGroup } from '@/types'
 import { toast } from '@/components/ui/sonner'
 import { useBusiness } from '@/lib/hooks/useBusiness'
 import { hasProAccess } from '@/lib/plan'
@@ -36,7 +36,14 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
     sort_order: initialData?.sort_order ?? 0,
     business_id: initialData?.business_id ?? 'biz-001',
   })
-  const [additionals, setAdditionals] = useState<Partial<Additional>[]>(initialData?.additionals ?? [])
+  // Grupos de opções/adicionais
+  const [optionGroups, setOptionGroups] = useState<OptionGroup[]>(initialData?.option_groups ?? [])
+  const addGroup = () => setOptionGroups(p => [...p, { name: '', required: false, max: 1, options: [{ name: '', price: 0 }] }])
+  const removeGroup = (gi: number) => setOptionGroups(p => p.filter((_, i) => i !== gi))
+  const updGroup = (gi: number, field: keyof OptionGroup, value: unknown) => setOptionGroups(p => p.map((g, i) => i === gi ? { ...g, [field]: value } : g))
+  const addOption = (gi: number) => setOptionGroups(p => p.map((g, i) => i === gi ? { ...g, options: [...g.options, { name: '', price: 0 }] } : g))
+  const removeOption = (gi: number, oi: number) => setOptionGroups(p => p.map((g, i) => i === gi ? { ...g, options: g.options.filter((_, j) => j !== oi) } : g))
+  const updOption = (gi: number, oi: number, field: 'name' | 'price', value: string) => setOptionGroups(p => p.map((g, i) => i === gi ? { ...g, options: g.options.map((o, j) => j === oi ? { ...o, [field]: field === 'price' ? (parseFloat(value) || 0) : value } : o) } : g))
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { business } = useBusiness()
@@ -79,15 +86,6 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
     }
   }
 
-  function addAdditional() {
-    setAdditionals(prev => [...prev, { name: '', price: 0, is_required: false, max_qty: 1 }])
-  }
-  function removeAdditional(idx: number) {
-    setAdditionals(prev => prev.filter((_, i) => i !== idx))
-  }
-  function updateAdditional(idx: number, field: string, value: unknown) {
-    setAdditionals(prev => prev.map((a, i) => i === idx ? { ...a, [field]: value } : a))
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -112,20 +110,22 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
     const pizzaField = isPizza
       ? { pizza: { sizes: cleanSizes, maxFlavors } }
       : (initialData?.pizza ? { pizza: null } : {})
+    // Limpa grupos/opções vazios; pizza não usa opções
+    const cleanGroups = isPizza ? [] : optionGroups
+      .map(g => ({ ...g, options: g.options.filter(o => o.name.trim()) }))
+      .filter(g => g.name.trim() && g.options.length > 0)
+    // Só envia option_groups quando há algo ou quando precisa limpar (evita erro se a coluna não existir)
+    const optionsField = cleanGroups.length > 0
+      ? { option_groups: cleanGroups }
+      : (initialData?.option_groups ? { option_groups: null } : {})
     setLoading(true)
     const result = await onSave({
       ...form,
       price: basePrice,
       promotional_price: !isPizza && form.promotional_price ? parseFloat(form.promotional_price) : undefined,
       ...pizzaField,
-      additionals: isPizza ? [] : additionals.map((a, i) => ({
-        id: `add-new-${i}`,
-        product_id: initialData?.id ?? '',
-        name: a.name ?? '',
-        price: Number(a.price) || 0,
-        is_required: a.is_required ?? false,
-        max_qty: a.max_qty ?? 1,
-      })),
+      ...optionsField,
+      additionals: [],
     })
     setLoading(false)
     if (!result) {
@@ -231,23 +231,52 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
             )}
           </div>
 
-          {/* Additionals */}
+          {/* Adicionais e opções */}
           {!isPizza && (
           <div className="rounded-xl border border-gray-200 bg-white p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">Adicionais</h2>
-              <button type="button" onClick={addAdditional} className="flex items-center gap-1.5 text-sm text-orange-500 hover:text-orange-600">
-                <Plus className="h-4 w-4" /> Adicionar
+              <h2 className="font-semibold text-gray-900">Adicionais e opções</h2>
+              <button type="button" onClick={addGroup} className="flex items-center gap-1.5 text-sm text-orange-500 hover:text-orange-600">
+                <Plus className="h-4 w-4" /> Novo grupo
               </button>
             </div>
-            {additionals.length === 0 && <p className="text-sm text-gray-400">Nenhum adicional cadastrado</p>}
-            {additionals.map((add, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <Input placeholder="Nome" value={add.name ?? ''} onChange={e => updateAdditional(i, 'name', e.target.value)} className="flex-1" />
-                <Input type="number" placeholder="R$" step="0.01" value={add.price ?? ''} onChange={e => updateAdditional(i, 'price', e.target.value)} className="w-24" />
-                <button type="button" onClick={() => removeAdditional(i)} className="text-gray-400 hover:text-red-500">
-                  <Trash2 className="h-4 w-4" />
-                </button>
+            <p className="text-sm text-gray-500">Crie grupos como &quot;Ponto da carne&quot; (obrigatório, 1 opção) ou &quot;Adicionais&quot; (opcional, várias).</p>
+            {optionGroups.length === 0 && <p className="text-sm text-gray-400">Nenhum grupo cadastrado.</p>}
+            {optionGroups.map((g, gi) => (
+              <div key={gi} className="rounded-lg border border-gray-200 p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Input placeholder="Nome do grupo (ex: Adicionais)" value={g.name} onChange={e => updGroup(gi, 'name', e.target.value)} className="flex-1" />
+                  <button type="button" onClick={() => removeGroup(gi)} className="rounded-md p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 shrink-0">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="flex flex-wrap items-center gap-4">
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" checked={g.required} onChange={e => updGroup(gi, 'required', e.target.checked)} className="h-4 w-4 accent-orange-500" />
+                    Obrigatório
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    Máx. de escolhas
+                    <Input type="number" min="1" value={g.max} onChange={e => updGroup(gi, 'max', Math.max(1, parseInt(e.target.value) || 1))} className="w-20" />
+                  </label>
+                </div>
+                <div className="space-y-2">
+                  {g.options.map((o, oi) => (
+                    <div key={oi} className="flex items-center gap-2">
+                      <Input placeholder="Opção (ex: Bacon)" value={o.name} onChange={e => updOption(gi, oi, 'name', e.target.value)} className="flex-1" />
+                      <div className="flex items-center gap-1 w-28 shrink-0">
+                        <span className="text-sm text-gray-400">R$</span>
+                        <Input type="number" step="0.01" min="0" placeholder="0,00" value={o.price || ''} onChange={e => updOption(gi, oi, 'price', e.target.value)} />
+                      </div>
+                      <button type="button" onClick={() => removeOption(gi, oi)} className="text-gray-400 hover:text-red-500 shrink-0">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button type="button" onClick={() => addOption(gi)} className="flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-600">
+                    <Plus className="h-4 w-4" /> Adicionar opção
+                  </button>
+                </div>
               </div>
             ))}
           </div>

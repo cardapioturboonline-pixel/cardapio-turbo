@@ -12,6 +12,7 @@ interface CartStore {
   couponCode: string | null
   couponDiscount: number
   addItem: (product: Product, additionals?: Additional[], observations?: string) => void
+  addConfiguredItem: (product: Product, additionals: Additional[], observations: string | undefined, quantity: number) => void
   addPizzaItem: (product: Product, pizza: PizzaSelection, observations?: string) => void
   removeItem: (key: string) => void
   updateQuantity: (key: string, quantity: number) => void
@@ -48,6 +49,13 @@ export const useCartStore = create<CartStore>()(
             items: [...state.items, { product, quantity: 1, additionals, observations }]
           }
         })
+      },
+
+      addConfiguredItem: (product, additionals, observations, quantity) => {
+        const lineId = `opt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+        set((state) => ({
+          items: [...state.items, { product, quantity: Math.max(1, quantity), additionals, observations, lineId }]
+        }))
       },
 
       addPizzaItem: (product, pizza, observations) => {

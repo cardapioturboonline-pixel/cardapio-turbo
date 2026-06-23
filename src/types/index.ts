@@ -133,8 +133,22 @@ export interface Product {
   orders: number
   additionals?: Additional[]
   pizza?: PizzaConfig | null
+  option_groups?: OptionGroup[] | null
   created_at: string
   updated_at: string
+}
+
+// Grupos de opções/adicionais de um produto (ex.: "Ponto da carne", "Adicionais").
+// required = precisa escolher; max = quantas opções o cliente pode marcar (1 = escolha única).
+export interface OptionItem {
+  name: string
+  price: number
+}
+export interface OptionGroup {
+  name: string
+  required: boolean
+  max: number
+  options: OptionItem[]
 }
 
 // Configuração de pizza (modo pizzaria, Pro). Cada sabor (produto) guarda
