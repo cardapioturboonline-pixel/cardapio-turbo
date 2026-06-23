@@ -15,7 +15,10 @@ export function WinbackButton({ count }: { count: number }) {
       const res = await fetch('/api/admin/winback', { method: 'POST' })
       const json = await res.json()
       if (!res.ok) { toast.error(json.error || 'Erro ao enviar'); return }
-      toast.success(`E-mails enviados: ${json.sent} de ${json.targets}${json.failed ? ` (${json.failed} falharam)` : ''}`)
+      const parts = [`E-mails enviados: ${json.sent}`]
+      if (json.skipped) parts.push(`${json.skipped} em cooldown (enviado há menos de ${json.cooldownDays} dias)`)
+      if (json.failed) parts.push(`${json.failed} falharam`)
+      toast.success(parts.join(' · '))
     } catch {
       toast.error('Erro ao enviar os e-mails. Tente novamente.')
     } finally {
