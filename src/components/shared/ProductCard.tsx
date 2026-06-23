@@ -43,9 +43,19 @@ export function ProductCard({ product, compact = false, pizzaFlavors = [] }: Pro
 
   const price = product.promotional_price ?? product.price
 
+  // Para produtos montáveis com grupos obrigatórios (ex.: açaí com tamanho),
+  // o preço inicial é a base + o menor preço de cada grupo obrigatório.
+  const requiredMin = (product.option_groups ?? [])
+    .filter(g => g.required && g.options.length > 0)
+    .reduce((s, g) => s + Math.min(...g.options.map(o => Number(o.price) || 0)), 0)
+  const hasRequiredGroup = !!product.option_groups?.some(g => g.required && g.options.length > 0)
+  const fromPrice = (product.promotional_price ?? product.price) + requiredMin
+
   const priceBlock = (
     isPizza ? (
       <span className="text-base font-bold text-[var(--text)]">a partir de <span className="text-[var(--brand)]">{formatCurrency(product.price)}</span></span>
+    ) : hasRequiredGroup ? (
+      <span className="text-base font-bold text-[var(--text)]">a partir de <span className="text-[var(--brand)]">{formatCurrency(fromPrice)}</span></span>
     ) : product.promotional_price ? (
       <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0">
         <span className="text-lg font-bold text-[var(--brand)]">{formatCurrency(product.promotional_price)}</span>
