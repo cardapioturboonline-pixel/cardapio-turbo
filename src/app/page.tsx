@@ -2,21 +2,133 @@ import Link from "next/link";
 import {
   QrCode, Smartphone, Zap, TrendingUp, Star, CheckCircle2,
   ArrowRight, MessageCircle, ShoppingCart, BarChart3, Sparkles,
-  Clock, MapPin, CreditCard, Palette, Package, Users, Bell, Bike, Gift, X as XIcon
+  Clock, MapPin, CreditCard, Palette, Package, Users, Bell, Bike, Gift, X as XIcon,
+  Pizza, ListPlus, Plus, Ticket
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const features = [
-  { icon: QrCode, title: "QR Code Profissional", desc: "Gere e baixe QR Codes personalizados com a logo da sua marca" },
-  { icon: MessageCircle, title: "Pedido via WhatsApp", desc: "Carrinho inteligente que monta o pedido e envia direto pro seu WhatsApp" },
-  { icon: Bell, title: "Painel de Pedidos ao Vivo", desc: "Receba e gerencie os pedidos em tempo real, com aviso sonoro a cada novo pedido" },
-  { icon: Bike, title: "Frete por Bairro", desc: "Cadastre as taxas e o cliente vê o valor da entrega automaticamente no carrinho" },
-  { icon: Gift, title: "Programa de Fidelidade", desc: "Cartão fidelidade digital: a cada X pedidos, seu cliente ganha um brinde e volta mais" },
-  { icon: Star, title: "Avaliações dos Clientes", desc: "Receba estrelas e comentários — prova social que atrai novos clientes" },
-  { icon: Palette, title: "Personalização Total", desc: "Cores, fontes, temas e layout da sua marca em minutos" },
-  { icon: TrendingUp, title: "Cupons e Relatórios", desc: "Crie cupons de desconto e acompanhe vendas, faturamento e ticket médio" },
-  { icon: Smartphone, title: "100% Mobile First", desc: "Design responsivo otimizado para celular, onde seus clientes estão" },
+  {
+    icon: MessageCircle, title: "Pedido via WhatsApp", pro: false,
+    desc: "O cliente monta o pedido e ele chega prontinho no seu WhatsApp.",
+    steps: [
+      "O cliente navega pelo seu cardápio e adiciona os itens ao carrinho.",
+      "Escolhe entrega ou retirada e a forma de pagamento.",
+      "Ao finalizar, o pedido chega no seu WhatsApp já formatado, com itens, observações, endereço e total.",
+      "Você confirma e prepara, sem erro de anotação e sem comissão de aplicativo.",
+    ],
+  },
+  {
+    icon: Pizza, title: "Modo Pizzaria (meio a meio)", pro: true,
+    desc: "Pizza meio a meio com o preço calculado automaticamente.",
+    steps: [
+      "Crie uma categoria Pizzas e cadastre cada sabor.",
+      "No produto, ative o Modo Pizza e informe os tamanhos com preço (ex.: Broto, Grande).",
+      "Escolha permitir meio a meio (2 sabores).",
+      "No cardápio, o cliente monta a pizza e o preço sai automático, pela média dos dois sabores.",
+    ],
+  },
+  {
+    icon: ListPlus, title: "Adicionais e Opções", pro: false,
+    desc: "Açaí montável, ponto da carne, marmita e muito mais.",
+    steps: [
+      "No produto, abra Adicionais e opções e crie grupos (ex.: Tamanho, Adicionais).",
+      "Defina se o grupo é obrigatório e quantas opções o cliente pode escolher.",
+      "Adicione as opções com preço (ex.: bacon +R$4, açaí 500ml R$20, leite condensado +R$3).",
+      "O cliente monta o produto do jeito dele e o preço soma sozinho.",
+    ],
+  },
+  {
+    icon: Bell, title: "Painel de Pedidos ao Vivo", pro: true,
+    desc: "Receba e gerencie os pedidos em tempo real, com aviso sonoro.",
+    steps: [
+      "Abra a aba Pedidos no seu painel.",
+      "Cada novo pedido aparece na hora, com aviso sonoro.",
+      "Mova o pedido pelos status: recebido, em preparo, saiu para entrega, concluído.",
+      "Acompanhe tudo organizado, mesmo nos horários de pico.",
+    ],
+  },
+  {
+    icon: Bike, title: "Frete por Bairro", pro: true,
+    desc: "Cadastre as taxas e o cliente vê a entrega calculada sozinha.",
+    steps: [
+      "Vá em Configurações e abra a área de entrega.",
+      "Cadastre cada bairro que você atende e a taxa de cada um.",
+      "Adicione também a opção de retirada no local.",
+      "No carrinho, o cliente vê o frete calculado automaticamente pela região.",
+    ],
+  },
+  {
+    icon: Ticket, title: "Cupons de Desconto", pro: true,
+    desc: "Crie promoções e atraia mais pedidos.",
+    steps: [
+      "Acesse a aba Promoções.",
+      "Crie um cupom com um código fácil (ex.: BEMVINDO10).",
+      "Escolha desconto percentual ou valor fixo e o pedido mínimo.",
+      "Divulgue o código; o cliente aplica na hora de fechar o pedido.",
+    ],
+  },
+  {
+    icon: Gift, title: "Programa de Fidelidade", pro: true,
+    desc: "A cada X pedidos, seu cliente ganha um brinde e volta mais.",
+    steps: [
+      "Ative a fidelidade em Configurações.",
+      "Defina a meta (ex.: a cada 10 pedidos) e o prêmio.",
+      "O cliente acompanha o progresso no próprio cardápio.",
+      "Ao bater a meta, ele ganha o brinde e cria o hábito de pedir de você.",
+    ],
+  },
+  {
+    icon: Palette, title: "Personalização Total", pro: false,
+    desc: "Cores, fontes, tema e layout com a cara da sua marca.",
+    steps: [
+      "Vá em Personalizar no painel.",
+      "Escolha a cor principal, a fonte e o tema (claro ou escuro).",
+      "Selecione o layout (compacto ou premium) e adicione a logo.",
+      "O cardápio fica com a identidade da sua marca na hora.",
+    ],
+  },
+  {
+    icon: QrCode, title: "QR Code Profissional", pro: false,
+    desc: "Gere e baixe QR Codes com a logo da sua marca.",
+    steps: [
+      "Acesse o menu QR Code no painel.",
+      "Personalize com a sua logo e a cor do seu negócio.",
+      "Baixe e imprima para colar na mesa, no balcão e na vitrine.",
+      "O cliente escaneia e abre seu cardápio na hora.",
+    ],
+  },
+  {
+    icon: BarChart3, title: "Relatórios de Vendas", pro: true,
+    desc: "Acompanhe faturamento, ticket médio e os mais vendidos.",
+    steps: [
+      "Acesse Relatórios no dashboard.",
+      "Veja os produtos mais vendidos e as visualizações do cardápio.",
+      "Acompanhe o faturamento e o ticket médio.",
+      "Use os dados para decidir o que destacar e quais combos criar.",
+    ],
+  },
+  {
+    icon: Star, title: "Avaliações dos Clientes", pro: true,
+    desc: "Estrelas e comentários que atraem novos clientes.",
+    steps: [
+      "Ative as avaliações no seu cardápio.",
+      "Os clientes deixam estrelas e comentários após o pedido.",
+      "As melhores avaliações aparecem no seu cardápio.",
+      "A prova social aumenta a confiança de quem está decidindo onde pedir.",
+    ],
+  },
+  {
+    icon: Smartphone, title: "100% Mobile First", pro: false,
+    desc: "Otimizado para o celular, onde seus clientes estão.",
+    steps: [
+      "Tudo funciona pelo celular, tanto pra você quanto pro cliente.",
+      "O cardápio carrega rápido e é fácil de navegar no telefone.",
+      "Você gerencia produtos e pedidos do próprio celular.",
+      "O cliente pede em poucos toques, sem instalar nada.",
+    ],
+  },
 ];
 
 const steps = [
@@ -301,15 +413,35 @@ export default function LandingPage() {
               Da criação do cardápio até a análise de desempenho, o Cardápio Turbo tem tudo em um lugar só.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <p className="text-center text-sm text-gray-400 mb-8">Toque em cada recurso para ver o passo a passo de como usar.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
             {features.map((f, i) => (
-              <div key={i} className="group p-6 rounded-2xl border border-gray-100 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-50 transition-all">
-                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-orange-500 transition-colors">
-                  <f.icon className="w-6 h-6 text-orange-500 group-hover:text-white transition-colors" />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-2">{f.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
-              </div>
+              <details key={i} className="group rounded-2xl border border-gray-100 open:border-orange-200 open:shadow-lg open:shadow-orange-50 hover:border-orange-200 transition-all">
+                <summary className="flex cursor-pointer list-none items-start gap-4 p-6">
+                  <div className="w-12 h-12 shrink-0 bg-orange-100 rounded-xl flex items-center justify-center group-open:bg-orange-500 transition-colors">
+                    <f.icon className="w-6 h-6 text-orange-500 group-open:text-white transition-colors" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-bold text-gray-900">{f.title}</h3>
+                      {f.pro && <span className="rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-600">PRO</span>}
+                    </div>
+                    <p className="text-gray-500 text-sm leading-relaxed mt-1">{f.desc}</p>
+                    <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-orange-500">
+                      Ver passo a passo
+                      <Plus className="w-3.5 h-3.5 transition-transform group-open:rotate-45" />
+                    </span>
+                  </div>
+                </summary>
+                <ol className="px-6 pb-6 pl-[5.5rem] space-y-3">
+                  {f.steps.map((s, j) => (
+                    <li key={j} className="flex gap-3 text-sm text-gray-600 leading-relaxed">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-100 text-[11px] font-bold text-orange-600">{j + 1}</span>
+                      {s}
+                    </li>
+                  ))}
+                </ol>
+              </details>
             ))}
           </div>
         </div>
