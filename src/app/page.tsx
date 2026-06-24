@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 
 const features = [
   {
-    icon: MessageCircle, title: "Pedido via WhatsApp", pro: false,
+    icon: MessageCircle, title: "Pedido via WhatsApp", pro: false, img: "/funcionalidades/cardapio.png",
     desc: "O cliente monta o pedido e ele chega prontinho no seu WhatsApp.",
     steps: [
       "O cliente navega pelo seu cardápio e adiciona os itens ao carrinho.",
@@ -20,7 +20,7 @@ const features = [
     ],
   },
   {
-    icon: Pizza, title: "Modo Pizzaria (meio a meio)", pro: true,
+    icon: Pizza, title: "Modo Pizzaria (meio a meio)", pro: true, img: "/funcionalidades/pizza.png",
     desc: "Pizza meio a meio com o preço calculado automaticamente.",
     steps: [
       "Crie uma categoria Pizzas e cadastre cada sabor.",
@@ -30,7 +30,7 @@ const features = [
     ],
   },
   {
-    icon: ListPlus, title: "Adicionais e Opções", pro: false,
+    icon: ListPlus, title: "Adicionais e Opções", pro: false, img: "/funcionalidades/adicionais.png",
     desc: "Açaí montável, ponto da carne, marmita e muito mais.",
     steps: [
       "No produto, abra Adicionais e opções e crie grupos (ex.: Tamanho, Adicionais).",
@@ -40,7 +40,7 @@ const features = [
     ],
   },
   {
-    icon: Bell, title: "Painel de Pedidos ao Vivo", pro: true,
+    icon: Bell, title: "Painel de Pedidos ao Vivo", pro: true, img: "/funcionalidades/painel.png",
     desc: "Receba e gerencie os pedidos em tempo real, com aviso sonoro.",
     steps: [
       "Abra a aba Pedidos no seu painel.",
@@ -80,7 +80,7 @@ const features = [
     ],
   },
   {
-    icon: Palette, title: "Personalização Total", pro: false,
+    icon: Palette, title: "Personalização Total", pro: false, img: "/funcionalidades/personalizar.png",
     desc: "Cores, fontes, tema e layout com a cara da sua marca.",
     steps: [
       "Vá em Personalizar no painel.",
@@ -433,14 +433,20 @@ export default function LandingPage() {
                     </span>
                   </div>
                 </summary>
-                <ol className="px-6 pb-6 pl-[5.5rem] space-y-3">
-                  {f.steps.map((s, j) => (
-                    <li key={j} className="flex gap-3 text-sm text-gray-600 leading-relaxed">
-                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-100 text-[11px] font-bold text-orange-600">{j + 1}</span>
-                      {s}
-                    </li>
-                  ))}
-                </ol>
+                <div className="px-6 pb-6 flex flex-col sm:flex-row gap-5 items-start">
+                  <ol className="flex-1 space-y-3 order-2 sm:order-1">
+                    {f.steps.map((s, j) => (
+                      <li key={j} className="flex gap-3 text-sm text-gray-600 leading-relaxed">
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-100 text-[11px] font-bold text-orange-600">{j + 1}</span>
+                        {s}
+                      </li>
+                    ))}
+                  </ol>
+                  {f.img && (
+                    <img src={f.img} alt={`Tela: ${f.title}`} loading="lazy"
+                      className="order-1 sm:order-2 w-32 sm:w-40 shrink-0 mx-auto drop-shadow-xl" />
+                  )}
+                </div>
               </details>
             ))}
           </div>
