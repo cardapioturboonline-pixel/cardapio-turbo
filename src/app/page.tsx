@@ -443,8 +443,8 @@ export default function LandingPage() {
                     ))}
                   </ol>
                   {f.img && (
-                    <img src={f.img} alt={`Tela: ${f.title}`} loading="lazy"
-                      className="order-1 sm:order-2 w-32 sm:w-40 shrink-0 mx-auto drop-shadow-xl" />
+                    <img src={f.img} alt={`Tela do app: ${f.title}`}
+                      className="order-1 sm:order-2 w-36 sm:w-44 shrink-0 mx-auto rounded-2xl drop-shadow-xl" />
                   )}
                 </div>
               </details>
