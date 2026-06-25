@@ -50,7 +50,7 @@ const features = [
     ],
   },
   {
-    icon: Bike, title: "Frete por Bairro", pro: true,
+    icon: Bike, title: "Frete por Bairro", pro: true, img: "/funcionalidades/frete.png",
     desc: "Cadastre as taxas e o cliente vê a entrega calculada sozinha.",
     steps: [
       "Vá em Configurações e abra a área de entrega.",
@@ -60,7 +60,7 @@ const features = [
     ],
   },
   {
-    icon: Ticket, title: "Cupons de Desconto", pro: true,
+    icon: Ticket, title: "Cupons de Desconto", pro: true, img: "/funcionalidades/cupom.png",
     desc: "Crie promoções e atraia mais pedidos.",
     steps: [
       "Acesse a aba Promoções.",
@@ -70,7 +70,7 @@ const features = [
     ],
   },
   {
-    icon: Gift, title: "Programa de Fidelidade", pro: true,
+    icon: Gift, title: "Programa de Fidelidade", pro: true, img: "/funcionalidades/fidelidade.png",
     desc: "A cada X pedidos, seu cliente ganha um brinde e volta mais.",
     steps: [
       "Ative a fidelidade em Configurações.",
@@ -90,7 +90,7 @@ const features = [
     ],
   },
   {
-    icon: QrCode, title: "QR Code Profissional", pro: false,
+    icon: QrCode, title: "QR Code Profissional", pro: false, img: "/funcionalidades/qrcode.png",
     desc: "Gere e baixe QR Codes com a logo da sua marca.",
     steps: [
       "Acesse o menu QR Code no painel.",
@@ -100,7 +100,7 @@ const features = [
     ],
   },
   {
-    icon: BarChart3, title: "Relatórios de Vendas", pro: true,
+    icon: BarChart3, title: "Relatórios de Vendas", pro: true, img: "/funcionalidades/relatorios.png",
     desc: "Acompanhe faturamento, ticket médio e os mais vendidos.",
     steps: [
       "Acesse Relatórios no dashboard.",
