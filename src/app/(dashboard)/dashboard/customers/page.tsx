@@ -8,34 +8,10 @@ import { useBusiness } from '@/lib/hooks/useBusiness'
 import { hasProAccess } from '@/lib/plan'
 import { formatCurrency } from '@/lib/utils/format'
 import type { Customer } from '@/types'
+import { DAY, TAG_META, tagsFor, daysSinceLast, waLink, type Tag } from '@/lib/customers'
 
-const DAY = 24 * 60 * 60 * 1000
-
-type Tag = 'novo' | 'recorrente' | 'vip' | 'sumido'
-
-const TAG_META: Record<Tag, { label: string; cls: string }> = {
-  vip: { label: 'VIP', cls: 'bg-amber-100 text-amber-700' },
-  recorrente: { label: 'Recorrente', cls: 'bg-blue-100 text-blue-700' },
-  novo: { label: 'Novo', cls: 'bg-green-100 text-green-700' },
-  sumido: { label: 'Sumido', cls: 'bg-red-100 text-red-600' },
-}
-
-// Calcula as tags do cliente a partir das metricas (sem cron).
-function tagsFor(c: Customer): Tag[] {
-  const tags: Tag[] = []
-  const daysSince = (Date.now() - new Date(c.last_order_at).getTime()) / DAY
-  if (c.total_spent >= 200 || c.orders_count >= 5) tags.push('vip')
-  if (c.orders_count >= 2) tags.push('recorrente')
-  else tags.push('novo')
-  if (daysSince >= 30) tags.push('sumido')
-  return tags
-}
-
-function waLink(phone: string, name?: string) {
-  const digits = phone.replace(/\D/g, '')
-  const num = digits.startsWith('55') ? digits : `55${digits}`
-  const msg = encodeURIComponent(`Oi${name ? ' ' + name.split(' ')[0] : ''}! Tudo bem? Aqui é do nosso delivery 😊`)
-  return `https://wa.me/${num}?text=${msg}`
+function greetWa(phone: string, name?: string) {
+  return waLink(phone, `Oi${name ? ' ' + name.split(' ')[0] : ''}! Tudo bem? Aqui é do nosso delivery 😊`)
 }
 
 export default function CustomersPage() {
@@ -167,7 +143,7 @@ export default function CustomersPage() {
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
           {filtered.map((c, i) => {
             const tags = tagsFor(c)
-            const daysSince = Math.floor((Date.now() - new Date(c.last_order_at).getTime()) / DAY)
+            const daysSince = daysSinceLast(c)
             return (
               <div key={c.id} className={`flex items-center gap-3 p-4 ${i > 0 ? 'border-t border-gray-100' : ''}`}>
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600 font-semibold">
@@ -186,7 +162,7 @@ export default function CustomersPage() {
                     {c.orders_count} pedido{c.orders_count !== 1 ? 's' : ''} · {formatCurrency(c.total_spent)} · {daysSince === 0 ? 'pediu hoje' : `há ${daysSince}d`}
                   </p>
                 </div>
-                <a href={waLink(c.phone, c.name)} target="_blank" rel="noopener noreferrer"
+                <a href={greetWa(c.phone, c.name)} target="_blank" rel="noopener noreferrer"
                   className="shrink-0 flex items-center gap-1.5 rounded-lg bg-green-500 px-3 py-2 text-xs font-semibold text-white hover:bg-green-600">
                   <MessageCircle className="h-4 w-4" /> <span className="hidden sm:inline">WhatsApp</span>
                 </a>
