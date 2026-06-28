@@ -2,10 +2,11 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
-import { Megaphone, MessageCircle, Check, Ticket, Sparkles, Users } from 'lucide-react'
+import { Megaphone, MessageCircle, Check, Ticket, Sparkles, Users, Wand2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useBusiness } from '@/lib/hooks/useBusiness'
 import { hasProAccess } from '@/lib/plan'
+import { toast } from '@/components/ui/sonner'
 import type { Customer, Coupon } from '@/types'
 import { tagsFor, waLink, renderMessage, type Tag } from '@/lib/customers'
 
@@ -36,6 +37,35 @@ export default function CampaignsPage() {
   const [coupon, setCoupon] = useState('')
   const [message, setMessage] = useState(TEMPLATES[0].text)
   const [sent, setSent] = useState<Set<string>>(new Set())
+  const [aiObjective, setAiObjective] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
+
+  async function generateWithAI() {
+    setAiLoading(true)
+    try {
+      const res = await fetch('/api/ai/campaign', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          segment: seg,
+          objective: aiObjective,
+          businessName: business?.name,
+          hasCoupon: !!coupon,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(data?.error === 'IA nao configurada' ? 'IA ainda não configurada (falta a chave)' : 'Não consegui gerar agora, tente de novo')
+        return
+      }
+      setMessage(data.message)
+      toast.success('✨ Mensagem gerada pela IA!')
+    } catch {
+      toast.error('Erro de conexão')
+    } finally {
+      setAiLoading(false)
+    }
+  }
 
   const load = useCallback(async () => {
     if (!business?.id) return
@@ -131,6 +161,18 @@ export default function CampaignsPage() {
           {/* 3. Mensagem */}
           <div className="rounded-xl border border-gray-200 bg-white p-4">
             <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2"><Sparkles className="h-4 w-4 text-orange-500" /> 3. Mensagem</h3>
+
+            {/* Escrever com IA */}
+            <div className="mb-3 rounded-lg border border-purple-200 bg-purple-50 p-3">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-purple-700 mb-2"><Wand2 className="h-3.5 w-3.5" /> Escrever com IA</div>
+              <input value={aiObjective} onChange={e => setAiObjective(e.target.value)} placeholder="Objetivo (opcional). Ex.: divulgar a pizza nova de sexta"
+                className="w-full rounded-lg border border-purple-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 mb-2" />
+              <button onClick={generateWithAI} disabled={aiLoading}
+                className="w-full flex items-center justify-center gap-2 rounded-lg bg-purple-600 px-3 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-60">
+                {aiLoading ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> Gerando...</> : <><Wand2 className="h-4 w-4" /> Gerar mensagem para "{SEGMENTS.find(s => s.id === seg)?.label}"</>}
+              </button>
+            </div>
+
             <div className="flex gap-1.5 flex-wrap mb-2">
               {TEMPLATES.map(t => (
                 <button key={t.id} onClick={() => setMessage(t.text)}
