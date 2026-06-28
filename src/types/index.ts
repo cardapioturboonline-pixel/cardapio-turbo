@@ -52,6 +52,21 @@ export interface Order {
   created_at: string
 }
 
+export interface Customer {
+  id: string
+  business_id: string
+  name?: string
+  phone: string
+  birthday?: string
+  first_order_at: string
+  last_order_at: string
+  orders_count: number
+  total_spent: number
+  tags?: string[]
+  notes?: string
+  created_at: string
+}
+
 export interface Business {
   id: string
   user_id: string

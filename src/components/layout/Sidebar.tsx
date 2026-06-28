@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, Package, Tag, Megaphone, Palette,
   QrCode, BarChart3, CreditCard, Settings, LogOut,
-  ChefHat, X, FileText, Bell, Crown
+  ChefHat, X, FileText, Bell, Crown, Users
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -17,6 +17,7 @@ import { isAdminEmail } from '@/lib/admin'
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/dashboard/orders', icon: Bell, label: 'Pedidos' },
+  { href: '/dashboard/customers', icon: Users, label: 'Clientes' },
   { href: '/dashboard/products', icon: Package, label: 'Produtos' },
   { href: '/dashboard/categories', icon: Tag, label: 'Categorias' },
   { href: '/dashboard/promotions', icon: Megaphone, label: 'Promoções' },
