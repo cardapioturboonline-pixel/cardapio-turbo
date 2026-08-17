@@ -307,14 +307,14 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmOTczMTYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0ibTM2IDM0di00aC0ydi00aC0ydjRoLTJ2NGgydi00aDJ2NEgzNnptMC0zMFYwaDR2MmgydjJoMlYyaDJ2LTJoNFYwaDJ2Mmg0di0yaDJWMGg0djRoLTJ2MmgtMlYyaC00djJoLTJWMmgtNHYyaC0yVjJoLTR2MmgtMlYwSDM2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-40" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
           <Badge className="mb-6 bg-orange-100 text-orange-600 hover:bg-orange-100 border-orange-200">
-            🚀 Mais de 500 lanchonetes já usam
+            🚀 Delivery próprio, sem comissão
           </Badge>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
-            Cardápio digital profissional{" "}
-            <span className="text-orange-500">em menos de 5 minutos</span>
+            O delivery é seu.{" "}
+            <span className="text-orange-500">Não do aplicativo.</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
-            Crie seu cardápio online com link próprio e QR Code. Seus clientes fazem pedidos direto pelo WhatsApp — sem aplicativo, sem complicação.
+            Cardápio digital com link próprio e QR Code. Seus clientes pedem direto no seu WhatsApp — sem comissão, sem intermediário e com a base de clientes 100% sua.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
@@ -384,20 +384,30 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="py-12 bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
-          {[
-            { value: "5 min", label: "para criar o cardápio" },
-            { value: "3x", label: "mais pedidos com foto" },
-            { value: "40%", label: "mais ticket com combos" },
-            { value: "7 dias", label: "grátis para testar tudo" },
-          ].map((stat, i) => (
-            <div key={i}>
-              <div className="text-3xl font-extrabold text-orange-400">{stat.value}</div>
-              <div className="text-sm text-gray-400 mt-1">{stat.label}</div>
-            </div>
-          ))}
+      {/* Pilares */}
+      <section className="py-20 bg-gray-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-extrabold mb-3">Muito além de um cardápio</h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Um sistema completo pra você vender mais, fidelizar e entender o seu negócio — tudo sem depender de aplicativo.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: TrendingUp, title: "Venda mais", desc: "Pedidos direto no seu WhatsApp, com combos, adicionais e frete por bairro calculado automático. Sem comissão comendo o seu lucro." },
+              { icon: Gift, title: "Fidelize e traga de volta", desc: "Programa de fidelidade, cupons de desconto e campanhas para reativar quem sumiu. O cliente volta a pedir de você." },
+              { icon: BarChart3, title: "Analise cada detalhe", desc: "Acompanhe faturamento, ticket médio, mais vendidos e a sua base de clientes. Decisões com dado, não no achismo." },
+            ].map((p, i) => (
+              <div key={i} className="rounded-2xl bg-gray-800/60 border border-gray-700 p-7">
+                <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center mb-4">
+                  <p.icon className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="font-bold text-xl mb-2">{p.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{p.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -407,10 +417,10 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <Badge className="mb-4 bg-orange-100 text-orange-600 hover:bg-orange-100">Funcionalidades</Badge>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
-              Tudo que seu negócio precisa
+              Tudo pra rodar o seu delivery
             </h2>
             <p className="text-lg text-gray-500 max-w-xl mx-auto">
-              Da criação do cardápio até a análise de desempenho, o Cardápio Turbo tem tudo em um lugar só.
+              Do cardápio à recompra do cliente, o Cardápio Turbo tem tudo num lugar só — sem depender de aplicativo.
             </p>
           </div>
           <p className="text-center text-sm text-gray-400 mb-8">Toque em cada recurso para ver o passo a passo de como usar.</p>
@@ -562,14 +572,42 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Diferenciais */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-orange-100 text-orange-600 hover:bg-orange-100">Por que o Cardápio Turbo</Badge>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
+              O que muda quando o delivery é seu
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: CreditCard, title: "Zero comissão", desc: "Você não paga por pedido. Diferente dos apps, o lucro de cada venda fica inteiro com você." },
+              { icon: Users, title: "O cliente é seu", desc: "Nome, WhatsApp e histórico de compras numa base que é sua — não do aplicativo." },
+              { icon: Smartphone, title: "Sem app pra instalar", desc: "O cliente pede pelo link ou QR Code, em poucos toques, direto do navegador." },
+              { icon: Palette, title: "Com a sua marca", desc: "Cores, logo e tema com a identidade do seu negócio, não a de um marketplace." },
+            ].map((d, i) => (
+              <div key={i} className="rounded-2xl border border-gray-100 p-6 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-50 transition-all">
+                <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center mb-4">
+                  <d.icon className="w-6 h-6 text-orange-500" />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">{d.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{d.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Final */}
       <section className="py-24 bg-gradient-to-r from-orange-500 to-orange-600">
         <div className="max-w-4xl mx-auto text-center px-4">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-            Pronto para vender mais?
+            Pronto para ter o SEU delivery?
           </h2>
           <p className="text-orange-100 text-lg mb-8">
-            Crie seu cardápio digital agora e comece a receber pedidos pelo WhatsApp hoje mesmo.
+            Monte seu cardápio digital agora e comece a receber pedidos no seu WhatsApp hoje mesmo — sem comissão.
           </p>
           <Link href="/register">
             <Button size="lg" className="bg-white text-orange-500 hover:bg-orange-50 px-10 py-6 text-lg rounded-xl font-bold shadow-xl">
