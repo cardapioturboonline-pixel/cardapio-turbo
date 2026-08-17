@@ -372,6 +372,50 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Veja funcionando */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div>
+              <Badge className="mb-4 bg-orange-100 text-orange-600 hover:bg-orange-100">Veja funcionando</Badge>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
+                É assim que seu cliente pede
+              </h2>
+              <p className="text-lg text-gray-500 mb-6">
+                Uma gravação real do cardápio no ar: o cliente abre, navega pelos produtos com foto, escolhe e o pedido vai direto pro seu WhatsApp. Sem app pra instalar, sem comissão.
+              </p>
+              <ul className="space-y-3">
+                {["Cardápio com foto que dá água na boca", "Pedido montado em poucos toques", "Chega prontinho no seu WhatsApp"].map((t, i) => (
+                  <li key={i} className="flex items-center gap-3 text-gray-700">
+                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/register">
+                <Button size="lg" className="mt-8 bg-orange-500 hover:bg-orange-600 text-white px-8 py-6 text-lg rounded-xl">
+                  Criar o meu grátis
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
+            </div>
+            <div className="flex justify-center">
+              <div className="relative w-[280px] rounded-[2.5rem] bg-gray-900 p-3 shadow-2xl">
+                <video
+                  className="w-full rounded-[2rem]"
+                  src="/demo-cardapio.mp4"
+                  poster="/demo-cardapio-poster.jpg"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Na imprensa */}
       <section className="py-8 bg-white border-y border-gray-100">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left">
