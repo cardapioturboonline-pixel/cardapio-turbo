@@ -400,17 +400,15 @@ export default function LandingPage() {
               </Link>
             </div>
             <div className="flex justify-center">
-              <div className="relative w-[280px] rounded-[2.5rem] bg-gray-900 p-3 shadow-2xl">
-                <video
-                  className="w-full rounded-[2rem]"
-                  src="/demo-cardapio.mp4"
-                  poster="/demo-cardapio-poster.jpg"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
-              </div>
+              <video
+                className="w-[320px] max-w-full"
+                src="/demo-cardapio.mp4"
+                poster="/demo-cardapio-poster.jpg"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
             </div>
           </div>
         </div>
