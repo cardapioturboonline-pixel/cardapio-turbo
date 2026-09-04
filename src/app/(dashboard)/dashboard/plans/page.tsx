@@ -68,10 +68,10 @@ export default function PlansPage() {
       const res = await fetch('/api/subscribe', { method: 'POST' })
       const data = await res.json()
       if (!res.ok || !data.init_point) {
-        const msg = data?.error === 'já é Pro'
-          ? 'Você já está no Pro!'
-          : `Não consegui abrir o pagamento.${data?.detail ? ' (' + data.detail + ')' : ''}`
-        toast.error(msg)
+        if (data?.error === 'já é Pro') { toast.error('Você já está no Pro!'); setLoading(false); return }
+        // Diagnostico temporario: mostra status + etapa + detalhe do MP
+        const diag = `[${res.status}] ${data?.error || 'sem erro'}${data?.detail ? ' :: ' + data.detail : ''}`
+        toast.error('Falha no pagamento — ' + diag)
         setLoading(false)
         return
       }
