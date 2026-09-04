@@ -68,7 +68,10 @@ export default function PlansPage() {
       const res = await fetch('/api/subscribe', { method: 'POST' })
       const data = await res.json()
       if (!res.ok || !data.init_point) {
-        toast.error(data?.error === 'já é Pro' ? 'Você já está no Pro!' : 'Não consegui abrir o pagamento. Tente de novo.')
+        const msg = data?.error === 'já é Pro'
+          ? 'Você já está no Pro!'
+          : `Não consegui abrir o pagamento.${data?.detail ? ' (' + data.detail + ')' : ''}`
+        toast.error(msg)
         setLoading(false)
         return
       }
