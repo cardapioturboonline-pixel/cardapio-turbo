@@ -69,9 +69,10 @@ export default function PlansPage() {
       const data = await res.json()
       if (!res.ok || !data.init_point) {
         if (data?.error === 'já é Pro') { toast.error('Você já está no Pro!'); setLoading(false); return }
-        // Diagnostico temporario: mostra status + etapa + detalhe do MP
-        const diag = `[${res.status}] ${data?.error || 'sem erro'}${data?.detail ? ' :: ' + data.detail : ''}`
-        toast.error('Falha no pagamento — ' + diag)
+        if (data?.error === 'negócio não encontrado') {
+          toast.error('Termine o cadastro do seu restaurante antes de assinar.'); setLoading(false); return
+        }
+        toast.error('Não consegui abrir o pagamento. Tente de novo em instantes.')
         setLoading(false)
         return
       }
