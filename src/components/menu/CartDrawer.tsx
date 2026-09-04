@@ -55,16 +55,20 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     : DEFAULT_PAYMENT_OPTIONS
 
   const proAccess = hasProAccess(business)
-  const deliveryAreas = proAccess ? (business.delivery_areas ?? []) : []
+  // Modo de entrega escolhido pelo dono: 'fixed' (taxa única) ou 'neighborhood' (por bairro).
+  // Se não definido, infere: tem bairros -> por bairro; senão, taxa fixa.
+  const deliveryMode = business.delivery_mode
+    ?? ((business.delivery_areas?.length) ? 'neighborhood' : (business.delivery_fixed_fee != null ? 'fixed' : 'neighborhood'))
+  const useFixed = deliveryMode === 'fixed'
+  const deliveryAreas = (!useFixed && proAccess) ? (business.delivery_areas ?? []) : []
   const hasDeliveryAreas = deliveryAreas.length > 0
 
   const loyaltyOn = proAccess && !!business.loyalty_enabled && !!business.loyalty_reward
   const loyaltyGoal = business.loyalty_goal ?? 10
   const selectedArea = deliveryAreas.find(a => a.name === selectedAreaName)
-  // Taxa fixa (disponível a todos os planos) usada quando não há bairros cadastrados.
   const fixedFee = Number(business.delivery_fixed_fee) || 0
   const deliveryFee = orderType === 'delivery'
-    ? (hasDeliveryAreas ? (selectedArea?.fee ?? 0) : fixedFee)
+    ? (useFixed ? fixedFee : (selectedArea?.fee ?? 0))
     : 0
   const finalTotal = getTotal() + deliveryFee
 

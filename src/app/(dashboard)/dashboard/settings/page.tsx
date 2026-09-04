@@ -59,6 +59,7 @@ export default function SettingsPage() {
   const [openingHours, setOpeningHours] = useState<OpeningHours>(DEFAULT_HOURS)
   const [deliveryAreas, setDeliveryAreas] = useState<DeliveryArea[]>([])
   const [fixedFee, setFixedFee] = useState<string>('')
+  const [deliveryMode, setDeliveryMode] = useState<'neighborhood' | 'fixed'>('neighborhood')
   const [loyaltyEnabled, setLoyaltyEnabled] = useState(false)
   const [loyaltyGoal, setLoyaltyGoal] = useState(10)
   const [loyaltyReward, setLoyaltyReward] = useState('')
@@ -102,6 +103,10 @@ export default function SettingsPage() {
       }
       if (business.delivery_areas?.length) setDeliveryAreas(business.delivery_areas)
       if (business.delivery_fixed_fee != null) setFixedFee(String(business.delivery_fixed_fee))
+      // modo: usa o salvo; senão infere (bairros -> por bairro; taxa fixa -> fixa)
+      const inferred = business.delivery_mode
+        ?? (business.delivery_areas?.length ? 'neighborhood' : (business.delivery_fixed_fee != null ? 'fixed' : 'neighborhood'))
+      setDeliveryMode(inferred)
       setLoyaltyEnabled(business.loyalty_enabled ?? false)
       setLoyaltyGoal(business.loyalty_goal ?? 10)
       setLoyaltyReward(business.loyalty_reward ?? '')
@@ -280,135 +285,127 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'delivery' && (
-            <div className="space-y-4 mb-8 border-b border-gray-100 pb-8">
-              <h2 className="font-semibold text-gray-900">Taxa fixa de entrega</h2>
-              <p className="text-sm text-gray-500">
-                Cobra uma taxa única em toda entrega, sem depender de bairro. Ideal se você tem um valor de frete padrão.
-              </p>
-              <div className="flex items-end gap-3">
-                <div className="w-40">
-                  <label className="text-sm font-medium text-gray-700">Valor da taxa</label>
-                  <div className="mt-1 flex items-center gap-1">
-                    <span className="text-sm text-gray-400">R$</span>
-                    <Input
-                      type="number" step="0.01" min="0"
-                      value={fixedFee}
-                      onChange={e => setFixedFee(e.target.value)}
-                      placeholder="0,00"
-                    />
-                  </div>
-                </div>
-                <button onClick={async () => {
-                  setSaving(true)
-                  const val = fixedFee.trim() === '' ? null : Math.max(0, parseFloat(fixedFee) || 0)
-                  const ok = await updateBusiness({ delivery_fixed_fee: val })
-                  setSaving(false)
-                  if (!ok) { toast.error('Erro ao salvar a taxa fixa'); return }
-                  toast.success(val ? 'Taxa fixa salva!' : 'Taxa fixa removida.')
-                }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
-                  {saving ? 'Salvando...' : 'Salvar'}
-                </button>
-                {fixedFee.trim() !== '' && (
-                  <button onClick={async () => {
-                    setSaving(true)
-                    const ok = await updateBusiness({ delivery_fixed_fee: null })
-                    setSaving(false)
-                    if (ok) { setFixedFee(''); toast.success('Taxa fixa removida.') }
-                  }} disabled={saving} className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-60">
-                    Remover
+            <div className="space-y-6">
+              {/* Seletor de modo */}
+              <div>
+                <h2 className="font-semibold text-gray-900 mb-1">Como você cobra a entrega?</h2>
+                <p className="text-sm text-gray-500 mb-4">Escolha uma opção. Você pode trocar quando quiser.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button onClick={() => setDeliveryMode('fixed')}
+                    className={`rounded-xl border-2 p-4 text-left transition-colors ${deliveryMode === 'fixed' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-300'}`}>
+                    <span className="font-semibold text-gray-900">Taxa fixa</span>
+                    <p className="text-xs text-gray-500 mt-0.5">Um valor único de frete pra toda entrega.</p>
                   </button>
-                )}
-              </div>
-              <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-sm text-blue-700">
-                💡 Se você também cadastrar bairros (Pro) abaixo, a taxa <strong>por bairro</strong> tem prioridade. Deixe o valor vazio para não cobrar frete automático.
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'delivery' && !proAccess && (
-            <div className="space-y-4">
-              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                Taxas de entrega por bairro
-                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-bold text-orange-600">PRO</span>
-              </h2>
-              <div className="rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 p-6 text-white">
-                <div className="flex items-center gap-3 mb-3">
-                  <Bike className="h-6 w-6" />
-                  <h3 className="font-semibold">Frete automático por bairro é um recurso Pro</h3>
+                  <button onClick={() => setDeliveryMode('neighborhood')}
+                    className={`rounded-xl border-2 p-4 text-left transition-colors ${deliveryMode === 'neighborhood' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-300'}`}>
+                    <span className="font-semibold text-gray-900 flex items-center gap-2">
+                      Taxa por bairro
+                      <span className="rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-600">PRO</span>
+                    </span>
+                    <p className="text-xs text-gray-500 mt-0.5">Cada bairro com a sua própria taxa.</p>
+                  </button>
                 </div>
-                <p className="text-sm text-orange-100 mb-4">
-                  Cadastre cada bairro com sua taxa e o cliente vê o valor da entrega automaticamente no carrinho. Disponível no plano Pro (R$ 29,90/mês).
-                </p>
-                <Link href="/dashboard/plans" className="inline-block rounded-lg bg-white px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
-                  Ver plano Pro
-                </Link>
               </div>
-            </div>
-          )}
 
-          {activeTab === 'delivery' && proAccess && (
-            <div className="space-y-4">
-              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                Taxas de entrega por bairro
-                {onTrial && <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-bold text-purple-600">TESTE GRÁTIS</span>}
-              </h2>
-              <p className="text-sm text-gray-500">
-                Cadastre os bairros que você atende e o valor da entrega. No cardápio, o cliente seleciona o bairro e a taxa é calculada automaticamente.
-              </p>
-
-              <div className="space-y-2">
-                {deliveryAreas.length === 0 && (
-                  <p className="text-sm text-gray-400 py-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
-                    Nenhum bairro cadastrado. Adicione abaixo.
+              {/* Editor: TAXA FIXA */}
+              {deliveryMode === 'fixed' && (
+                <div className="space-y-4 border-t border-gray-100 pt-6">
+                  <p className="text-sm text-gray-500">
+                    Cobra uma taxa única em toda entrega, sem depender de bairro.
                   </p>
-                )}
-                {deliveryAreas.map((area, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <Input
-                      value={area.name}
-                      onChange={e => setDeliveryAreas(prev => prev.map((a, idx) => idx === i ? { ...a, name: e.target.value } : a))}
-                      placeholder="Nome do bairro"
-                      className="flex-1"
-                    />
-                    <div className="flex items-center gap-1 w-32 shrink-0">
-                      <span className="text-sm text-gray-400">R$</span>
-                      <Input
-                        type="number" step="0.01" min="0"
-                        value={area.fee}
-                        onChange={e => setDeliveryAreas(prev => prev.map((a, idx) => idx === i ? { ...a, fee: parseFloat(e.target.value) || 0 } : a))}
-                        placeholder="0,00"
-                      />
+                  <div className="flex items-end gap-3">
+                    <div className="w-40">
+                      <label className="text-sm font-medium text-gray-700">Valor da taxa</label>
+                      <div className="mt-1 flex items-center gap-1">
+                        <span className="text-sm text-gray-400">R$</span>
+                        <Input type="number" step="0.01" min="0" value={fixedFee}
+                          onChange={e => setFixedFee(e.target.value)} placeholder="0,00" />
+                      </div>
                     </div>
-                    <button onClick={() => setDeliveryAreas(prev => prev.filter((_, idx) => idx !== i))}
-                      className="rounded-md p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 shrink-0">
-                      <Trash2 className="h-4 w-4" />
+                    <button onClick={async () => {
+                      setSaving(true)
+                      const val = fixedFee.trim() === '' ? null : Math.max(0, parseFloat(fixedFee) || 0)
+                      const ok = await updateBusiness({ delivery_fixed_fee: val, delivery_mode: 'fixed' })
+                      setSaving(false)
+                      if (!ok) { toast.error('Erro ao salvar a taxa fixa'); return }
+                      toast.success('Taxa fixa salva! O cardápio agora usa frete fixo.')
+                    }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                      {saving ? 'Salvando...' : 'Salvar'}
                     </button>
                   </div>
-                ))}
-              </div>
+                  <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-sm text-blue-700">
+                    💡 Deixe o valor vazio e salve para não cobrar frete automático (você combina com o cliente).
+                  </div>
+                </div>
+              )}
 
-              <button onClick={() => setDeliveryAreas(prev => [...prev, { name: '', fee: 0 }])}
-                className="flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-600">
-                <Plus className="h-4 w-4" /> Adicionar bairro
-              </button>
+              {/* Editor: POR BAIRRO — Free vê upsell */}
+              {deliveryMode === 'neighborhood' && !proAccess && (
+                <div className="border-t border-gray-100 pt-6">
+                  <div className="rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 p-6 text-white">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Bike className="h-6 w-6" />
+                      <h3 className="font-semibold">Frete por bairro é um recurso Pro</h3>
+                    </div>
+                    <p className="text-sm text-orange-100 mb-4">
+                      Cadastre cada bairro com sua taxa e o cliente vê o valor automaticamente. No plano Free você pode usar a <strong>Taxa fixa</strong> acima.
+                    </p>
+                    <Link href="/dashboard/plans" className="inline-block rounded-lg bg-white px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+                      Ver plano Pro
+                    </Link>
+                  </div>
+                </div>
+              )}
 
-              <div className="pt-2">
-                <button onClick={async () => {
-                  setSaving(true)
-                  const clean = deliveryAreas.filter(a => a.name.trim())
-                  const ok = await updateBusiness({ delivery_areas: clean })
-                  setSaving(false)
-                  if (!ok) { toast.error('Erro ao salvar taxas de entrega'); return }
-                  setDeliveryAreas(clean)
-                  toast.success('Taxas de entrega salvas!')
-                }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
-                  {saving ? 'Salvando...' : 'Salvar'}
-                </button>
-              </div>
-
-              <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-sm text-blue-700">
-                💡 Dica: deixe sem bairros se você cobra frete fixo ou combina a taxa direto com o cliente.
-              </div>
+              {/* Editor: POR BAIRRO — Pro */}
+              {deliveryMode === 'neighborhood' && proAccess && (
+                <div className="space-y-4 border-t border-gray-100 pt-6">
+                  <p className="text-sm text-gray-500">
+                    Cadastre os bairros que você atende e o valor da entrega. O cliente seleciona o bairro no cardápio e a taxa é calculada automaticamente.
+                  </p>
+                  <div className="space-y-2">
+                    {deliveryAreas.length === 0 && (
+                      <p className="text-sm text-gray-400 py-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
+                        Nenhum bairro cadastrado. Adicione abaixo.
+                      </p>
+                    )}
+                    {deliveryAreas.map((area, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <Input value={area.name}
+                          onChange={e => setDeliveryAreas(prev => prev.map((a, idx) => idx === i ? { ...a, name: e.target.value } : a))}
+                          placeholder="Nome do bairro" className="flex-1" />
+                        <div className="flex items-center gap-1 w-32 shrink-0">
+                          <span className="text-sm text-gray-400">R$</span>
+                          <Input type="number" step="0.01" min="0" value={area.fee}
+                            onChange={e => setDeliveryAreas(prev => prev.map((a, idx) => idx === i ? { ...a, fee: parseFloat(e.target.value) || 0 } : a))}
+                            placeholder="0,00" />
+                        </div>
+                        <button onClick={() => setDeliveryAreas(prev => prev.filter((_, idx) => idx !== i))}
+                          className="rounded-md p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 shrink-0">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <button onClick={() => setDeliveryAreas(prev => [...prev, { name: '', fee: 0 }])}
+                    className="flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-600">
+                    <Plus className="h-4 w-4" /> Adicionar bairro
+                  </button>
+                  <div className="pt-2">
+                    <button onClick={async () => {
+                      setSaving(true)
+                      const clean = deliveryAreas.filter(a => a.name.trim())
+                      const ok = await updateBusiness({ delivery_areas: clean, delivery_mode: 'neighborhood' })
+                      setSaving(false)
+                      if (!ok) { toast.error('Erro ao salvar taxas de entrega'); return }
+                      setDeliveryAreas(clean)
+                      toast.success('Taxas por bairro salvas! O cardápio agora usa frete por bairro.')
+                    }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                      {saving ? 'Salvando...' : 'Salvar'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

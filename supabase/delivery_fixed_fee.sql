@@ -1,12 +1,14 @@
 -- ============================================================
--- TAXA FIXA DE ENTREGA (frete único, sem depender de bairro)
--- Disponível para todos os planos (Free e Pro).
+-- ENTREGA: taxa fixa (frete único) OU taxa por bairro — o dono escolhe o modo.
 -- ============================================================
 
 ALTER TABLE public.businesses
   ADD COLUMN IF NOT EXISTS delivery_fixed_fee DECIMAL(10,2);
 
+ALTER TABLE public.businesses
+  ADD COLUMN IF NOT EXISTS delivery_mode TEXT; -- 'neighborhood' | 'fixed'
+
 -- Como funciona no cardápio:
--- 1) Se houver bairros cadastrados (Pro) -> usa a taxa por bairro.
--- 2) Senão, se delivery_fixed_fee estiver definida -> cobra essa taxa fixa em toda entrega.
--- 3) Senão -> sem taxa automática (combina com o cliente).
+-- delivery_mode = 'fixed'        -> cobra a taxa fixa (delivery_fixed_fee) em toda entrega.
+-- delivery_mode = 'neighborhood' -> usa as taxas por bairro (delivery_areas, Pro).
+-- se não definido: infere pelo que estiver preenchido (bairros -> neighborhood; senão fixed).
