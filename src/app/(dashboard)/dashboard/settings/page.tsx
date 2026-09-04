@@ -60,6 +60,7 @@ export default function SettingsPage() {
   const [deliveryAreas, setDeliveryAreas] = useState<DeliveryArea[]>([])
   const [fixedFee, setFixedFee] = useState<string>('')
   const [deliveryMode, setDeliveryMode] = useState<'neighborhood' | 'fixed'>('neighborhood')
+  const [pickupEnabled, setPickupEnabled] = useState(true)
   const [loyaltyEnabled, setLoyaltyEnabled] = useState(false)
   const [loyaltyGoal, setLoyaltyGoal] = useState(10)
   const [loyaltyReward, setLoyaltyReward] = useState('')
@@ -110,6 +111,7 @@ export default function SettingsPage() {
       const inferred = business.delivery_mode
         ?? (business.delivery_areas?.length ? 'neighborhood' : (business.delivery_fixed_fee != null ? 'fixed' : 'neighborhood'))
       setDeliveryMode(inferred)
+      setPickupEnabled(business.pickup_enabled !== false)
       setLoyaltyEnabled(business.loyalty_enabled ?? false)
       setLoyaltyGoal(business.loyalty_goal ?? 10)
       setLoyaltyReward(business.loyalty_reward ?? '')
@@ -332,6 +334,26 @@ export default function SettingsPage() {
 
           {activeTab === 'delivery' && (
             <div className="space-y-6">
+              {/* Retirada no local */}
+              <div className="flex items-center justify-between rounded-xl border border-gray-200 p-4">
+                <div>
+                  <p className="font-semibold text-gray-900">Permitir retirada no local</p>
+                  <p className="text-sm text-gray-500">Se desligar, o cliente só vê a opção de Delivery no cardápio.</p>
+                </div>
+                <button
+                  onClick={async () => {
+                    const next = !pickupEnabled
+                    setPickupEnabled(next)
+                    const ok = await updateBusiness({ pickup_enabled: next })
+                    if (!ok) { setPickupEnabled(!next); toast.error('Erro ao salvar'); return }
+                    toast.success(next ? 'Retirada no local ativada.' : 'Retirada no local desativada.')
+                  }}
+                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${pickupEnabled ? 'bg-orange-500' : 'bg-gray-300'}`}
+                >
+                  <span className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${pickupEnabled ? 'left-6' : 'left-1'}`} />
+                </button>
+              </div>
+
               {/* Seletor de modo */}
               <div>
                 <h2 className="font-semibold text-gray-900 mb-1">Como você cobra a entrega?</h2>

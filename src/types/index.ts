@@ -98,6 +98,7 @@ export interface Business {
   delivery_areas?: DeliveryArea[]
   delivery_fixed_fee?: number | null
   delivery_mode?: 'neighborhood' | 'fixed' | null
+  pickup_enabled?: boolean
   loyalty_enabled?: boolean
   loyalty_goal?: number
   loyalty_reward?: string

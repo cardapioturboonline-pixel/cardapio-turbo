@@ -62,12 +62,15 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
   const useFixed = deliveryMode === 'fixed'
   const deliveryAreas = (!useFixed && proAccess) ? (business.delivery_areas ?? []) : []
   const hasDeliveryAreas = deliveryAreas.length > 0
+  // Retirada no local: ligada por padrão; some do carrinho se o dono desligar.
+  const pickupEnabled = business.pickup_enabled !== false
+  const effectiveOrderType: OrderType = pickupEnabled ? orderType : 'delivery'
 
   const loyaltyOn = proAccess && !!business.loyalty_enabled && !!business.loyalty_reward
   const loyaltyGoal = business.loyalty_goal ?? 10
   const selectedArea = deliveryAreas.find(a => a.name === selectedAreaName)
   const fixedFee = Number(business.delivery_fixed_fee) || 0
-  const deliveryFee = orderType === 'delivery'
+  const deliveryFee = effectiveOrderType === 'delivery'
     ? (useFixed ? fixedFee : (selectedArea?.fee ?? 0))
     : 0
   const finalTotal = getTotal() + deliveryFee
@@ -129,9 +132,9 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     msg += '\n'
 
     // Order type
-    msg += `📦 *Forma do pedido:* ${orderType === 'delivery' ? 'Delivery' : 'Retirar no local'}\n`
+    msg += `📦 *Forma do pedido:* ${effectiveOrderType === 'delivery' ? 'Delivery' : 'Retirar no local'}\n`
 
-    if (orderType === 'delivery') {
+    if (effectiveOrderType === 'delivery') {
       if (addressStreet) msg += `📍 *Endereço:* ${addressStreet}\n`
       if (selectedArea) msg += `🏘️ *Bairro:* ${selectedArea.name}\n`
       else if (addressDistrict) msg += `🏘️ *Bairro/Cidade:* ${addressDistrict}\n`
@@ -162,7 +165,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     if (couponDiscount > 0 && couponCode) {
       msg += `*Cupom (${couponCode}):* -${formatCurrency(couponDiscount)}\n`
     }
-    if (orderType === 'delivery' && deliveryFee > 0) {
+    if (effectiveOrderType === 'delivery' && deliveryFee > 0) {
       msg += `*Taxa de entrega:* ${formatCurrency(deliveryFee)}\n`
     }
     msg += `*Total:* ${formatCurrency(finalTotal)}\n\n`
@@ -187,9 +190,9 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
         business_id: business.id,
         customer_name: customerName,
         customer_phone: customerPhone,
-        order_type: orderType,
-        delivery_address: orderType === 'delivery' ? addressParts.join(', ') : null,
-        neighborhood: selectedArea?.name || (orderType === 'delivery' ? addressDistrict : null) || null,
+        order_type: effectiveOrderType,
+        delivery_address: effectiveOrderType === 'delivery' ? addressParts.join(', ') : null,
+        neighborhood: selectedArea?.name || (effectiveOrderType === 'delivery' ? addressDistrict : null) || null,
         payment_method: payment,
         items: items.map(it => ({
           name: it.pizza
@@ -219,8 +222,8 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     if (items.length === 0) return
     if (!customerName) { toast.error('Informe seu nome'); return }
     if (!customerPhone) { toast.error('Informe seu telefone'); return }
-    if (orderType === 'delivery' && !addressStreet) { toast.error('Informe o endereço de entrega'); return }
-    if (orderType === 'delivery' && hasDeliveryAreas && !selectedArea) { toast.error('Selecione seu bairro para calcular a entrega'); return }
+    if (effectiveOrderType === 'delivery' && !addressStreet) { toast.error('Informe o endereço de entrega'); return }
+    if (effectiveOrderType === 'delivery' && hasDeliveryAreas && !selectedArea) { toast.error('Selecione seu bairro para calcular a entrega'); return }
     if (!payment) { toast.error('Selecione a forma de pagamento'); return }
 
     // Abre o WhatsApp IMEDIATAMENTE (dentro do gesto do clique) para não ser bloqueado pelo navegador
@@ -353,24 +356,26 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
               </div>
 
               {/* Order type */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-                  <Package className="h-4 w-4 text-orange-500" /> Forma do pedido
-                </h3>
-                <div className="grid grid-cols-2 gap-2">
-                  <button onClick={() => setOrderType('delivery')}
-                    className={`flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-medium transition-colors ${orderType === 'delivery' ? 'border-[var(--brand)] bg-orange-50 text-[var(--brand)]' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
-                    🛵 Delivery
-                  </button>
-                  <button onClick={() => setOrderType('pickup')}
-                    className={`flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-medium transition-colors ${orderType === 'pickup' ? 'border-[var(--brand)] bg-orange-50 text-[var(--brand)]' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
-                    🏪 Retirar no local
-                  </button>
+              {pickupEnabled && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                    <Package className="h-4 w-4 text-orange-500" /> Forma do pedido
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button onClick={() => setOrderType('delivery')}
+                      className={`flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-medium transition-colors ${orderType === 'delivery' ? 'border-[var(--brand)] bg-orange-50 text-[var(--brand)]' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
+                      🛵 Delivery
+                    </button>
+                    <button onClick={() => setOrderType('pickup')}
+                      className={`flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-medium transition-colors ${orderType === 'pickup' ? 'border-[var(--brand)] bg-orange-50 text-[var(--brand)]' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
+                      🏪 Retirar no local
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Address - only for delivery */}
-              {orderType === 'delivery' && (
+              {effectiveOrderType === 'delivery' && (
                 <div className="space-y-2">
                   <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
                     <MapPin className="h-4 w-4 text-orange-500" /> Endereço de entrega
@@ -506,7 +511,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                   <span>Desconto</span><span>-{formatCurrency(couponDiscount)}</span>
                 </div>
               )}
-              {orderType === 'delivery' && deliveryFee > 0 && (
+              {effectiveOrderType === 'delivery' && deliveryFee > 0 && (
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Taxa de entrega{selectedArea ? ` (${selectedArea.name})` : ''}</span>
                   <span>{formatCurrency(deliveryFee)}</span>
