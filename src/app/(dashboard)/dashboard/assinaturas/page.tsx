@@ -286,7 +286,7 @@ export default async function AssinaturasPage() {
             <span key="p" className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-700 uppercase">{b.plan}</span>,
             fmtDate(b.created_at),
             fmtDate(b.updated_at),
-            <PlanActions key="a" businessId={b.id} plan={b.plan} />,
+            <PlanActions key="a" businessId={b.id} plan={b.plan} name={b.name} />,
           ])}
           empty="Ninguém converteu para o Pro ainda."
         />
@@ -307,7 +307,7 @@ export default async function AssinaturasPage() {
                 b.name, localStr(b), emailOf(b), b.whatsapp || '—',
                 <span key="d" className={`font-semibold ${d <= 2 ? 'text-red-500' : 'text-blue-600'}`}>{d} dia{d !== 1 ? 's' : ''}</span>,
                 fmtDate(b.created_at),
-                <PlanActions key="a" businessId={b.id} plan={b.plan} />,
+                <PlanActions key="a" businessId={b.id} plan={b.plan} name={b.name} />,
               ]
             })}
           empty="Ninguém em trial ativo no momento."
@@ -324,7 +324,7 @@ export default async function AssinaturasPage() {
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Trial terminou em', 'Ações']}
           rows={trialExpired.map(b => [
             b.name, localStr(b), emailOf(b), b.whatsapp || '—', fmtDate(b.trial_ends_at),
-            <PlanActions key="a" businessId={b.id} plan={b.plan} />,
+            <PlanActions key="a" businessId={b.id} plan={b.plan} name={b.name} />,
           ])}
           empty="Nenhum trial expirado."
         />
