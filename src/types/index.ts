@@ -96,6 +96,7 @@ export interface Business {
   payment_methods?: string[]
   pix_key?: string
   delivery_areas?: DeliveryArea[]
+  delivery_fixed_fee?: number | null
   loyalty_enabled?: boolean
   loyalty_goal?: number
   loyalty_reward?: string

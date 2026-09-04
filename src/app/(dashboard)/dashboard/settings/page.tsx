@@ -58,6 +58,7 @@ export default function SettingsPage() {
   const [pixKey, setPixKey] = useState('')
   const [openingHours, setOpeningHours] = useState<OpeningHours>(DEFAULT_HOURS)
   const [deliveryAreas, setDeliveryAreas] = useState<DeliveryArea[]>([])
+  const [fixedFee, setFixedFee] = useState<string>('')
   const [loyaltyEnabled, setLoyaltyEnabled] = useState(false)
   const [loyaltyGoal, setLoyaltyGoal] = useState(10)
   const [loyaltyReward, setLoyaltyReward] = useState('')
@@ -100,6 +101,7 @@ export default function SettingsPage() {
         setOpeningHours({ ...DEFAULT_HOURS, ...business.opening_hours })
       }
       if (business.delivery_areas?.length) setDeliveryAreas(business.delivery_areas)
+      if (business.delivery_fixed_fee != null) setFixedFee(String(business.delivery_fixed_fee))
       setLoyaltyEnabled(business.loyalty_enabled ?? false)
       setLoyaltyGoal(business.loyalty_goal ?? 10)
       setLoyaltyReward(business.loyalty_reward ?? '')
@@ -274,6 +276,52 @@ export default function SettingsPage() {
               }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
                 {saving ? 'Salvando...' : 'Salvar horários'}
               </button>
+            </div>
+          )}
+
+          {activeTab === 'delivery' && (
+            <div className="space-y-4 mb-8 border-b border-gray-100 pb-8">
+              <h2 className="font-semibold text-gray-900">Taxa fixa de entrega</h2>
+              <p className="text-sm text-gray-500">
+                Cobra uma taxa única em toda entrega, sem depender de bairro. Ideal se você tem um valor de frete padrão.
+              </p>
+              <div className="flex items-end gap-3">
+                <div className="w-40">
+                  <label className="text-sm font-medium text-gray-700">Valor da taxa</label>
+                  <div className="mt-1 flex items-center gap-1">
+                    <span className="text-sm text-gray-400">R$</span>
+                    <Input
+                      type="number" step="0.01" min="0"
+                      value={fixedFee}
+                      onChange={e => setFixedFee(e.target.value)}
+                      placeholder="0,00"
+                    />
+                  </div>
+                </div>
+                <button onClick={async () => {
+                  setSaving(true)
+                  const val = fixedFee.trim() === '' ? null : Math.max(0, parseFloat(fixedFee) || 0)
+                  const ok = await updateBusiness({ delivery_fixed_fee: val })
+                  setSaving(false)
+                  if (!ok) { toast.error('Erro ao salvar a taxa fixa'); return }
+                  toast.success(val ? 'Taxa fixa salva!' : 'Taxa fixa removida.')
+                }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                  {saving ? 'Salvando...' : 'Salvar'}
+                </button>
+                {fixedFee.trim() !== '' && (
+                  <button onClick={async () => {
+                    setSaving(true)
+                    const ok = await updateBusiness({ delivery_fixed_fee: null })
+                    setSaving(false)
+                    if (ok) { setFixedFee(''); toast.success('Taxa fixa removida.') }
+                  }} disabled={saving} className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-60">
+                    Remover
+                  </button>
+                )}
+              </div>
+              <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-sm text-blue-700">
+                💡 Se você também cadastrar bairros (Pro) abaixo, a taxa <strong>por bairro</strong> tem prioridade. Deixe o valor vazio para não cobrar frete automático.
+              </div>
             </div>
           )}
 

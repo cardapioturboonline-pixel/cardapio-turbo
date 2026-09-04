@@ -61,7 +61,11 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
   const loyaltyOn = proAccess && !!business.loyalty_enabled && !!business.loyalty_reward
   const loyaltyGoal = business.loyalty_goal ?? 10
   const selectedArea = deliveryAreas.find(a => a.name === selectedAreaName)
-  const deliveryFee = orderType === 'delivery' ? (selectedArea?.fee ?? 0) : 0
+  // Taxa fixa (disponível a todos os planos) usada quando não há bairros cadastrados.
+  const fixedFee = Number(business.delivery_fixed_fee) || 0
+  const deliveryFee = orderType === 'delivery'
+    ? (hasDeliveryAreas ? (selectedArea?.fee ?? 0) : fixedFee)
+    : 0
   const finalTotal = getTotal() + deliveryFee
 
   useEffect(() => {
