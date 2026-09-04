@@ -186,7 +186,7 @@ const plans = [
       "Sem marca d'água",
     ],
     cta: "Assinar Pro",
-    href: "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=cda0003141c949a8976b7fc106bd85ed",
+    href: "/register",
   },
 ];
 

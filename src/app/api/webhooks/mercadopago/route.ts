@@ -37,11 +37,12 @@ export async function POST(req: NextRequest) {
     let businessId = external_reference
 
     if (!businessId && payer_email) {
-      // Find business by user email
+      // Fallback (assinaturas antigas sem external_reference): casa pelo e-mail,
+      // sem diferenciar maiúsculas/minúsculas.
       const { data: user } = await supabase
         .from('users')
         .select('id')
-        .eq('email', payer_email)
+        .ilike('email', payer_email)
         .single()
 
       if (user) {

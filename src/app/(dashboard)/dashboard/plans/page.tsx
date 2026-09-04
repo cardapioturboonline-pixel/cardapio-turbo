@@ -1,6 +1,7 @@
 'use client'
 
-import { Check, X, Zap, Sparkles } from 'lucide-react'
+import { useState } from 'react'
+import { Check, X, Zap, Sparkles, Loader2 } from 'lucide-react'
 import { useBusiness } from '@/lib/hooks/useBusiness'
 import { toast } from '@/components/ui/sonner'
 
@@ -58,15 +59,24 @@ const plans = [
 export default function PlansPage() {
   const { business } = useBusiness()
   const currentPlan = business?.plan ?? 'free'
+  const [loading, setLoading] = useState(false)
 
-  const checkoutLinks: Record<string, string> = {
-    pro: 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=cda0003141c949a8976b7fc106bd85ed',
-  }
-
-  function handleUpgrade(planId: string) {
-    if (planId === currentPlan) return
-    if (checkoutLinks[planId]) {
-      window.open(checkoutLinks[planId], '_blank')
+  async function handleUpgrade(planId: string) {
+    if (planId !== 'pro' || currentPlan !== 'free' || loading) return
+    setLoading(true)
+    try {
+      const res = await fetch('/api/subscribe', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok || !data.init_point) {
+        toast.error(data?.error === 'já é Pro' ? 'Você já está no Pro!' : 'Não consegui abrir o pagamento. Tente de novo.')
+        setLoading(false)
+        return
+      }
+      // Redireciona para o checkout do Mercado Pago (assinatura já vinculada ao seu negócio)
+      window.location.href = data.init_point
+    } catch {
+      toast.error('Erro de conexão. Tente de novo.')
+      setLoading(false)
     }
   }
 
@@ -106,7 +116,7 @@ export default function PlansPage() {
                 <span className="text-gray-500">{plan.period}</span>
               </div>
 
-              {isCurrent || !checkoutLinks[plan.id] ? (
+              {plan.id !== 'pro' || isCurrent ? (
                 <button
                   disabled={isCurrent}
                   className={`w-full rounded-xl py-2.5 text-sm font-semibold transition-colors mb-6 ${isCurrent ? 'bg-gray-100 text-gray-400 cursor-default' : plan.btnClass}`}
@@ -114,14 +124,13 @@ export default function PlansPage() {
                   {isCurrent ? 'Plano atual' : 'Usar grátis'}
                 </button>
               ) : (
-                <a
-                  href={checkoutLinks[plan.id]}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`w-full rounded-xl py-2.5 text-sm font-semibold transition-colors mb-6 flex items-center justify-center ${plan.btnClass}`}
+                <button
+                  onClick={() => handleUpgrade(plan.id)}
+                  disabled={loading}
+                  className={`w-full rounded-xl py-2.5 text-sm font-semibold transition-colors mb-6 flex items-center justify-center gap-2 disabled:opacity-70 ${plan.btnClass}`}
                 >
-                  Assinar agora
-                </a>
+                  {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Abrindo...</> : 'Assinar agora'}
+                </button>
               )}
 
               <ul className="space-y-2.5">
