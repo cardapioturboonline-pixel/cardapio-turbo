@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { User, Store, Share2, CreditCard, AlertTriangle, Clock, Bike, Plus, Trash2, Gift } from 'lucide-react'
+import { User, Store, Share2, CreditCard, AlertTriangle, Clock, Bike, Plus, Trash2, Gift, ImagePlus, Loader2 } from 'lucide-react'
 import type { OpeningHours, DayHours, DeliveryArea } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -72,6 +72,8 @@ export default function SettingsPage() {
   const [storeName, setStoreName] = useState('')
   const [storeWhatsapp, setStoreWhatsapp] = useState('')
   const [storeCity, setStoreCity] = useState('')
+  const [logoUrl, setLogoUrl] = useState('')
+  const [uploadingLogo, setUploadingLogo] = useState(false)
 
   // Social state
   const [instagram, setInstagram] = useState('')
@@ -93,6 +95,7 @@ export default function SettingsPage() {
       setStoreName(business.name || '')
       setStoreWhatsapp(business.whatsapp || '')
       setStoreCity(business.city || '')
+      setLogoUrl(business.logo_url || '')
       setInstagram(business.instagram || '')
       setFacebook(business.facebook || '')
       setTiktok(business.tiktok || '')
@@ -186,7 +189,50 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'store' && (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {/* Logo da loja */}
+              <div className="space-y-3 border-b border-gray-100 pb-6">
+                <h2 className="font-semibold text-gray-900">Logo da loja</h2>
+                <p className="text-sm text-gray-500">Aparece no topo do seu cardápio. Use PNG ou JPG, de preferência quadrada (até 5MB).</p>
+                <div className="flex items-center gap-4">
+                  <div className="h-24 w-24 shrink-0 rounded-2xl bg-orange-50 border border-orange-100 overflow-hidden flex items-center justify-center">
+                    {logoUrl
+                      ? <img src={logoUrl} alt="Logo" className="h-full w-full object-cover" />
+                      : <Store className="h-8 w-8 text-orange-300" />}
+                  </div>
+                  <div className="space-y-2">
+                    <label className={`inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 cursor-pointer ${uploadingLogo ? 'opacity-60 pointer-events-none' : ''}`}>
+                      {uploadingLogo ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+                      {uploadingLogo ? 'Enviando...' : (logoUrl ? 'Trocar logo' : 'Enviar logo')}
+                      <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden"
+                        onChange={async e => {
+                          const file = e.target.files?.[0]
+                          if (!file) return
+                          if (file.size > 5 * 1024 * 1024) { toast.error('Imagem muito grande (máx. 5MB)'); return }
+                          setUploadingLogo(true)
+                          try {
+                            const fd = new FormData(); fd.append('file', file)
+                            const res = await fetch('/api/products/upload', { method: 'POST', body: fd })
+                            const data = await res.json()
+                            if (!res.ok || !data.url) { toast.error(data?.error || 'Falha no upload'); setUploadingLogo(false); return }
+                            const ok = await updateBusiness({ logo_url: data.url })
+                            if (!ok) { toast.error('Enviou, mas não salvou. Tente de novo.'); setUploadingLogo(false); return }
+                            setLogoUrl(data.url)
+                            toast.success('Logo atualizada! Já aparece no seu cardápio.')
+                          } catch { toast.error('Erro de conexão.') }
+                          finally { setUploadingLogo(false); e.target.value = '' }
+                        }} />
+                    </label>
+                    {logoUrl && (
+                      <button onClick={async () => {
+                        const ok = await updateBusiness({ logo_url: null as unknown as string })
+                        if (ok) { setLogoUrl(''); toast.success('Logo removida.') }
+                      }} className="block text-xs text-gray-400 hover:text-red-500">Remover logo</button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <h2 className="font-semibold text-gray-900">Dados da loja</h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
