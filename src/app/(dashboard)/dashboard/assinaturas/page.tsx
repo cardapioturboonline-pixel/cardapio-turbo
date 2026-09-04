@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { isAdminEmail } from '@/lib/admin'
 import { WinbackButton } from './WinbackButton'
+import { PlanActions } from './PlanActions'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,6 +41,8 @@ const EVENT_META: Record<string, { label: string; cls: string; icon: typeof Hist
   reactivated: { label: 'Reativou', cls: 'bg-emerald-100 text-emerald-700', icon: RefreshCw },
   cancelled: { label: 'Cancelou', cls: 'bg-red-100 text-red-700', icon: XCircle },
   paused: { label: 'Pausou', cls: 'bg-amber-100 text-amber-700', icon: Clock },
+  manual_pro: { label: 'Pro (manual)', cls: 'bg-amber-100 text-amber-700', icon: Crown },
+  manual_free: { label: 'Free (manual)', cls: 'bg-gray-100 text-gray-600', icon: TrendingDown },
 }
 
 function daysLeft(iso: string | null): number | null {
@@ -277,12 +280,13 @@ export default async function AssinaturasPage() {
       {/* Tabela: Fecharam o Pro */}
       <Section title={`Fecharam o Pro: saíram do trial e assinaram (${pro.length})`} accent="amber">
         <Table
-          headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Plano', 'Cadastro', 'Assinou em (aprox.)']}
+          headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Plano', 'Cadastro', 'Assinou em (aprox.)', 'Ações']}
           rows={pro.map(b => [
             b.name, localStr(b), emailOf(b), b.whatsapp || '—',
             <span key="p" className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-700 uppercase">{b.plan}</span>,
             fmtDate(b.created_at),
             fmtDate(b.updated_at),
+            <PlanActions key="a" businessId={b.id} plan={b.plan} />,
           ])}
           empty="Ninguém converteu para o Pro ainda."
         />
@@ -294,7 +298,7 @@ export default async function AssinaturasPage() {
       </p>
       <Section title={`Em trial ativo: ainda testando (${trialActive.length})`} accent="blue">
         <Table
-          headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Dias restantes', 'Início']}
+          headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Dias restantes', 'Início', 'Ações']}
           rows={trialActive
             .sort((a, b) => (daysLeft(a.trial_ends_at) ?? 99) - (daysLeft(b.trial_ends_at) ?? 99))
             .map(b => {
@@ -303,6 +307,7 @@ export default async function AssinaturasPage() {
                 b.name, localStr(b), emailOf(b), b.whatsapp || '—',
                 <span key="d" className={`font-semibold ${d <= 2 ? 'text-red-500' : 'text-blue-600'}`}>{d} dia{d !== 1 ? 's' : ''}</span>,
                 fmtDate(b.created_at),
+                <PlanActions key="a" businessId={b.id} plan={b.plan} />,
               ]
             })}
           empty="Ninguém em trial ativo no momento."
@@ -316,9 +321,10 @@ export default async function AssinaturasPage() {
           <WinbackButton count={trialExpired.length} />
         </div>
         <Table
-          headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Trial terminou em']}
+          headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Trial terminou em', 'Ações']}
           rows={trialExpired.map(b => [
             b.name, localStr(b), emailOf(b), b.whatsapp || '—', fmtDate(b.trial_ends_at),
+            <PlanActions key="a" businessId={b.id} plan={b.plan} />,
           ])}
           empty="Nenhum trial expirado."
         />
