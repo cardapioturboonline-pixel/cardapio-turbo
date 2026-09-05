@@ -323,12 +323,18 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                 <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
                   <User className="h-4 w-4 text-orange-500" /> Suas informações
                 </h3>
-                <input value={customerName} onChange={e => setCustomerName(e.target.value)}
-                  placeholder="Seu nome *"
-                  className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                <input value={customerPhone} onChange={e => setCustomerPhone(e.target.value)}
-                  placeholder="Seu telefone/WhatsApp *" type="tel"
-                  className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-600">Nome *</label>
+                  <input value={customerName} onChange={e => setCustomerName(e.target.value)}
+                    placeholder="Ex.: Maria Silva"
+                    className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-900 placeholder:text-gray-400" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-600">Telefone / WhatsApp *</label>
+                  <input value={customerPhone} onChange={e => setCustomerPhone(e.target.value)}
+                    placeholder="Ex.: (67) 99999-9999" type="tel"
+                    className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-900 placeholder:text-gray-400" />
+                </div>
 
                 {/* Cartão fidelidade */}
                 {loyaltyOn && loyaltyCount !== null && (() => {
@@ -382,11 +388,11 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                   </h3>
                   <input value={addressStreet} onChange={e => setAddressStreet(e.target.value)}
                     placeholder="Rua e número *"
-                    className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                    className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-900 placeholder:text-gray-400" />
 
                   {hasDeliveryAreas ? (
                     <select value={selectedAreaName} onChange={e => setSelectedAreaName(e.target.value)}
-                      className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                      className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-900 placeholder:text-gray-400 bg-white">
                       <option value="">Selecione seu bairro *</option>
                       {deliveryAreas.map(a => (
                         <option key={a.name} value={a.name}>{a.name} — {a.fee > 0 ? formatCurrency(a.fee) : 'Grátis'}</option>
@@ -395,12 +401,12 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                   ) : (
                     <input value={addressDistrict} onChange={e => setAddressDistrict(e.target.value)}
                       placeholder="Bairro e cidade *"
-                      className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                      className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-900 placeholder:text-gray-400" />
                   )}
 
                   <input value={addressComplement} onChange={e => setAddressComplement(e.target.value)}
                     placeholder="CEP, bloco, complemento (opcional)"
-                    className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                    className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-900 placeholder:text-gray-400" />
 
                   {selectedArea && (
                     <p className="text-xs text-gray-500">
@@ -427,7 +433,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                 </div>
                 {scheduleType === 'later' && (
                   <input type="time" value={scheduleTime} onChange={e => setScheduleTime(e.target.value)}
-                    className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                    className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-900 placeholder:text-gray-400" />
                 )}
               </div>
 
@@ -482,7 +488,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                 ) : (
                   <div className="flex gap-2">
                     <input value={couponInput} onChange={e => setCouponInput(e.target.value.toUpperCase())}
-                      placeholder="CÓDIGO" className="flex-1 h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 uppercase" />
+                      placeholder="CÓDIGO" className="flex-1 h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-900 placeholder:text-gray-400 uppercase" />
                     <button onClick={applyCouponCode} className="rounded-xl bg-gray-100 px-4 text-sm font-medium text-gray-700 hover:bg-gray-200">Aplicar</button>
                   </div>
                 )}
@@ -493,7 +499,7 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                 <label className="text-sm font-medium text-gray-700">📝 Observações gerais</label>
                 <textarea value={observations} onChange={e => setObservations(e.target.value)}
                   placeholder="Avisar troco, alergia, preferência geral..."
-                  rows={2} className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
+                  rows={2} className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-900 placeholder:text-gray-400 resize-none" />
               </div>
             </div>
           )}
