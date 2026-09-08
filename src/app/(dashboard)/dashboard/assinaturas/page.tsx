@@ -79,7 +79,7 @@ export default async function AssinaturasPage() {
     .order('created_at', { ascending: false })
     .limit(200)
   const eventsTableMissing = !!evErr
-  const events = (evData ?? []) as EventRow[]
+  const rawEvents = (evData ?? []) as EventRow[]
 
   const businesses = (bizData ?? []) as BizRow[]
   const nameById = new Map<string, string>()
@@ -87,6 +87,26 @@ export default async function AssinaturasPage() {
   const emailById = new Map<string, string>()
   for (const u of (userData ?? []) as UserRow[]) emailById.set(u.id, u.email || '')
   const emailOf = (b: BizRow) => emailById.get(b.user_id) || '—'
+
+  // Auto-completa a linha do tempo: negócios que estão Pro mas não têm evento de
+  // conversão registrado (ex.: liberados via SQL ou antes do rastreio existir)
+  // ganham um evento de conversão sintético, para aparecerem como convertidos.
+  const hasProEvent = new Set(rawEvents.filter(e => e.to_plan === 'pro').map(e => e.business_id))
+  const synthEvents: EventRow[] = businesses
+    .filter(b => b.plan && b.plan !== 'free' && !hasProEvent.has(b.id))
+    .map(b => ({
+      id: `synth-${b.id}`,
+      business_id: b.id,
+      event_type: 'converted',
+      from_plan: 'free',
+      to_plan: 'pro',
+      city: b.city,
+      state: b.state,
+      amount: null,
+      created_at: b.updated_at || b.created_at,
+    }))
+  const events = [...rawEvents, ...synthEvents]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
   const now = Date.now()
   const isPro = (b: BizRow) => b.plan && b.plan !== 'free'
