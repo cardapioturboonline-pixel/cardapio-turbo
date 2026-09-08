@@ -53,10 +53,24 @@ function fmtDate(iso: string | null): string {
   if (!iso) return '—'
   return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
+// Extrai a UF: usa a coluna state se preenchida; senão pega do fim do campo
+// cidade, que os donos digitam como "Campo Grande - MS", "São Paulo/SP" etc.
+function ufOf(b: BizRow): string {
+  const s = b.state?.trim()
+  if (s) return s.toUpperCase()
+  const m = (b.city || '').trim().match(/[-/,]\s*([A-Za-z]{2})\s*$/)
+  return m ? m[1].toUpperCase() : 'Não informado'
+}
+// Nome da cidade sem a UF no fim (ex.: "Campo Grande - MS" -> "Campo Grande").
+function cityName(b: BizRow): string {
+  const c = (b.city || '').trim()
+  if (!c) return ''
+  return c.replace(/[-/,]\s*[A-Za-z]{2}\s*$/, '').trim() || c
+}
 function localStr(b: BizRow): string {
-  const c = b.city?.trim(); const s = b.state?.trim()
-  if (c && s) return `${c} / ${s}`
-  return c || s || '—'
+  const c = cityName(b); const uf = ufOf(b)
+  if (c && uf !== 'Não informado') return `${c} / ${uf}`
+  return c || (uf !== 'Não informado' ? uf : '—')
 }
 
 export default async function AssinaturasPage() {
@@ -150,9 +164,9 @@ export default async function AssinaturasPage() {
   const byState = new Map<string, number>()
   const byCity = new Map<string, number>()
   for (const b of pro) {
-    const s = (b.state?.trim() || 'Não informado').toUpperCase()
-    byState.set(s, (byState.get(s) || 0) + 1)
-    const c = b.city?.trim() ? `${b.city.trim()} / ${(b.state?.trim() || '').toUpperCase()}` : 'Não informado'
+    const uf = ufOf(b)
+    byState.set(uf, (byState.get(uf) || 0) + 1)
+    const c = cityName(b) ? `${cityName(b)}${uf !== 'Não informado' ? ` / ${uf}` : ''}` : 'Não informado'
     byCity.set(c, (byCity.get(c) || 0) + 1)
   }
   const topStates = [...byState.entries()].sort((a, b) => b[1] - a[1])
