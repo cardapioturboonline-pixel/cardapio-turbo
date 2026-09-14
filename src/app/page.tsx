@@ -645,6 +645,43 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* App instalável (PWA) */}
+      <section className="py-24 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl bg-gray-900 text-white p-8 sm:p-12 grid lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <Badge className="mb-4 bg-orange-500 text-white hover:bg-orange-500">Novo</Badge>
+              <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">
+                Instale como aplicativo, sem baixar da loja
+              </h2>
+              <p className="text-gray-300 text-lg mb-6">
+                O Cardápio Turbo vira um app na tela inicial do seu celular, tablet ou computador. Abre em tela cheia, com o seu ícone, e a tela de cozinha fica perfeita num tablet ou TV.
+              </p>
+              <ul className="space-y-3">
+                {[
+                  "Instala em segundos, direto do navegador",
+                  "Funciona no Android, iPhone, tablet e computador",
+                  "Atalhos rápidos para Pedidos, Cozinha e Caixa",
+                  "Sem ocupar espaço, sem loja de aplicativos",
+                ].map((t, i) => (
+                  <li key={i} className="flex items-center gap-3 text-gray-200">
+                    <CheckCircle2 className="w-5 h-5 text-orange-400 shrink-0" /> {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex justify-center">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-28 h-28 rounded-3xl bg-orange-500 flex items-center justify-center shadow-2xl shadow-orange-500/30">
+                  <Smartphone className="w-14 h-14 text-white" />
+                </div>
+                <span className="text-sm text-gray-400">Toque em <strong className="text-white">Instalar app</strong> no painel</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Final */}
       <section className="py-24 bg-gradient-to-r from-orange-500 to-orange-600">
         <div className="max-w-4xl mx-auto text-center px-4">
