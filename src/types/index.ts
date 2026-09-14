@@ -172,6 +172,7 @@ export interface Product {
   is_available: boolean
   is_featured: boolean
   is_combo: boolean
+  stock?: number | null
   sort_order: number
   views: number
   orders: number

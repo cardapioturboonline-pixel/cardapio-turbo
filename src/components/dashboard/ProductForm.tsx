@@ -33,6 +33,8 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
     is_available: initialData?.is_available ?? true,
     is_featured: initialData?.is_featured ?? false,
     is_combo: initialData?.is_combo ?? false,
+    stockEnabled: initialData?.stock != null,
+    stockQty: initialData?.stock != null ? String(initialData.stock) : '',
     sort_order: initialData?.sort_order ?? 0,
     business_id: initialData?.business_id ?? 'biz-001',
   })
@@ -118,9 +120,16 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
     const optionsField = cleanGroups.length > 0
       ? { option_groups: cleanGroups }
       : (initialData?.option_groups ? { option_groups: null } : {})
+    // Estoque: se controlado, define a quantidade e a disponibilidade segue o estoque
+    // (zerou -> desativa). Se não controlado, mantém a disponibilidade manual.
+    const { stockEnabled, stockQty, ...formRest } = form
+    const stock = stockEnabled ? Math.max(0, parseInt(stockQty || '0', 10) || 0) : null
+    const isAvailable = stockEnabled ? stock! > 0 : form.is_available
     setLoading(true)
     const result = await onSave({
-      ...form,
+      ...formRest,
+      is_available: isAvailable,
+      stock,
       price: basePrice,
       promotional_price: !isPizza && form.promotional_price ? parseFloat(form.promotional_price) : undefined,
       ...pizzaField,
@@ -340,6 +349,25 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
               <Label className="text-xs">Ou cole a URL da imagem</Label>
               <Input value={form.image_url} onChange={e => setForm(p => ({ ...p, image_url: e.target.value }))} placeholder="https://..." className="text-xs" />
             </div>
+          </div>
+
+          {/* Estoque */}
+          <div className="rounded-xl border border-gray-200 bg-white p-6 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-semibold text-gray-900">Controle de estoque</h2>
+                <p className="text-xs text-gray-500">Quando o estoque zera, o item some do cardápio automaticamente.</p>
+              </div>
+              <Switch checked={form.stockEnabled} onCheckedChange={v => setForm(p => ({ ...p, stockEnabled: v }))} />
+            </div>
+            {form.stockEnabled && (
+              <div>
+                <Label>Quantidade em estoque</Label>
+                <Input type="number" min="0" step="1" value={form.stockQty}
+                  onChange={e => setForm(p => ({ ...p, stockQty: e.target.value }))} placeholder="Ex.: 20" className="mt-1" />
+                <p className="text-xs text-gray-400 mt-1">A cada pedido, o estoque baixa sozinho. Ao chegar a 0, o produto fica indisponível. Reponha aqui para reativar.</p>
+              </div>
+            )}
           </div>
 
           {/* Toggles */}

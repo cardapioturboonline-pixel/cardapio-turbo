@@ -234,6 +234,15 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     // Salva o pedido no painel em segundo plano (sem bloquear o envio)
     saveOrderToDb()
 
+    // Baixa o estoque dos produtos controlados (desativa sozinho ao zerar)
+    try {
+      const supabase = createClient()
+      const agg = new Map<string, number>()
+      for (const it of items) agg.set(it.product.id, (agg.get(it.product.id) || 0) + it.quantity)
+      const payload = [...agg.entries()].map(([product_id, quantity]) => ({ product_id, quantity }))
+      if (payload.length) supabase.rpc('decrement_stock', { p_items: payload })
+    } catch { /* estoque é best-effort; nunca bloqueia o pedido */ }
+
     clearCart()
     onClose()
     toast.success('Pedido enviado pelo WhatsApp! 🎉')
