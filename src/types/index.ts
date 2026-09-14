@@ -34,6 +34,7 @@ export interface OrderItemSnapshot {
 export interface Order {
   id: string
   business_id: string
+  order_number?: number
   customer_name?: string
   customer_phone?: string
   order_type?: 'delivery' | 'pickup'

@@ -8,6 +8,7 @@ import {
   QrCode, BarChart3, CreditCard, Settings, LogOut,
   ChefHat, X, FileText, Bell, Crown, Users, Megaphone as MegaphoneIcon, Wallet
 } from 'lucide-react'
+// ChefHat reutilizado para a Cozinha
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
@@ -17,6 +18,7 @@ import { isAdminEmail } from '@/lib/admin'
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/dashboard/orders', icon: Bell, label: 'Pedidos' },
+  { href: '/dashboard/cozinha', icon: ChefHat, label: 'Cozinha' },
   { href: '/dashboard/caixa', icon: Wallet, label: 'Caixa' },
   { href: '/dashboard/customers', icon: Users, label: 'Clientes' },
   { href: '/dashboard/campaigns', icon: MegaphoneIcon, label: 'Campanhas' },

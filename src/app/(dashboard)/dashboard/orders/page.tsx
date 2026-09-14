@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { Clock, MapPin, Phone, CreditCard, Bike, Store, Volume2, VolumeX, RefreshCw, Bell } from 'lucide-react'
+import { Clock, MapPin, Phone, CreditCard, Bike, Store, Volume2, VolumeX, RefreshCw, Bell, Printer } from 'lucide-react'
+import { printComanda } from '@/lib/print-comanda'
 import { createClient } from '@/lib/supabase/client'
 import { useBusiness } from '@/lib/hooks/useBusiness'
 import { hasProAccess } from '@/lib/plan'
@@ -185,7 +186,10 @@ export default function OrdersPage() {
               <div key={order.id} className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="font-semibold text-gray-900">{order.customer_name || 'Cliente'}</p>
+                    <p className="font-semibold text-gray-900">
+                      {order.order_number ? <span className="text-orange-500">#{order.order_number} · </span> : ''}
+                      {order.customer_name || 'Cliente'}
+                    </p>
                     <p className="text-xs text-gray-400">{new Date(order.created_at).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</p>
                   </div>
                   <span className={`rounded-full px-2 py-0.5 text-xs font-medium text-white ${flowStep?.color || 'bg-gray-400'}`}>{flowStep?.label}</span>
@@ -212,6 +216,10 @@ export default function OrdersPage() {
                 <div className="flex items-center justify-between border-t border-gray-100 pt-2">
                   <span className="font-bold text-gray-900">{formatCurrency(order.total)}</span>
                   <div className="flex gap-1.5">
+                    <button onClick={() => printComanda(order, business?.name || 'Pedido')} title="Imprimir comanda"
+                      className="rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-500 hover:text-orange-500 hover:border-orange-200 flex items-center gap-1">
+                      <Printer className="h-3.5 w-3.5" /> Imprimir
+                    </button>
                     {order.status !== 'cancelled' && order.status !== 'delivered' && (
                       <button onClick={() => updateStatus(order.id, 'cancelled')} className="rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-500 hover:text-red-500 hover:border-red-200">Cancelar</button>
                     )}
