@@ -183,7 +183,7 @@ const plans = [
       "Cupons de desconto",
       "Cozinha e comanda impressa",
       "Controle de caixa",
-      "Atendente rápido no cardápio",
+      "Perguntas frequentes no cardápio",
       "Relatórios avançados",
       "Temas premium e QR com logo",
       "Sem marca d'água",

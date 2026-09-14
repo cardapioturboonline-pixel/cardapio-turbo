@@ -33,7 +33,7 @@ export function ChatWidget({ business }: { business: Business }) {
       {open && (
         <div className="fixed bottom-24 right-5 z-40 w-[calc(100vw-2.5rem)] max-w-sm rounded-2xl border border-gray-200 bg-white shadow-2xl overflow-hidden">
           <div className="p-4 text-white" style={{ backgroundColor: 'var(--brand)' }}>
-            <p className="font-semibold">Atendimento</p>
+            <p className="font-semibold">Perguntas frequentes</p>
             <p className="text-sm text-white/90 mt-0.5">{greeting}</p>
           </div>
 

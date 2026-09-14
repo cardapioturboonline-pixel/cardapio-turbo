@@ -41,7 +41,7 @@ const tabs: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
   { id: 'hours', label: 'Horários', icon: Clock },
   { id: 'delivery', label: 'Entrega', icon: Bike },
   { id: 'loyalty', label: 'Fidelidade', icon: Gift },
-  { id: 'atendimento', label: 'Atendimento', icon: MessageCircle },
+  { id: 'atendimento', label: 'Perguntas frequentes', icon: MessageCircle },
   { id: 'payment', label: 'Pagamentos', icon: CreditCard },
   { id: 'danger', label: 'Zona de Perigo', icon: AlertTriangle },
 ]
@@ -542,7 +542,7 @@ export default function SettingsPage() {
           {activeTab === 'atendimento' && !proAccess && (
             <div className="space-y-4">
               <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                Atendente rápido
+                Perguntas frequentes
                 <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-bold text-orange-600">PRO</span>
               </h2>
               <div className="rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 p-6 text-white">
@@ -562,7 +562,7 @@ export default function SettingsPage() {
             <div className="space-y-5">
               <div className="flex items-center justify-between rounded-xl border border-gray-200 p-4">
                 <div>
-                  <p className="font-semibold text-gray-900">Atendente rápido no cardápio</p>
+                  <p className="font-semibold text-gray-900">Perguntas frequentes no cardápio</p>
                   <p className="text-sm text-gray-500">Mostra um botão de atendimento com respostas prontas + WhatsApp. Usa link oficial (não conecta seu número).</p>
                 </div>
                 <button
