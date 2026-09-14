@@ -24,17 +24,22 @@ const NEXT_LABEL: Record<string, string> = {
   delivered: 'Concluir pedido',
 }
 
+// Campainha "ding-dong" (estilo sino), sintetizada — sem depender de arquivo.
 function beep() {
   try {
     const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.connect(gain); gain.connect(ctx.destination)
-    osc.type = 'sine'; osc.frequency.value = 880
-    gain.gain.setValueAtTime(0.0001, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.02)
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5)
-    osc.start(); osc.stop(ctx.currentTime + 0.5)
+    const note = (freq: number, start: number, dur: number) => {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain()
+      osc.type = 'sine'; osc.frequency.value = freq
+      osc.connect(gain); gain.connect(ctx.destination)
+      const t = ctx.currentTime + start
+      gain.gain.setValueAtTime(0.0001, t)
+      gain.gain.exponentialRampToValueAtTime(0.4, t + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + dur)
+      osc.start(t); osc.stop(t + dur)
+    }
+    note(988, 0, 0.7)     // ding
+    note(784, 0.33, 0.95) // dong
   } catch { /* ignore */ }
 }
 
