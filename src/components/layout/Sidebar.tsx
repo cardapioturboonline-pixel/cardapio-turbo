@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
 import { useBusiness } from '@/lib/hooks/useBusiness'
 import { isAdminEmail } from '@/lib/admin'
+import { InstallButton } from '@/components/InstallButton'
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -163,6 +164,7 @@ export function Sidebar({ onClose }: SidebarProps) {
             {trialDaysLeft === 0 ? '🔒 Assinar para continuar' : '⚡ Fazer upgrade Pro'}
           </Link>
         )}
+        <InstallButton />
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-semibold text-sm">
             {user?.name?.[0]?.toUpperCase() || 'U'}

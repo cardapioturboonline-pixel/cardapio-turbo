@@ -3,15 +3,20 @@
   "short_name": "Cardápio Turbo",
   "description": "Cardápio digital profissional para lanchonetes",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#f97316",
   "icons": [
-    {
-      "src": "/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Pedidos", "short_name": "Pedidos", "url": "/dashboard/orders" },
+    { "name": "Cozinha", "short_name": "Cozinha", "url": "/dashboard/cozinha" },
+    { "name": "Caixa", "short_name": "Caixa", "url": "/dashboard/caixa" }
   ]
 }

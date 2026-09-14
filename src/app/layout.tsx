@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { PwaRegister } from "@/components/PwaRegister";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -22,11 +23,20 @@ export const metadata: Metadata = {
     description: "Cardápio digital para pequenos negócios",
   },
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: [
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/icon-192.png",
+    apple: "/apple-touch-icon.png",
   },
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Cardápio Turbo",
+  },
   verification: {
     google: "kFb03BGpnkiobIHExgY-r2GxlpxzNMxdpc-D8W8i33Y",
   },
@@ -69,6 +79,7 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         {children}
+        <PwaRegister />
         <Toaster />
       </body>
     </html>
