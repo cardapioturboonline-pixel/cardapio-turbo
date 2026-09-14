@@ -11,8 +11,8 @@ import type { Order, OrderStatus } from '@/types'
 import { toast } from '@/components/ui/sonner'
 
 const COLUMNS: { id: OrderStatus; label: string; next?: OrderStatus; nextLabel?: string; head: string }[] = [
-  { id: 'pending', label: 'Novos', next: 'preparing', nextLabel: 'Preparar', head: 'bg-orange-500' },
-  { id: 'preparing', label: 'Em preparo', next: 'delivering', nextLabel: 'Pronto', head: 'bg-blue-500' },
+  { id: 'pending', label: 'Aguardando aprovação', next: 'preparing', nextLabel: 'Aceitar e enviar à cozinha', head: 'bg-orange-500' },
+  { id: 'preparing', label: 'Em preparo', next: 'delivering', nextLabel: 'Marcar pronto', head: 'bg-blue-500' },
   { id: 'delivering', label: 'Prontos', next: 'delivered', nextLabel: 'Entregue', head: 'bg-green-600' },
 ]
 
