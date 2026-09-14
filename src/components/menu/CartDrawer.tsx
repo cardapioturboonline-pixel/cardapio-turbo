@@ -179,14 +179,14 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     return encodeURIComponent(msg)
   }
 
-  async function saveOrderToDb() {
+  async function saveOrderToDb(): Promise<number | null> {
     // Salva o pedido no banco (best-effort) para aparecer no painel de pedidos.
     // Só salva se o negócio tiver acesso Pro (recurso do painel).
-    if (!hasProAccess(business)) return
+    if (!hasProAccess(business)) return null
     try {
       const supabase = createClient()
       const addressParts = [addressStreet, selectedArea?.name || addressDistrict, addressComplement].filter(Boolean)
-      await supabase.from('orders').insert({
+      const { data } = await supabase.from('orders').insert({
         business_id: business.id,
         customer_name: customerName,
         customer_phone: customerPhone,
@@ -212,9 +212,11 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
         schedule: scheduleType === 'now' ? 'Agora' : (scheduleTime || 'A combinar'),
         observations: observations || null,
         status: 'pending',
-      })
+      }).select('order_number').single()
+      return (data?.order_number as number | undefined) ?? null
     } catch (err) {
       console.error('[saveOrderToDb]', err)
+      return null
     }
   }
 
@@ -231,8 +233,10 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     const message = buildWhatsAppMessage()
     window.open(`https://wa.me/55${whatsappNumber}?text=${message}`, '_blank')
 
-    // Salva o pedido no painel em segundo plano (sem bloquear o envio)
-    saveOrderToDb()
+    // Salva o pedido no painel em segundo plano e avisa o cliente com o número
+    saveOrderToDb().then(n => {
+      if (n) toast.success(`✅ Pedido #${n} enviado! Aguarde a confirmação do restaurante.`)
+    })
 
     // Baixa o estoque dos produtos controlados (desativa sozinho ao zerar)
     try {
