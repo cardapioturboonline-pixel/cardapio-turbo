@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { User, Store, Share2, CreditCard, AlertTriangle, Clock, Bike, Plus, Trash2, Gift, ImagePlus, Loader2 } from 'lucide-react'
+import { User, Store, Share2, CreditCard, AlertTriangle, Clock, Bike, Plus, Trash2, Gift, ImagePlus, Loader2, MessageCircle } from 'lucide-react'
 import type { OpeningHours, DayHours, DeliveryArea } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { hasProAccess, isOnTrial } from '@/lib/plan'
 
-type Tab = 'profile' | 'store' | 'social' | 'hours' | 'delivery' | 'loyalty' | 'payment' | 'danger'
+type Tab = 'profile' | 'store' | 'social' | 'hours' | 'delivery' | 'loyalty' | 'atendimento' | 'payment' | 'danger'
 
 const DAYS = [
   { key: 'monday', label: 'Segunda-feira' },
@@ -41,6 +41,7 @@ const tabs: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
   { id: 'hours', label: 'Horários', icon: Clock },
   { id: 'delivery', label: 'Entrega', icon: Bike },
   { id: 'loyalty', label: 'Fidelidade', icon: Gift },
+  { id: 'atendimento', label: 'Atendimento', icon: MessageCircle },
   { id: 'payment', label: 'Pagamentos', icon: CreditCard },
   { id: 'danger', label: 'Zona de Perigo', icon: AlertTriangle },
 ]
@@ -61,6 +62,9 @@ export default function SettingsPage() {
   const [fixedFee, setFixedFee] = useState<string>('')
   const [deliveryMode, setDeliveryMode] = useState<'neighborhood' | 'fixed'>('neighborhood')
   const [pickupEnabled, setPickupEnabled] = useState(true)
+  const [chatbotEnabled, setChatbotEnabled] = useState(false)
+  const [chatbotGreeting, setChatbotGreeting] = useState('')
+  const [chatbotFaqs, setChatbotFaqs] = useState<{ q: string; a: string }[]>([])
   const [loyaltyEnabled, setLoyaltyEnabled] = useState(false)
   const [loyaltyGoal, setLoyaltyGoal] = useState(10)
   const [loyaltyReward, setLoyaltyReward] = useState('')
@@ -112,6 +116,9 @@ export default function SettingsPage() {
         ?? (business.delivery_areas?.length ? 'neighborhood' : (business.delivery_fixed_fee != null ? 'fixed' : 'neighborhood'))
       setDeliveryMode(inferred)
       setPickupEnabled(business.pickup_enabled !== false)
+      setChatbotEnabled(!!business.chatbot_enabled)
+      setChatbotGreeting(business.chatbot_greeting || '')
+      setChatbotFaqs(business.chatbot_faqs?.length ? business.chatbot_faqs : [])
       setLoyaltyEnabled(business.loyalty_enabled ?? false)
       setLoyaltyGoal(business.loyalty_goal ?? 10)
       setLoyaltyReward(business.loyalty_reward ?? '')
@@ -528,6 +535,87 @@ export default function SettingsPage() {
 
               <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-sm text-blue-700">
                 💡 O progresso conta os pedidos <strong>concluídos</strong> (marcados como entregue no painel de Pedidos). Quando o cliente atingir a meta, ele vê o aviso do brinde no cardápio.
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'atendimento' && !proAccess && (
+            <div className="space-y-4">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                Atendente rápido
+                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-bold text-orange-600">PRO</span>
+              </h2>
+              <div className="rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 p-6 text-white">
+                <div className="flex items-center gap-3 mb-3">
+                  <MessageCircle className="h-6 w-6" />
+                  <h3 className="font-semibold">Um atendente de respostas prontas no seu cardápio</h3>
+                </div>
+                <p className="text-sm text-orange-100 mb-4">
+                  Um botão de atendimento com perguntas e respostas prontas + link direto pro seu WhatsApp. Sem robô no seu número, sem risco de bloqueio. Recurso do plano Pro (R$ 29,90/mês).
+                </p>
+                <Link href="/dashboard/plans" className="inline-block rounded-lg bg-white px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">Ver plano Pro</Link>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'atendimento' && proAccess && (
+            <div className="space-y-5">
+              <div className="flex items-center justify-between rounded-xl border border-gray-200 p-4">
+                <div>
+                  <p className="font-semibold text-gray-900">Atendente rápido no cardápio</p>
+                  <p className="text-sm text-gray-500">Mostra um botão de atendimento com respostas prontas + WhatsApp. Usa link oficial (não conecta seu número).</p>
+                </div>
+                <button
+                  onClick={() => setChatbotEnabled(v => !v)}
+                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${chatbotEnabled ? 'bg-orange-500' : 'bg-gray-300'}`}
+                >
+                  <span className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${chatbotEnabled ? 'left-6' : 'left-1'}`} />
+                </button>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Mensagem de boas-vindas</Label>
+                <Input value={chatbotGreeting} onChange={e => setChatbotGreeting(e.target.value)} placeholder="Ex.: Olá! Bem-vindo. Como podemos ajudar?" />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Perguntas e respostas</Label>
+                {chatbotFaqs.length === 0 && (
+                  <p className="text-sm text-gray-400 py-3 text-center border-2 border-dashed border-gray-200 rounded-lg">Nenhuma pergunta ainda. Adicione abaixo.</p>
+                )}
+                {chatbotFaqs.map((f, i) => (
+                  <div key={i} className="rounded-xl border border-gray-200 p-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Input value={f.q} onChange={e => setChatbotFaqs(prev => prev.map((x, idx) => idx === i ? { ...x, q: e.target.value } : x))} placeholder="Pergunta (ex.: Qual o horário de funcionamento?)" className="flex-1" />
+                      <button onClick={() => setChatbotFaqs(prev => prev.filter((_, idx) => idx !== i))} className="rounded-md p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 shrink-0">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <textarea value={f.a} onChange={e => setChatbotFaqs(prev => prev.map((x, idx) => idx === i ? { ...x, a: e.target.value } : x))}
+                      placeholder="Resposta (ex.: Funcionamos de terça a domingo, das 18h às 23h.)" rows={2}
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
+                  </div>
+                ))}
+                <button onClick={() => setChatbotFaqs(prev => [...prev, { q: '', a: '' }])}
+                  className="flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-600">
+                  <Plus className="h-4 w-4" /> Adicionar pergunta
+                </button>
+              </div>
+
+              <button onClick={async () => {
+                setSaving(true)
+                const cleanFaqs = chatbotFaqs.filter(f => f.q.trim() && f.a.trim()).map(f => ({ q: f.q.trim(), a: f.a.trim() }))
+                const ok = await updateBusiness({ chatbot_enabled: chatbotEnabled, chatbot_greeting: chatbotGreeting.trim() || null, chatbot_faqs: cleanFaqs })
+                setSaving(false)
+                if (!ok) { toast.error('Erro ao salvar o atendimento'); return }
+                setChatbotFaqs(cleanFaqs)
+                toast.success('Atendimento salvo!')
+              }} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
+                {saving ? 'Salvando...' : 'Salvar'}
+              </button>
+
+              <div className="rounded-lg bg-green-50 border border-green-100 p-3 text-sm text-green-700">
+                🔒 Seguro: isso <strong>não conecta seu WhatsApp</strong> nem usa robô no seu número. É só um atendente de respostas prontas com um botão que abre o WhatsApp normalmente.
               </div>
             </div>
           )}

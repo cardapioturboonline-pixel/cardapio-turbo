@@ -5,6 +5,7 @@ import { MessageCircle, Search, ShoppingCart, Link as LinkIcon, MapPin, Clock, S
 import type { Business, Category, Product, Review } from '@/types'
 import { ProductCard } from '@/components/shared/ProductCard'
 import { CartDrawer } from '@/components/menu/CartDrawer'
+import { ChatWidget } from '@/components/menu/ChatWidget'
 import { Reviews } from '@/components/menu/Reviews'
 import { useCartStore } from '@/lib/stores/cart'
 import { isOpenNow } from '@/lib/utils/format'
@@ -230,6 +231,7 @@ export function MenuClient({ business, categories, products, reviews = [] }: Men
       </footer>
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} business={business} />
+      {showReviews && business.chatbot_enabled && <ChatWidget business={business} />}
     </div>
   )
 }

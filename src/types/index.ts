@@ -122,6 +122,9 @@ export interface Business {
   delivery_fixed_fee?: number | null
   delivery_mode?: 'neighborhood' | 'fixed' | null
   pickup_enabled?: boolean
+  chatbot_enabled?: boolean
+  chatbot_greeting?: string | null
+  chatbot_faqs?: { q: string; a: string }[]
   loyalty_enabled?: boolean
   loyalty_goal?: number
   loyalty_reward?: string
