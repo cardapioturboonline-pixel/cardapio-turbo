@@ -52,6 +52,29 @@ export interface Order {
   created_at: string
 }
 
+export type CashMovementType = 'entrada' | 'saida' | 'sangria' | 'suprimento'
+
+export interface CashSession {
+  id: string
+  business_id: string
+  opened_at: string
+  closed_at?: string | null
+  opening_amount: number
+  closing_amount?: number | null
+  notes?: string | null
+  created_at: string
+}
+
+export interface CashMovement {
+  id: string
+  session_id: string
+  business_id: string
+  type: CashMovementType
+  amount: number
+  description?: string | null
+  created_at: string
+}
+
 export interface Customer {
   id: string
   business_id: string

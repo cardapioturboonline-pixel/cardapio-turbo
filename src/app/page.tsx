@@ -181,6 +181,7 @@ const plans = [
       "Programa de fidelidade",
       "Avaliações dos clientes",
       "Cupons de desconto",
+      "Controle de caixa",
       "Relatórios avançados",
       "Temas premium e QR com logo",
       "Sem marca d'água",
