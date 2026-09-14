@@ -240,7 +240,8 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
       const agg = new Map<string, number>()
       for (const it of items) agg.set(it.product.id, (agg.get(it.product.id) || 0) + it.quantity)
       const payload = [...agg.entries()].map(([product_id, quantity]) => ({ product_id, quantity }))
-      if (payload.length) supabase.rpc('decrement_stock', { p_items: payload })
+      // .then() é necessário: o builder do supabase só dispara a requisição quando "thenado".
+      if (payload.length) supabase.rpc('decrement_stock', { p_items: payload }).then(() => {}, () => {})
     } catch { /* estoque é best-effort; nunca bloqueia o pedido */ }
 
     clearCart()
