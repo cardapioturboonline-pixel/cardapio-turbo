@@ -1,203 +1,68 @@
-import Link from "next/link";
-import {
-  QrCode, Smartphone, Zap, TrendingUp, Star, CheckCircle2,
-  ArrowRight, MessageCircle, ShoppingCart, BarChart3, Sparkles,
-  Clock, MapPin, CreditCard, Palette, Package, Users, Bell, Bike, Gift, X as XIcon,
-  Pizza, ListPlus, Plus, Ticket
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+'use client'
 
-const features = [
-  {
-    icon: MessageCircle, title: "Pedido via WhatsApp", pro: false, img: "/funcionalidades/cardapio.png",
-    desc: "O cliente monta o pedido e ele chega prontinho no seu WhatsApp.",
-    steps: [
-      "O cliente navega pelo seu cardápio e adiciona os itens ao carrinho.",
-      "Escolhe entrega ou retirada e a forma de pagamento.",
-      "Ao finalizar, o pedido chega no seu WhatsApp já formatado, com itens, observações, endereço e total.",
-      "Você confirma e prepara, sem erro de anotação e sem comissão de aplicativo.",
-    ],
-  },
-  {
-    icon: Pizza, title: "Modo Pizzaria (meio a meio)", pro: true, img: "/funcionalidades/pizza.png",
-    desc: "Pizza meio a meio com o preço calculado automaticamente.",
-    steps: [
-      "Crie uma categoria Pizzas e cadastre cada sabor.",
-      "No produto, ative o Modo Pizza e informe os tamanhos com preço (ex.: Broto, Grande).",
-      "Escolha permitir meio a meio (2 sabores).",
-      "No cardápio, o cliente monta a pizza e o preço sai automático, pela média dos dois sabores.",
-    ],
-  },
-  {
-    icon: ListPlus, title: "Adicionais e Opções", pro: false, img: "/funcionalidades/adicionais.png",
-    desc: "Açaí montável, ponto da carne, marmita e muito mais.",
-    steps: [
-      "No produto, abra Adicionais e opções e crie grupos (ex.: Tamanho, Adicionais).",
-      "Defina se o grupo é obrigatório e quantas opções o cliente pode escolher.",
-      "Adicione as opções com preço (ex.: bacon +R$4, açaí 500ml R$20, leite condensado +R$3).",
-      "O cliente monta o produto do jeito dele e o preço soma sozinho.",
-    ],
-  },
-  {
-    icon: Bell, title: "Painel de Pedidos ao Vivo", pro: true, img: "/funcionalidades/painel.png",
-    desc: "Receba e gerencie os pedidos em tempo real, com aviso sonoro.",
-    steps: [
-      "Abra a aba Pedidos no seu painel.",
-      "Cada novo pedido aparece na hora, com aviso sonoro.",
-      "Mova o pedido pelos status: recebido, em preparo, saiu para entrega, concluído.",
-      "Acompanhe tudo organizado, mesmo nos horários de pico.",
-    ],
-  },
-  {
-    icon: Bike, title: "Frete por Bairro", pro: true, img: "/funcionalidades/frete.png",
-    desc: "Cadastre as taxas e o cliente vê a entrega calculada sozinha.",
-    steps: [
-      "Vá em Configurações e abra a área de entrega.",
-      "Cadastre cada bairro que você atende e a taxa de cada um.",
-      "Adicione também a opção de retirada no local.",
-      "No carrinho, o cliente vê o frete calculado automaticamente pela região.",
-    ],
-  },
-  {
-    icon: Ticket, title: "Cupons de Desconto", pro: true, img: "/funcionalidades/cupom.png",
-    desc: "Crie promoções e atraia mais pedidos.",
-    steps: [
-      "Acesse a aba Promoções.",
-      "Crie um cupom com um código fácil (ex.: BEMVINDO10).",
-      "Escolha desconto percentual ou valor fixo e o pedido mínimo.",
-      "Divulgue o código; o cliente aplica na hora de fechar o pedido.",
-    ],
-  },
-  {
-    icon: Gift, title: "Programa de Fidelidade", pro: true, img: "/funcionalidades/fidelidade.png",
-    desc: "A cada X pedidos, seu cliente ganha um brinde e volta mais.",
-    steps: [
-      "Ative a fidelidade em Configurações.",
-      "Defina a meta (ex.: a cada 10 pedidos) e o prêmio.",
-      "O cliente acompanha o progresso no próprio cardápio.",
-      "Ao bater a meta, ele ganha o brinde e cria o hábito de pedir de você.",
-    ],
-  },
-  {
-    icon: Palette, title: "Personalização Total", pro: false, img: "/funcionalidades/personalizar.png",
-    desc: "Cores, fontes, tema e layout com a cara da sua marca.",
-    steps: [
-      "Vá em Personalizar no painel.",
-      "Escolha a cor principal, a fonte e o tema (claro ou escuro).",
-      "Selecione o layout (compacto ou premium) e adicione a logo.",
-      "O cardápio fica com a identidade da sua marca na hora.",
-    ],
-  },
-  {
-    icon: QrCode, title: "QR Code Profissional", pro: false, img: "/funcionalidades/qrcode.png",
-    desc: "Gere e baixe QR Codes com a logo da sua marca.",
-    steps: [
-      "Acesse o menu QR Code no painel.",
-      "Personalize com a sua logo e a cor do seu negócio.",
-      "Baixe e imprima para colar na mesa, no balcão e na vitrine.",
-      "O cliente escaneia e abre seu cardápio na hora.",
-    ],
-  },
-  {
-    icon: BarChart3, title: "Relatórios de Vendas", pro: true, img: "/funcionalidades/relatorios.png",
-    desc: "Acompanhe faturamento, ticket médio e os mais vendidos.",
-    steps: [
-      "Acesse Relatórios no dashboard.",
-      "Veja os produtos mais vendidos e as visualizações do cardápio.",
-      "Acompanhe o faturamento e o ticket médio.",
-      "Use os dados para decidir o que destacar e quais combos criar.",
-    ],
-  },
-  {
-    icon: Star, title: "Avaliações dos Clientes", pro: true,
-    desc: "Estrelas e comentários que atraem novos clientes.",
-    steps: [
-      "Ative as avaliações no seu cardápio.",
-      "Os clientes deixam estrelas e comentários após o pedido.",
-      "As melhores avaliações aparecem no seu cardápio.",
-      "A prova social aumenta a confiança de quem está decidindo onde pedir.",
-    ],
-  },
-  {
-    icon: Smartphone, title: "100% Mobile First", pro: false,
-    desc: "Otimizado para o celular, onde seus clientes estão.",
-    steps: [
-      "Tudo funciona pelo celular, tanto pra você quanto pro cliente.",
-      "O cardápio carrega rápido e é fácil de navegar no telefone.",
-      "Você gerencia produtos e pedidos do próprio celular.",
-      "O cliente pede em poucos toques, sem instalar nada.",
-    ],
-  },
-];
+import Link from "next/link"
+import { useEffect, useRef, useState } from "react"
+import {
+  QrCode, Smartphone, Zap, Star, CheckCircle2, Check, ArrowRight, MessageCircle,
+  BarChart3, MapPin, Palette, Bell, Bike, Gift, Pizza, ListPlus, Ticket,
+  Menu as MenuIcon, X as XIcon, Users, Wallet, TrendingUp,
+} from "lucide-react"
+
+/* ----------------------------- DADOS (preservados) ----------------------------- */
+
+const resources = [
+  { icon: MessageCircle, title: "Pedido via WhatsApp", pro: false, desc: "O cliente monta o pedido e ele chega prontinho no seu WhatsApp." },
+  { icon: Pizza, title: "Modo Pizzaria", pro: true, desc: "Pizza meio a meio com o preço calculado automaticamente." },
+  { icon: ListPlus, title: "Adicionais e Opções", pro: false, desc: "Açaí montável, ponto da carne, marmita e muito mais." },
+  { icon: Bell, title: "Painel de Pedidos", pro: true, desc: "Receba e gerencie os pedidos em tempo real, com aviso sonoro." },
+  { icon: Bike, title: "Frete por Bairro", pro: true, desc: "Cadastre as taxas e o cliente vê a entrega calculada sozinha." },
+  { icon: Ticket, title: "Cupons de Desconto", pro: true, desc: "Crie promoções e atraia mais pedidos." },
+  { icon: Gift, title: "Programa de Fidelidade", pro: true, desc: "A cada X pedidos, seu cliente ganha um brinde e volta mais." },
+  { icon: QrCode, title: "QR Code Profissional", pro: false, desc: "Gere e baixe QR Codes com a logo da sua marca." },
+  { icon: BarChart3, title: "Relatórios de Vendas", pro: true, desc: "Acompanhe faturamento, ticket médio e os mais vendidos." },
+  { icon: Star, title: "Avaliações", pro: true, desc: "Estrelas e comentários que atraem novos clientes." },
+  { icon: Palette, title: "Personalização", pro: false, desc: "Cores, fontes, tema e layout com a cara da sua marca." },
+  { icon: Smartphone, title: "100% Mobile First", pro: false, desc: "Otimizado para o celular, onde seus clientes estão." },
+]
+
+const featureTabs = [
+  { key: "Pedidos", pro: false, title: "Pedidos via WhatsApp", desc: "Seu cliente monta o pedido. O Cardápio Turbo organiza tudo e envia direto para o seu WhatsApp, já formatado.", img: "/funcionalidades/cardapio.png" },
+  { key: "Cardápio", pro: false, title: "Cardápio digital", desc: "Produtos com foto, descrição e preço, organizados por categoria, com a identidade da sua marca.", img: "/funcionalidades/personalizar.png" },
+  { key: "Pizzaria", pro: true, title: "Modo Pizzaria", desc: "Pizza meio a meio com o preço calculado automaticamente pela média dos sabores.", img: "/funcionalidades/pizza.png" },
+  { key: "Adicionais", pro: false, title: "Adicionais e opções", desc: "Açaí montável, ponto da carne, marmita: o cliente monta do jeito dele e o preço soma sozinho.", img: "/funcionalidades/adicionais.png" },
+  { key: "Delivery", pro: true, title: "Frete por bairro", desc: "Cadastre as taxas por bairro e o cliente vê o valor da entrega calculado no carrinho.", img: "/funcionalidades/frete.png" },
+  { key: "Fidelidade", pro: true, title: "Programa de fidelidade", desc: "A cada X pedidos o cliente ganha um brinde e cria o hábito de pedir de você.", img: "/funcionalidades/fidelidade.png" },
+  { key: "Cupons", pro: true, title: "Cupons de desconto", desc: "Crie promoções com códigos e atraia mais pedidos, com pedido mínimo se quiser.", img: "/funcionalidades/cupom.png" },
+  { key: "Relatórios", pro: true, title: "Relatórios de vendas", desc: "Acompanhe faturamento, ticket médio e os produtos mais vendidos.", img: "/funcionalidades/relatorios.png" },
+  { key: "QR Code", pro: false, title: "QR Code profissional", desc: "Gere e baixe QR Codes com a logo da sua marca para colar na mesa e no balcão.", img: "/funcionalidades/qrcode.png" },
+]
 
 const steps = [
-  { number: "01", title: "Crie sua conta grátis", desc: "Cadastro em 30 segundos, sem cartão de crédito" },
-  { number: "02", title: "Configure sua loja", desc: "Adicione logo, cores e informações do seu negócio" },
-  { number: "03", title: "Cadastre seu cardápio", desc: "Produtos, fotos, preços e categorias facilmente" },
-  { number: "04", title: "Compartilhe e venda mais", desc: "Gere o QR Code e compartilhe o link com seus clientes" },
-];
+  { number: "01", title: "Crie sua conta", desc: "Cadastro rápido e sem cartão." },
+  { number: "02", title: "Personalize", desc: "Adicione logo, cores e informações." },
+  { number: "03", title: "Monte seu cardápio", desc: "Produtos, fotos, preços e categorias." },
+  { number: "04", title: "Comece a vender", desc: "Compartilhe seu link ou QR Code." },
+]
 
 const plans = [
   {
-    name: "Free",
-    price: "R$ 0",
-    period: "",
-    badge: null,
-    color: "border-gray-200",
-    btnVariant: "outline" as const,
-    features: [
-      "7 dias grátis para testar tudo",
-      "Até 15 produtos",
-      "Até 3 categorias",
-      "1 cardápio digital",
-      "QR Code básico",
-      "Pedido por WhatsApp",
-      "Personalização básica",
-    ],
-    locked: [
-      "Painel de pedidos em tempo real",
-      "Frete automático por bairro",
-      "Programa de fidelidade",
-      "Avaliações dos clientes",
-      "Cupons de desconto",
-    ],
-    cta: "Começar grátis",
-    href: "/register",
+    name: "Free", price: "R$ 0", period: "por 7 dias", badge: null,
+    features: ["7 dias grátis para testar tudo", "Até 15 produtos", "Até 3 categorias", "1 cardápio digital", "QR Code básico", "Pedido por WhatsApp", "Personalização básica"],
+    locked: ["Painel de pedidos em tempo real", "Frete automático por bairro", "Programa de fidelidade", "Avaliações dos clientes", "Cupons de desconto"],
+    cta: "Começar grátis", href: "/register",
   },
   {
-    name: "Pro",
-    price: "R$ 29,90",
-    period: "/mês",
-    badge: "Mais popular",
-    color: "border-orange-500 ring-2 ring-orange-500",
-    btnVariant: "default" as const,
-    features: [
-      "Tudo do plano Free",
-      "Produtos e categorias ilimitados",
-      "Modo pizzaria (meio a meio)",
-      "Painel de pedidos em tempo real",
-      "Frete automático por bairro",
-      "Programa de fidelidade",
-      "Avaliações dos clientes",
-      "Cupons de desconto",
-      "Cozinha e comanda impressa",
-      "Controle de caixa",
-      "Perguntas frequentes no cardápio",
-      "Relatórios avançados",
-      "Temas premium e QR com logo",
-      "Sem marca d'água",
-    ],
-    cta: "Assinar Pro",
-    href: "/register",
+    name: "Pro", price: "R$ 29,90", period: "/mês", badge: "Mais popular",
+    features: ["Tudo do plano Free", "Produtos e categorias ilimitados", "Modo pizzaria (meio a meio)", "Painel de pedidos em tempo real", "Frete automático por bairro", "Programa de fidelidade", "Avaliações dos clientes", "Cupons de desconto", "Cozinha e comanda impressa", "Controle de caixa", "Perguntas frequentes no cardápio", "Relatórios avançados", "Temas premium e QR com logo", "Sem marca d'água"],
+    cta: "Quero o Pro", href: "/register",
   },
-];
+]
 
 const testimonials = [
   { name: "Ana Paula", role: "Hamburgueria Artesanal SP", text: "Em 10 minutos já tínhamos nosso cardápio no ar. As vendas pelo WhatsApp aumentaram muito!", avatar: "A" },
   { name: "Carlos Mendes", role: "Pizzaria Bairro", text: "O QR Code com nossa logo ficou incrível. Colocamos nas mesas e o movimento aumentou bastante.", avatar: "C" },
   { name: "Fernanda Lima", role: "Cafeteria", text: "Os insights me mostraram quais produtos precisavam de foto. Depois que adicionei, as vendas dobraram!", avatar: "F" },
-];
+]
 
 const homeFaqs = [
   { q: 'O que é o Cardápio Turbo?', a: 'O Cardápio Turbo é uma plataforma para criar um cardápio digital profissional para lanchonetes, pizzarias, hamburguerias e outros negócios de alimentação. O cliente acessa por link ou QR Code e envia o pedido direto para o seu WhatsApp, sem comissão por venda.' },
@@ -210,406 +75,492 @@ const homeFaqs = [
 const homeJsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
-    {
-      '@type': 'Organization',
-      '@id': 'https://cardapioturbo.com.br/#organization',
-      name: 'Cardápio Turbo',
-      url: 'https://cardapioturbo.com.br',
-      logo: 'https://cardapioturbo.com.br/icon.png',
-      description: 'Plataforma de cardápio digital com pedidos pelo WhatsApp para negócios de alimentação.',
-      sameAs: ['https://instagram.com/cardapioturboonline'],
-    },
-    {
-      '@type': 'SoftwareApplication',
-      '@id': 'https://cardapioturbo.com.br/#software',
-      name: 'Cardápio Turbo',
-      applicationCategory: 'BusinessApplication',
-      operatingSystem: 'Web',
-      url: 'https://cardapioturbo.com.br',
-      description: 'Crie um cardápio digital profissional em minutos e receba pedidos direto no WhatsApp. Inclui painel de pedidos ao vivo, frete por bairro, cupons, programa de fidelidade, QR Code e relatórios.',
-      featureList: [
-        'Cardápio digital com foto e preço',
-        'Modo pizzaria com meio a meio (preço proporcional)',
-        'Pedidos direto no WhatsApp',
-        'Painel de pedidos ao vivo',
-        'Frete automático por bairro',
-        'Cupons de desconto',
-        'Programa de fidelidade',
-        'Avaliações de clientes',
-        'QR Code personalizado',
-        'Relatórios de vendas',
-      ],
-      offers: [
-        {
-          '@type': 'Offer',
-          name: 'Teste grátis',
-          category: 'free trial',
-          price: '0',
-          priceCurrency: 'BRL',
-          description: '7 dias grátis para testar todos os recursos, sem cartão de crédito.',
-        },
-        {
-          '@type': 'Offer',
-          name: 'Plano Pro',
-          price: '29.90',
-          priceCurrency: 'BRL',
-          description: 'Plano Pro mensal: produtos ilimitados, painel de pedidos ao vivo, cupons, fidelidade, relatórios, QR com logo e sem marca d’água.',
-          url: 'https://cardapioturbo.com.br/#plans',
-          availability: 'https://schema.org/InStock',
-        },
-      ],
-      publisher: { '@id': 'https://cardapioturbo.com.br/#organization' },
-    },
-    {
-      '@type': 'FAQPage',
-      mainEntity: homeFaqs.map(f => ({
-        '@type': 'Question',
-        name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
-      })),
-    },
+    { '@type': 'Organization', '@id': 'https://cardapioturbo.com.br/#organization', name: 'Cardápio Turbo', url: 'https://cardapioturbo.com.br', logo: 'https://cardapioturbo.com.br/icon.png', description: 'Plataforma de cardápio digital com pedidos pelo WhatsApp para negócios de alimentação.', sameAs: ['https://instagram.com/cardapioturboonline'] },
+    { '@type': 'SoftwareApplication', '@id': 'https://cardapioturbo.com.br/#software', name: 'Cardápio Turbo', applicationCategory: 'BusinessApplication', operatingSystem: 'Web', url: 'https://cardapioturbo.com.br', description: 'Crie um cardápio digital profissional em minutos e receba pedidos direto no WhatsApp. Inclui painel de pedidos ao vivo, frete por bairro, cupons, programa de fidelidade, QR Code e relatórios.', featureList: ['Cardápio digital com foto e preço', 'Modo pizzaria com meio a meio (preço proporcional)', 'Pedidos direto no WhatsApp', 'Painel de pedidos ao vivo', 'Frete automático por bairro', 'Cupons de desconto', 'Programa de fidelidade', 'Avaliações de clientes', 'QR Code personalizado', 'Relatórios de vendas'], offers: [{ '@type': 'Offer', name: 'Teste grátis', category: 'free trial', price: '0', priceCurrency: 'BRL', description: '7 dias grátis para testar todos os recursos, sem cartão de crédito.' }, { '@type': 'Offer', name: 'Plano Pro', price: '29.90', priceCurrency: 'BRL', description: 'Plano Pro mensal: produtos ilimitados, painel de pedidos ao vivo, cupons, fidelidade, relatórios, QR com logo e sem marca d’água.', url: 'https://cardapioturbo.com.br/#plans', availability: 'https://schema.org/InStock' }], publisher: { '@id': 'https://cardapioturbo.com.br/#organization' } },
+    { '@type': 'FAQPage', mainEntity: homeFaqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
   ],
 }
 
+const categorias = [
+  { emoji: "🍔", label: "Hamburguerias" },
+  { emoji: "🍕", label: "Pizzarias" },
+  { emoji: "🥤", label: "Lanchonetes" },
+  { emoji: "🍰", label: "Cafeterias" },
+  { emoji: "🥗", label: "Restaurantes" },
+  { emoji: "🍱", label: "Marmitarias" },
+]
+
+/* --------------------------------- COMPONENTE --------------------------------- */
+
+function brl(n: number) {
+  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
+}
+
 export default function LandingPage() {
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [tab, setTab] = useState(0)
+  const [rev, setRev] = useState(5000)
+  const [tax, setTax] = useState(10)
+  const [faqOpen, setFaqOpen] = useState<number | null>(0)
+  const revealRoot = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const on = () => setScrolled(window.scrollY > 16)
+    on(); window.addEventListener('scroll', on, { passive: true })
+    return () => window.removeEventListener('scroll', on)
+  }, [])
+
+  useEffect(() => {
+    const els = revealRoot.current?.querySelectorAll('[data-reveal]')
+    if (!els) return
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('reveal-in'); io.unobserve(e.target) } })
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' })
+    els.forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
+  const economia = Math.max(0, Math.round((rev * tax) / 100))
+  const nav = [
+    { label: "Produto", href: "#beneficios" },
+    { label: "Funcionalidades", href: "#features" },
+    { label: "Como funciona", href: "#how" },
+    { label: "Preços", href: "#plans" },
+    { label: "FAQ", href: "#faq" },
+  ]
+
   return (
-    <div className="min-h-screen bg-white">
+    <div ref={revealRoot} className="min-h-screen bg-[#FAFAF8] text-[#111111] antialiased">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
+      <style>{`
+        [data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+        [data-reveal].reveal-in{opacity:1;transform:none}
+        @keyframes ctFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+        .ct-float{animation:ctFloat 4.5s ease-in-out infinite}
+        .ct-float2{animation:ctFloat 5.5s ease-in-out infinite}
+        @media (prefers-reduced-motion: reduce){[data-reveal]{transition:none;opacity:1;transform:none}.ct-float,.ct-float2{animation:none}}
+        .no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+      `}</style>
+
+      {/* ============================== HEADER ============================== */}
+      <header className={`sticky top-0 z-50 transition-all ${scrolled ? 'bg-white/80 backdrop-blur-md border-b border-black/5 shadow-sm' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center shadow-sm shadow-orange-200">
               <Zap className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-xl text-gray-900">Cardápio Turbo</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
-            <a href="#features" className="hover:text-orange-500 transition-colors">Funcionalidades</a>
-            <a href="#plans" className="hover:text-orange-500 transition-colors">Planos</a>
-            <Link href="/blog" className="hover:text-orange-500 transition-colors">Blog</Link>
-            <Link href="/faq" className="hover:text-orange-500 transition-colors">FAQ</Link>
-            <Link href="/sobre" className="hover:text-orange-500 transition-colors">Sobre</Link>
-            <Link href="/contato" className="hover:text-orange-500 transition-colors">Contato</Link>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login">
-              <Button variant="ghost" size="sm">Entrar</Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
-                Criar grátis
-              </Button>
+            <span className="font-bold text-lg tracking-tight">Cardápio Turbo</span>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-8 text-sm text-[#666666]">
+            {nav.map(n => <a key={n.href} href={n.href} className="hover:text-[#111111] transition-colors">{n.label}</a>)}
+          </nav>
+
+          <div className="hidden md:flex items-center gap-3">
+            <Link href="/login" className="text-sm font-medium text-[#666666] hover:text-[#111111] px-3 py-2">Entrar</Link>
+            <Link href="/register" className="text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-xl px-4 py-2.5 shadow-sm shadow-green-600/20 transition-colors">
+              Criar grátis
             </Link>
           </div>
+
+          <button className="md:hidden p-2 -mr-2 text-[#111111]" onClick={() => setMenuOpen(v => !v)} aria-label="Menu">
+            {menuOpen ? <XIcon className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
+          </button>
         </div>
-      </nav>
-
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-50 pt-20 pb-32">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmOTczMTYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0ibTM2IDM0di00aC0ydi00aC0ydjRoLTJ2NGgydi00aDJ2NEgzNnptMC0zMFYwaDR2MmgydjJoMlYyaDJ2LTJoNFYwaDJ2Mmg0di0yaDJWMGg0djRoLTJ2MmgtMlYyaC00djJoLTJWMmgtNHYyaC0yVjJoLTR2MmgtMlYwSDM2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-40" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
-          <Badge className="mb-6 bg-orange-100 text-orange-600 hover:bg-orange-100 border-orange-200">
-            🚀 Delivery próprio, sem comissão
-          </Badge>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
-            O delivery é seu.{" "}
-            <span className="text-orange-500">Não do aplicativo.</span>
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
-            Cardápio digital com link próprio e QR Code. Seus clientes pedem direto no seu WhatsApp — sem comissão, sem intermediário e com a base de clientes 100% sua.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
-              <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-orange-200">
-                Criar meu cardápio grátis
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            <Link href="/menu/dogao-do-denis-ikir">
-              <Button size="lg" variant="outline" className="px-8 py-6 text-lg rounded-xl">
-                Ver demonstração
-              </Button>
-            </Link>
+        {menuOpen && (
+          <div className="md:hidden bg-white border-b border-black/5 px-4 py-4 space-y-1">
+            {nav.map(n => <a key={n.href} href={n.href} onClick={() => setMenuOpen(false)} className="block px-2 py-2.5 rounded-lg text-[#111111] hover:bg-black/5">{n.label}</a>)}
+            <div className="flex gap-3 pt-2">
+              <Link href="/login" className="flex-1 text-center rounded-xl border border-black/10 px-4 py-2.5 text-sm font-medium">Entrar</Link>
+              <Link href="/register" className="flex-1 text-center rounded-xl bg-green-600 text-white px-4 py-2.5 text-sm font-semibold">Criar grátis</Link>
+            </div>
           </div>
-          <p className="mt-4 text-sm text-gray-400">7 dias grátis • Sem cartão de crédito • Setup em 5 minutos</p>
+        )}
+      </header>
 
-          {/* Hero mockup */}
-          <div className="mt-16 relative max-w-4xl mx-auto">
-            <div className="bg-gray-900 rounded-2xl p-4 shadow-2xl">
-              <div className="bg-white rounded-xl overflow-hidden">
-                <div className="bg-gradient-to-r from-orange-500 to-orange-600 h-32 flex items-end p-4">
-                  <div>
-                    <div className="w-16 h-16 bg-white rounded-xl mb-2 flex items-center justify-center shadow-md">
-                      <span className="text-2xl">🍔</span>
-                    </div>
-                    <h3 className="text-white font-bold text-xl">Burger House</h3>
-                    <p className="text-orange-100 text-sm">Aberto agora • WhatsApp disponível</p>
+      {/* ============================== HERO ============================== */}
+      <section className="relative overflow-hidden">
+        <div className="pointer-events-none absolute -top-24 -right-24 w-[480px] h-[480px] rounded-full bg-orange-100/50 blur-3xl" />
+        <div className="pointer-events-none absolute top-40 -left-32 w-[420px] h-[420px] rounded-full bg-green-100/40 blur-3xl" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20 lg:pt-20 lg:pb-28 grid lg:grid-cols-2 gap-12 lg:gap-8 items-center relative">
+          <div data-reveal>
+            <span className="inline-flex items-center gap-2 rounded-full bg-green-50 border border-green-100 px-3 py-1 text-xs font-semibold text-green-700 mb-6">
+              <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Sem comissão por pedido
+            </span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">
+              Seu restaurante.<br />Seu cardápio.<br />
+              <span className="text-green-600">Suas vendas.</span>
+            </h1>
+            <p className="mt-6 text-lg text-[#666666] max-w-xl">
+              Crie um cardápio digital profissional, receba pedidos pelo WhatsApp e venda sem pagar comissão para aplicativos.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <Link href="/register" className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 text-white px-7 py-4 text-base font-semibold shadow-lg shadow-green-600/20 transition-colors">
+                Criar meu cardápio grátis <ArrowRight className="w-5 h-5" />
+              </Link>
+              <a href="#how" className="inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-black/10 hover:border-black/20 px-7 py-4 text-base font-semibold transition-colors">
+                Ver como funciona
+              </a>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#666666]">
+              {["7 dias grátis", "Sem cartão de crédito", "Setup em 5 minutos"].map(t => (
+                <span key={t} className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> {t}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Mockup */}
+          <div className="relative flex justify-center lg:justify-end" data-reveal>
+            <div className="relative w-[290px] sm:w-[320px]">
+              <div className="rounded-[2.75rem] bg-[#111111] p-3 shadow-2xl shadow-black/20">
+                <div className="rounded-[2.25rem] bg-white overflow-hidden">
+                  <div className="h-8 bg-white flex items-center justify-center"><div className="h-5 w-24 bg-[#111111] rounded-full" /></div>
+                  <div className="bg-gradient-to-br from-orange-500 to-orange-600 px-5 pt-3 pb-6">
+                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-xl shadow mb-2">🍔</div>
+                    <h3 className="text-white font-bold text-lg">Burger House</h3>
+                    <p className="text-orange-50 text-xs">Aberto agora • WhatsApp disponível</p>
                   </div>
-                </div>
-                <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {[
-                    { name: "X-Burguer Clássico", price: "R$ 24,90", tag: "🔥 Mais pedido" },
-                    { name: "Combo Duplo", price: "R$ 39,90", tag: "⭐ Destaque" },
-                    { name: "Batata Frita G", price: "R$ 14,90", tag: null },
-                  ].map((item, i) => (
-                    <div key={i} className="border border-gray-100 rounded-lg p-3 text-left">
-                      <div className="bg-orange-50 rounded-lg h-16 mb-2 flex items-center justify-center">
-                        <span className="text-2xl">🍟</span>
+                  <div className="p-4 space-y-2.5">
+                    {[["X-Burguer Clássico", "R$ 24,90", "🍔"], ["Combo Duplo", "R$ 39,90", "🍟"], ["Batata Frita", "R$ 14,90", "🍟"]].map(([n, p, e]) => (
+                      <div key={n} className="flex items-center gap-3 rounded-xl border border-black/5 p-2.5">
+                        <div className="h-11 w-11 rounded-lg bg-orange-50 flex items-center justify-center text-lg">{e}</div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-[#111111] truncate">{n}</p>
+                          <p className="text-sm font-bold text-orange-500">{p}</p>
+                        </div>
+                        <div className="h-7 w-7 rounded-full bg-orange-500 text-white flex items-center justify-center text-sm">+</div>
                       </div>
-                      {item.tag && <span className="text-xs text-orange-500 font-medium">{item.tag}</span>}
-                      <p className="text-xs font-medium text-gray-900 mt-1">{item.name}</p>
-                      <p className="text-sm font-bold text-orange-500">{item.price}</p>
+                    ))}
+                    <div className="mt-1 rounded-xl bg-green-600 text-white text-sm font-semibold py-3 flex items-center justify-center gap-2">
+                      <MessageCircle className="w-4 h-4" /> Pedir pelo WhatsApp
                     </div>
-                  ))}
-                </div>
-                <div className="p-3 border-t">
-                  <div className="bg-green-500 text-white text-sm rounded-lg p-2 text-center flex items-center justify-center gap-2">
-                    <MessageCircle className="w-4 h-4" />
-                    Pedir pelo WhatsApp
                   </div>
                 </div>
+              </div>
+              {/* elementos flutuantes */}
+              <div className="ct-float absolute -left-6 top-24 hidden sm:flex items-center gap-2 rounded-2xl bg-white shadow-xl border border-black/5 px-3 py-2">
+                <span className="h-8 w-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><Bell className="w-4 h-4" /></span>
+                <div><p className="text-[11px] font-bold leading-tight">Novo pedido</p><p className="text-[10px] text-[#666666]">agora mesmo</p></div>
+              </div>
+              <div className="ct-float2 absolute -right-4 top-8 hidden sm:flex items-center gap-2 rounded-2xl bg-white shadow-xl border border-black/5 px-3 py-2">
+                <span className="text-green-600 font-extrabold">+ R$ 84,70</span>
+              </div>
+              <div className="ct-float absolute -right-6 bottom-28 hidden sm:flex items-center gap-2 rounded-2xl bg-white shadow-xl border border-black/5 px-3 py-2">
+                <MessageCircle className="w-4 h-4 text-green-600" /><span className="text-[11px] font-semibold">Pedido via WhatsApp</span>
+              </div>
+              <div className="ct-float2 absolute -left-4 bottom-10 hidden sm:flex items-center gap-1.5 rounded-2xl bg-white shadow-xl border border-black/5 px-3 py-2">
+                <Star className="w-4 h-4 fill-orange-400 text-orange-400" /><span className="text-[11px] font-bold">4,9</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Veja funcionando */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <Badge className="mb-4 bg-orange-100 text-orange-600 hover:bg-orange-100">Veja funcionando</Badge>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
-                É assim que seu cliente pede
-              </h2>
-              <p className="text-lg text-gray-500 mb-6">
-                Uma gravação real do cardápio no ar: o cliente abre, navega pelos produtos com foto, escolhe e o pedido vai direto pro seu WhatsApp. Sem app pra instalar, sem comissão.
-              </p>
-              <ul className="space-y-3">
-                {["Cardápio com foto que dá água na boca", "Pedido montado em poucos toques", "Chega prontinho no seu WhatsApp"].map((t, i) => (
-                  <li key={i} className="flex items-center gap-3 text-gray-700">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                    {t}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/register">
-                <Button size="lg" className="mt-8 bg-orange-500 hover:bg-orange-600 text-white px-8 py-6 text-lg rounded-xl">
-                  Criar o meu grátis
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-            </div>
-            <div className="flex justify-center">
-              <video
-                className="w-[320px] max-w-full"
-                src="/demo-cardapio.mp4"
-                poster="/demo-cardapio-poster.jpg"
-                autoPlay
-                muted
-                loop
-                playsInline
-              />
-            </div>
+      {/* ============================== PROVA / CATEGORIAS ============================== */}
+      <section className="border-y border-black/5 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" data-reveal>
+          <p className="text-center text-sm font-semibold text-[#666666] mb-6">Feito para quem vende todos os dias</p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {categorias.map(c => (
+              <span key={c.label} className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-[#FAFAF8] px-4 py-2 text-sm font-medium text-[#111111]">
+                <span className="text-base">{c.emoji}</span> {c.label}
+              </span>
+            ))}
+          </div>
+          <div className="mt-6 flex items-center justify-center">
+            <a href="https://www.correiodoestado.com.br" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs text-[#666666] hover:text-[#111111]">
+              <Star className="w-3.5 h-3.5 fill-orange-400 text-orange-400" /> Como visto no <span className="font-semibold text-[#111111]">Correio do Estado</span>
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Na imprensa */}
-      <section className="py-8 bg-white border-y border-gray-100">
-        <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left">
-          <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">Na imprensa</span>
-          <a href="https://www.correiodoestado.com.br" target="_blank" rel="noreferrer"
-            className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors">
-            <Star className="w-4 h-4 fill-orange-400 text-orange-400" />
-            <span className="font-bold">Como visto no <span className="text-orange-500">Correio do Estado</span></span>
-          </a>
+      {/* ============================== BENEFÍCIOS ============================== */}
+      <section id="beneficios" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div className="max-w-3xl" data-reveal>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+            Pare de pagar comissão para vender o que é seu.
+          </h2>
+          <p className="mt-4 text-lg text-[#666666]">Seu cliente, seu pedido, seu WhatsApp e sua margem.</p>
+        </div>
+        <div className="mt-12 grid md:grid-cols-3 gap-6">
+          {[
+            { icon: MessageCircle, color: "bg-green-50 text-green-600", title: "Venda direto", desc: "Pedidos chegam no seu WhatsApp já organizados, com itens, endereço e total." },
+            { icon: Wallet, color: "bg-orange-50 text-orange-500", title: "Zero comissão", desc: "Você paga uma mensalidade. Não uma porcentagem de cada venda." },
+            { icon: Users, color: "bg-green-50 text-green-600", title: "Cliente é seu", desc: "Construa sua própria base de clientes e incentive a recompra." },
+          ].map((c, i) => (
+            <div key={i} data-reveal style={{ transitionDelay: `${i * 80}ms` }} className="rounded-3xl bg-white border border-black/5 p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all">
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${c.color} mb-6`}><c.icon className="w-7 h-7" /></div>
+              <h3 className="text-xl font-bold mb-2">{c.title}</h3>
+              <p className="text-[#666666] leading-relaxed">{c.desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Pilares */}
-      <section className="py-20 bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-extrabold mb-3">Muito além de um cardápio</h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Um sistema completo pra você vender mais, fidelizar e entender o seu negócio — tudo sem depender de aplicativo.
-            </p>
+      {/* ============================== FUNCIONALIDADES (TABS) ============================== */}
+      <section id="features" className="bg-white border-y border-black/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <div className="max-w-3xl mb-12" data-reveal>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Tudo que você precisa para vender mais.</h2>
+            <p className="mt-4 text-lg text-[#666666]">Um sistema completo, simples de usar, feito para o dia a dia do seu negócio.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { icon: TrendingUp, title: "Venda mais", desc: "Pedidos direto no seu WhatsApp, com combos, adicionais e frete por bairro calculado automático. Sem comissão comendo o seu lucro." },
-              { icon: Gift, title: "Fidelize e traga de volta", desc: "Programa de fidelidade, cupons de desconto e campanhas para reativar quem sumiu. O cliente volta a pedir de você." },
-              { icon: BarChart3, title: "Analise cada detalhe", desc: "Acompanhe faturamento, ticket médio, mais vendidos e a sua base de clientes. Decisões com dado, não no achismo." },
-            ].map((p, i) => (
-              <div key={i} className="rounded-2xl bg-gray-800/60 border border-gray-700 p-7">
-                <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center mb-4">
-                  <p.icon className="w-6 h-6 text-white" />
+          <div className="grid lg:grid-cols-[320px_1fr] gap-8 items-start">
+            {/* lista / tabs */}
+            <div className="flex gap-2 overflow-x-auto no-scrollbar lg:flex-col lg:overflow-visible -mx-4 px-4 lg:mx-0 lg:px-0" data-reveal>
+              {featureTabs.map((f, i) => (
+                <button key={f.key} onClick={() => setTab(i)}
+                  className={`shrink-0 lg:w-full text-left rounded-2xl border px-4 py-3 transition-all ${tab === i ? 'border-green-600 bg-green-50/60 shadow-sm' : 'border-black/10 bg-white hover:border-black/20'}`}>
+                  <span className="flex items-center gap-2 text-sm font-semibold whitespace-nowrap lg:whitespace-normal">
+                    {f.key}
+                    {f.pro && <span className="rounded-full bg-orange-100 px-1.5 py-0.5 text-[9px] font-bold text-orange-600">PRO</span>}
+                  </span>
+                  <span className="hidden lg:block text-xs text-[#666666] mt-0.5 leading-snug">{f.title}</span>
+                </button>
+              ))}
+            </div>
+            {/* mockup */}
+            <div className="rounded-3xl bg-[#FAFAF8] border border-black/5 p-6 sm:p-10 grid sm:grid-cols-2 gap-8 items-center min-h-[420px]" data-reveal>
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <h3 className="text-2xl font-bold">{featureTabs[tab].title}</h3>
+                  {featureTabs[tab].pro && <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-600">PRO</span>}
                 </div>
-                <h3 className="font-bold text-xl mb-2">{p.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{p.desc}</p>
+                <p className="text-[#666666] leading-relaxed">{featureTabs[tab].desc}</p>
+                <Link href="/register" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-green-700 hover:text-green-800">
+                  Experimentar grátis <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+              <div className="flex justify-center">
+                <img key={featureTabs[tab].img} src={featureTabs[tab].img} alt={`Tela: ${featureTabs[tab].title}`} loading="lazy"
+                  className="w-44 sm:w-52 rounded-[2rem] drop-shadow-2xl transition-opacity duration-300" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================== CARDÁPIO NO CELULAR ============================== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div className="max-w-2xl mx-auto text-center mb-14" data-reveal>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Seu cardápio cabe no bolso.</h2>
+          <p className="mt-4 text-lg text-[#666666]">Seu cliente não precisa baixar aplicativo. É só abrir o link ou apontar a câmera para o QR Code.</p>
+        </div>
+        <div className="flex flex-wrap justify-center items-end gap-6 sm:gap-10">
+          {[
+            { img: "/funcionalidades/cardapio.png", label: "O cardápio da sua marca" },
+            { img: "/funcionalidades/adicionais.png", label: "Cliente monta o pedido" },
+            { img: "/funcionalidades/frete.png", label: "Carrinho e entrega" },
+          ].map((p, i) => (
+            <div key={i} data-reveal style={{ transitionDelay: `${i * 90}ms` }} className={`text-center ${i === 1 ? 'sm:-mb-6' : ''}`}>
+              <img src={p.img} alt={p.label} loading="lazy" className="w-40 sm:w-52 rounded-[2rem] drop-shadow-2xl mx-auto" />
+              <p className="mt-4 text-sm text-[#666666]">{p.label}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-10 text-center" data-reveal>
+          <Link href="/menu/dogao-do-denis-ikir" className="inline-flex items-center gap-2 rounded-xl border border-black/10 bg-white px-6 py-3 text-sm font-semibold hover:border-black/20 transition-colors">
+            Ver cardápio de exemplo <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ============================== WHATSAPP (verde escuro) ============================== */}
+      <section className="bg-green-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
+          <div data-reveal>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+              Do pedido para o WhatsApp.<br /><span className="text-green-300">Sem intermediários.</span>
+            </h2>
+            <div className="mt-8 space-y-3 max-w-xs">
+              {[["Cliente", "🧑"], ["Cardápio Turbo", "⚡"], ["WhatsApp", "💬"], ["Restaurante", "🏪"]].map(([t, e], i) => (
+                <div key={t}>
+                  <div className="flex items-center gap-3 rounded-2xl bg-white/10 border border-white/10 px-4 py-3 backdrop-blur-sm">
+                    <span className="text-xl">{e}</span><span className="font-semibold">{t}</span>
+                  </div>
+                  {i < 3 && <div className="flex justify-center py-1 text-green-300">↓</div>}
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* demo pedido */}
+          <div data-reveal className="justify-self-center w-full max-w-sm">
+            <div className="rounded-3xl bg-white text-[#111111] shadow-2xl overflow-hidden">
+              <div className="bg-green-600 text-white px-5 py-4 flex items-center gap-2">
+                <MessageCircle className="w-5 h-5" /><span className="font-bold">Novo pedido #1048</span>
+              </div>
+              <div className="p-5 space-y-2 text-sm">
+                {[["2x", "X-Burguer"], ["1x", "Batata Grande"], ["2x", "Coca-Cola"]].map(([q, n]) => (
+                  <div key={n} className="flex justify-between"><span><b>{q}</b> {n}</span></div>
+                ))}
+                <div className="border-t border-black/5 my-2" />
+                <div className="flex justify-between text-[#666666]"><span>Subtotal</span><span>R$ 84,70</span></div>
+                <div className="flex justify-between text-[#666666]"><span>Entrega</span><span>R$ 7,00</span></div>
+                <div className="flex justify-between text-lg font-extrabold"><span>Total</span><span>R$ 91,70</span></div>
+                <button className="mt-3 w-full rounded-xl bg-green-600 text-white font-semibold py-3">Confirmar pedido</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================== RECURSOS (grid) ============================== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div className="max-w-2xl mb-12" data-reveal>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Recursos que fazem a diferença.</h2>
+          <p className="mt-4 text-lg text-[#666666]">Do cardápio à recompra do cliente, tudo num lugar só.</p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {resources.map((r, i) => (
+            <div key={i} data-reveal style={{ transitionDelay: `${(i % 3) * 70}ms` }} className="group rounded-2xl bg-white border border-black/5 p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-11 h-11 rounded-xl bg-[#FAFAF8] border border-black/5 flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors">
+                  <r.icon className="w-5 h-5" />
+                </div>
+                {r.pro && <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-600">PRO</span>}
+              </div>
+              <h3 className="font-bold mb-1">{r.title}</h3>
+              <p className="text-sm text-[#666666] leading-relaxed">{r.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ============================== COMO FUNCIONA (timeline) ============================== */}
+      <section id="how" className="bg-white border-y border-black/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <div className="max-w-2xl mb-14" data-reveal>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Do zero ao primeiro pedido em minutos.</h2>
+          </div>
+          <div className="relative grid md:grid-cols-4 gap-8">
+            <div className="hidden md:block absolute top-7 left-0 right-0 h-px bg-gradient-to-r from-green-200 via-orange-200 to-green-200" />
+            {steps.map((s, i) => (
+              <div key={i} data-reveal style={{ transitionDelay: `${i * 90}ms` }} className="relative">
+                <div className="w-14 h-14 rounded-2xl bg-green-600 text-white flex items-center justify-center font-extrabold text-lg shadow-lg shadow-green-600/20 relative z-10">{s.number}</div>
+                <h3 className="mt-5 font-bold text-lg">{s.title}</h3>
+                <p className="mt-1 text-[#666666]">{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-orange-100 text-orange-600 hover:bg-orange-100">Funcionalidades</Badge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
-              Tudo pra rodar o seu delivery
-            </h2>
-            <p className="text-lg text-gray-500 max-w-xl mx-auto">
-              Do cardápio à recompra do cliente, o Cardápio Turbo tem tudo num lugar só — sem depender de aplicativo.
-            </p>
+      {/* ============================== RESULTADOS ============================== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div className="max-w-2xl mb-12" data-reveal>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Você cuida do restaurante.<br />O Turbo cuida do resto.</h2>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { icon: Bell, title: "Pedidos organizados", desc: "Tudo formatado e no lugar, sem erro de anotação." },
+            { icon: Users, title: "Clientes recorrentes", desc: "Fidelidade e cupons para o cliente voltar." },
+            { icon: TrendingUp, title: "Ticket médio", desc: "Combos e adicionais que aumentam o valor do pedido." },
+            { icon: Wallet, title: "0% de comissão", desc: "Nenhuma porcentagem sai do seu bolso por venda." },
+          ].map((c, i) => (
+            <div key={i} data-reveal style={{ transitionDelay: `${i * 70}ms` }} className="rounded-2xl bg-white border border-black/5 p-6 shadow-sm">
+              <div className="w-11 h-11 rounded-xl bg-green-50 text-green-600 flex items-center justify-center mb-4"><c.icon className="w-5 h-5" /></div>
+              <h3 className="font-bold mb-1">{c.title}</h3>
+              <p className="text-sm text-[#666666] leading-relaxed">{c.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ============================== PREÇOS ============================== */}
+      <section id="plans" className="bg-white border-y border-black/5">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <div className="text-center max-w-2xl mx-auto mb-14" data-reveal>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Comece grátis. Cresça quando quiser.</h2>
+            <p className="mt-4 text-lg text-[#666666]">Teste todos os recursos por 7 dias. Sem cartão de crédito.</p>
           </div>
-          <p className="text-center text-sm text-gray-400 mb-8">Toque em cada recurso para ver o passo a passo de como usar.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-            {features.map((f, i) => (
-              <details key={i} className="group rounded-2xl border border-gray-100 open:border-orange-200 open:shadow-lg open:shadow-orange-50 hover:border-orange-200 transition-all">
-                <summary className="flex cursor-pointer list-none items-start gap-4 p-6">
-                  <div className="w-12 h-12 shrink-0 bg-orange-100 rounded-xl flex items-center justify-center group-open:bg-orange-500 transition-colors">
-                    <f.icon className="w-6 h-6 text-orange-500 group-open:text-white transition-colors" />
+          <div className="grid md:grid-cols-2 gap-6 items-start">
+            {plans.map((plan, i) => {
+              const pro = plan.name === "Pro"
+              return (
+                <div key={i} data-reveal className={`relative rounded-3xl p-8 ${pro ? 'bg-[#111111] text-white shadow-2xl md:-mt-4' : 'bg-white border border-black/10'}`}>
+                  {plan.badge && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-orange-500 text-white px-4 py-1 text-xs font-bold shadow">{plan.badge.toUpperCase()}</span>
+                  )}
+                  <h3 className={`font-bold text-lg ${pro ? 'text-white' : 'text-[#111111]'}`}>{plan.name}</h3>
+                  <div className="mt-3 flex items-baseline gap-1">
+                    <span className="text-4xl font-extrabold">{plan.price}</span>
+                    <span className={pro ? 'text-white/60' : 'text-[#666666]'}>{plan.period}</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-bold text-gray-900">{f.title}</h3>
-                      {f.pro && <span className="rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-600">PRO</span>}
-                    </div>
-                    <p className="text-gray-500 text-sm leading-relaxed mt-1">{f.desc}</p>
-                    <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-orange-500">
-                      Ver passo a passo
-                      <Plus className="w-3.5 h-3.5 transition-transform group-open:rotate-45" />
-                    </span>
-                  </div>
-                </summary>
-                <div className="px-6 pb-6 flex flex-col sm:flex-row gap-5 items-start">
-                  <ol className="flex-1 space-y-3 order-2 sm:order-1">
-                    {f.steps.map((s, j) => (
-                      <li key={j} className="flex gap-3 text-sm text-gray-600 leading-relaxed">
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-100 text-[11px] font-bold text-orange-600">{j + 1}</span>
-                        {s}
+                  <Link href={plan.href} className={`mt-6 block w-full text-center rounded-xl py-3 text-sm font-semibold transition-colors ${pro ? 'bg-green-500 hover:bg-green-400 text-[#062e18]' : 'bg-green-600 hover:bg-green-700 text-white'}`}>
+                    {plan.cta}
+                  </Link>
+                  <ul className="mt-7 space-y-3">
+                    {plan.features.map((f, j) => (
+                      <li key={j} className="flex items-start gap-2.5 text-sm">
+                        <CheckCircle2 className={`w-4 h-4 mt-0.5 shrink-0 ${pro ? 'text-green-400' : 'text-green-600'}`} />
+                        <span className={pro ? 'text-white/90' : 'text-[#111111]'}>{f}</span>
                       </li>
                     ))}
-                  </ol>
-                  {f.img && (
-                    <img src={f.img} alt={`Tela do app: ${f.title}`}
-                      className="order-1 sm:order-2 w-36 sm:w-44 shrink-0 mx-auto rounded-2xl drop-shadow-xl" />
-                  )}
+                    {plan.locked?.map((f, j) => (
+                      <li key={`l${j}`} className="flex items-start gap-2.5 text-sm">
+                        <XIcon className="w-4 h-4 mt-0.5 shrink-0 text-black/20" />
+                        <span className="text-[#999999]">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </details>
-            ))}
+              )
+            })}
           </div>
+          <p className="text-center text-xs text-[#999999] mt-8" data-reveal>Pagamento processado com segurança. Cancele quando quiser.</p>
         </div>
       </section>
 
-      {/* How it works */}
-      <section id="how" className="py-24 bg-orange-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-orange-100 text-orange-600 hover:bg-orange-100">Como funciona</Badge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
-              Cardápio no ar em 4 passos
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {steps.map((step, i) => (
-              <div key={i} className="text-center">
-                <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-200">
-                  <span className="text-white font-extrabold text-xl">{step.number}</span>
+      {/* ============================== CALCULADORA ============================== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div className="rounded-3xl bg-[#111111] text-white p-8 sm:p-12 grid lg:grid-cols-2 gap-10 items-center" data-reveal>
+          <div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Quanto você deixa nas plataformas?</h2>
+            <p className="mt-4 text-white/70">Faça uma simulação rápida e veja o quanto a comissão pode estar custando por mês.</p>
+            <div className="mt-8 space-y-6">
+              <div>
+                <label className="text-sm text-white/70">Quanto você vende por mês?</label>
+                <div className="mt-2 flex items-center gap-4">
+                  <input type="range" min={500} max={50000} step={500} value={rev} onChange={e => setRev(Number(e.target.value))}
+                    className="flex-1 accent-green-500" />
+                  <span className="w-28 text-right font-bold text-lg">{brl(rev)}</span>
                 </div>
-                <h3 className="font-bold text-gray-900 mb-2">{step.title}</h3>
-                <p className="text-gray-500 text-sm">{step.desc}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Plans */}
-      <section id="plans" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-orange-100 text-orange-600 hover:bg-orange-100">Planos e Preços</Badge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
-              Comece grátis, cresça quando quiser
-            </h2>
-            <p className="text-gray-500 text-lg">Comece grátis por 7 dias. Sem cartão de crédito.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-            {plans.map((plan, i) => (
-              <div key={i} className={`relative rounded-2xl border-2 p-8 ${plan.color}`}>
-                {plan.badge && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-orange-500 text-white hover:bg-orange-500 px-4">
-                      {plan.badge}
-                    </Badge>
-                  </div>
-                )}
-                <h3 className="font-bold text-xl text-gray-900 mb-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
-                  <span className="text-gray-400">{plan.period}</span>
+              <div>
+                <label className="text-sm text-white/70">Taxa média do aplicativo</label>
+                <div className="mt-2 flex items-center gap-4">
+                  <input type="range" min={0} max={30} step={1} value={tax} onChange={e => setTax(Number(e.target.value))}
+                    className="flex-1 accent-orange-500" />
+                  <span className="w-28 text-right font-bold text-lg">{tax}%</span>
                 </div>
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-center gap-2 text-sm text-gray-600">
-                      <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      {f}
-                      {f.includes('Modo pizzaria') && (
-                        <span className="ml-1 rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-600">NOVO</span>
-                      )}
-                    </li>
-                  ))}
-                  {(plan as { locked?: string[] }).locked?.map((f, j) => (
-                    <li key={`l${j}`} className="flex items-center gap-2 text-sm text-gray-400">
-                      <XIcon className="w-4 h-4 text-gray-300 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <a href={(plan as { href?: string }).href ?? '/register'} target={((plan as { href?: string }).href ?? '').startsWith('http') ? '_blank' : '_self'} rel="noreferrer">
-                  <Button
-                    variant={plan.btnVariant}
-                    className={`w-full ${plan.btnVariant === 'default' ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}`}
-                  >
-                    {plan.cta}
-                  </Button>
-                </a>
               </div>
-            ))}
+            </div>
+          </div>
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-8 text-center">
+            <p className="text-white/70 text-sm">Você pode estar pagando aproximadamente</p>
+            <p className="my-3 text-5xl font-extrabold text-orange-400">{brl(economia)}<span className="text-lg text-white/60 font-semibold">/mês</span></p>
+            <p className="text-white/80">Com o Cardápio Turbo, você <b className="text-green-400">não paga comissão</b> por pedido.</p>
+            <Link href="/register" className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-green-500 hover:bg-green-400 text-[#062e18] px-6 py-3 font-semibold w-full">
+              Quero vender sem comissão <ArrowRight className="w-4 h-4" />
+            </Link>
+            <p className="mt-4 text-[11px] text-white/40">Simulação ilustrativa. Não representa dados oficiais de plataformas específicas.</p>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-4">Quem já usa, aprova</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* ============================== DEPOIMENTOS ============================== */}
+      <section className="bg-white border-y border-black/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-12" data-reveal>Quem vende, entende.</h2>
+          <div className="flex gap-5 overflow-x-auto no-scrollbar snap-x pb-2 md:grid md:grid-cols-3 md:overflow-visible">
             {testimonials.map((t, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="w-4 h-4 fill-orange-400 text-orange-400" />
-                  ))}
-                </div>
-                <p className="text-gray-600 text-sm leading-relaxed mb-4">"{t.text}"</p>
+              <div key={i} data-reveal style={{ transitionDelay: `${i * 80}ms` }} className="snap-center shrink-0 w-[85%] sm:w-[70%] md:w-auto rounded-3xl bg-[#FAFAF8] border border-black/5 p-7">
+                <div className="flex gap-1 mb-4">{[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-orange-400 text-orange-400" />)}</div>
+                <p className="text-[#111111] leading-relaxed mb-6">“{t.text}”</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
-                    {t.avatar}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">{t.name}</p>
-                    <p className="text-gray-400 text-xs">{t.role}</p>
-                  </div>
+                  <div className="w-11 h-11 rounded-full bg-green-600 text-white flex items-center justify-center font-bold">{t.avatar}</div>
+                  <div><p className="font-semibold text-sm">{t.name}</p><p className="text-xs text-[#666666]">{t.role}</p></div>
                 </div>
               </div>
             ))}
@@ -617,132 +568,95 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Diferenciais */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-orange-100 text-orange-600 hover:bg-orange-100">Por que o Cardápio Turbo</Badge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
-              O que muda quando o delivery é seu
-            </h2>
+      {/* ============================== FAQ ============================== */}
+      <section id="faq" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div className="grid lg:grid-cols-[380px_1fr] gap-10 lg:gap-16">
+          <div data-reveal>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Tire suas dúvidas.</h2>
+            <p className="mt-4 text-[#666666]">Não achou o que procurava? <Link href="/faq" className="text-green-700 font-semibold hover:underline">Ver todas as perguntas</Link> ou fale com a gente pelo <Link href="/contato" className="text-green-700 font-semibold hover:underline">contato</Link>.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { icon: CreditCard, title: "Zero comissão", desc: "Você não paga por pedido. Diferente dos apps, o lucro de cada venda fica inteiro com você." },
-              { icon: Users, title: "O cliente é seu", desc: "Nome, WhatsApp e histórico de compras numa base que é sua — não do aplicativo." },
-              { icon: Smartphone, title: "Sem app pra instalar", desc: "O cliente pede pelo link ou QR Code, em poucos toques, direto do navegador." },
-              { icon: Palette, title: "Com a sua marca", desc: "Cores, logo e tema com a identidade do seu negócio, não a de um marketplace." },
-            ].map((d, i) => (
-              <div key={i} className="rounded-2xl border border-gray-100 p-6 hover:border-orange-200 hover:shadow-lg hover:shadow-orange-50 transition-all">
-                <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center mb-4">
-                  <d.icon className="w-6 h-6 text-orange-500" />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-2">{d.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{d.desc}</p>
+          <div className="space-y-3" data-reveal>
+            {homeFaqs.map((f, i) => (
+              <div key={i} className="rounded-2xl border border-black/10 bg-white overflow-hidden">
+                <button onClick={() => setFaqOpen(faqOpen === i ? null : i)} className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-semibold">
+                  {f.q}
+                  <span className={`text-green-600 text-xl leading-none transition-transform ${faqOpen === i ? 'rotate-45' : ''}`}>+</span>
+                </button>
+                {faqOpen === i && <p className="px-5 pb-5 -mt-1 text-[#666666] leading-relaxed">{f.a}</p>}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* App instalável (PWA) */}
-      <section className="py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-gray-900 text-white p-8 sm:p-12 grid lg:grid-cols-2 gap-8 items-center">
+      {/* ============================== CTA FINAL ============================== */}
+      <section className="bg-green-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 grid lg:grid-cols-[1fr_auto] gap-12 items-center">
+          <div data-reveal>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">Seu próximo pedido pode começar aqui.</h2>
+            <p className="mt-4 text-lg text-white/70 max-w-xl">Crie seu cardápio digital hoje e comece a vender direto pelo WhatsApp.</p>
+            <Link href="/register" className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-green-500 hover:bg-green-400 text-[#062e18] px-8 py-4 text-base font-bold shadow-lg transition-colors">
+              Criar meu cardápio grátis <ArrowRight className="w-5 h-5" />
+            </Link>
+            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
+              {["7 dias grátis", "Sem cartão de crédito", "Setup em 5 minutos"].map(t => (
+                <span key={t} className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-green-300" /> {t}</span>
+              ))}
+            </div>
+          </div>
+          <div className="hidden lg:block" data-reveal>
+            <div className="w-[200px] rounded-[2rem] bg-black/40 p-2.5 shadow-2xl">
+              <div className="rounded-[1.6rem] bg-white overflow-hidden">
+                <div className="bg-orange-500 px-4 py-3"><p className="text-white font-bold text-sm">Burger House</p></div>
+                <div className="p-3 space-y-2">
+                  {["X-Burguer", "Combo Duplo"].map(n => <div key={n} className="h-9 rounded-lg bg-[#FAFAF8] border border-black/5 flex items-center px-2 text-[10px] font-medium">{n}</div>)}
+                  <div className="rounded-lg bg-green-600 text-white text-[10px] font-semibold py-2 text-center">Pedir pelo WhatsApp</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================== FOOTER ============================== */}
+      <footer className="bg-[#111111] text-[#999999]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="grid md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10">
             <div>
-              <Badge className="mb-4 bg-orange-500 text-white hover:bg-orange-500">Novo</Badge>
-              <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">
-                Instale como aplicativo, sem baixar da loja
-              </h2>
-              <p className="text-gray-300 text-lg mb-6">
-                O Cardápio Turbo vira um app na tela inicial do seu celular, tablet ou computador. Abre em tela cheia, com o seu ícone, e a tela de cozinha fica perfeita num tablet ou TV.
-              </p>
-              <ul className="space-y-3">
-                {[
-                  "Instala em segundos, direto do navegador",
-                  "Funciona no Android, iPhone, tablet e computador",
-                  "Atalhos rápidos para Pedidos, Cozinha e Caixa",
-                  "Sem ocupar espaço, sem loja de aplicativos",
-                ].map((t, i) => (
-                  <li key={i} className="flex items-center gap-3 text-gray-200">
-                    <CheckCircle2 className="w-5 h-5 text-orange-400 shrink-0" /> {t}
-                  </li>
-                ))}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center"><Zap className="w-5 h-5 text-white" /></div>
+                <span className="font-bold text-white text-lg">Cardápio Turbo</span>
+              </div>
+              <p className="text-sm max-w-xs">Seu cardápio digital. Seu cliente. Suas vendas.</p>
+            </div>
+            <div>
+              <p className="text-white font-semibold text-sm mb-3">Produto</p>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#features" className="hover:text-white">Funcionalidades</a></li>
+                <li><a href="#plans" className="hover:text-white">Preços</a></li>
+                <li><a href="#faq" className="hover:text-white">FAQ</a></li>
+                <li><Link href="/blog" className="hover:text-white">Blog</Link></li>
               </ul>
             </div>
-            <div className="flex justify-center">
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-28 h-28 rounded-3xl bg-orange-500 flex items-center justify-center shadow-2xl shadow-orange-500/30">
-                  <Smartphone className="w-14 h-14 text-white" />
-                </div>
-                <span className="text-sm text-gray-400">Toque em <strong className="text-white">Instalar app</strong> no painel</span>
-              </div>
+            <div>
+              <p className="text-white font-semibold text-sm mb-3">Empresa</p>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/sobre" className="hover:text-white">Sobre</Link></li>
+                <li><Link href="/contato" className="hover:text-white">Contato</Link></li>
+                <li><a href="https://instagram.com/cardapioturboonline" target="_blank" rel="noreferrer" className="hover:text-white">Instagram</a></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-white font-semibold text-sm mb-3">Legal</p>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/termos" className="hover:text-white">Termos de Uso</Link></li>
+                <li><Link href="/privacidade" className="hover:text-white">Privacidade</Link></li>
+              </ul>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Final */}
-      <section className="py-24 bg-gradient-to-r from-orange-500 to-orange-600">
-        <div className="max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-            Pronto para ter o SEU delivery?
-          </h2>
-          <p className="text-orange-100 text-lg mb-8">
-            Monte seu cardápio digital agora e comece a receber pedidos no seu WhatsApp hoje mesmo — sem comissão.
-          </p>
-          <Link href="/register">
-            <Button size="lg" className="bg-white text-orange-500 hover:bg-orange-50 px-10 py-6 text-lg rounded-xl font-bold shadow-xl">
-              Criar meu cardápio grátis
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
-          <p className="mt-4 text-orange-100 text-sm">Sem cartão • Setup em 5 minutos • <a href="https://wa.me/5567992741982" target="_blank" rel="noreferrer" className="underline hover:text-white">Suporte via WhatsApp</a></p>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section id="faq" className="py-24 bg-gray-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 text-center mb-3">Perguntas frequentes</h2>
-          <p className="text-gray-500 text-center mb-10">Tudo o que você precisa saber sobre o Cardápio Turbo. <Link href="/faq" className="text-orange-500 hover:underline">Ver todas as perguntas</Link>.</p>
-          <div className="divide-y divide-gray-200 rounded-2xl border border-gray-200 bg-white">
-            {homeFaqs.map((f, i) => (
-              <details key={i} className="group px-6 py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-gray-900">
-                  {f.q}
-                  <span className="text-orange-500 transition-transform group-open:rotate-45 text-2xl leading-none">+</span>
-                </summary>
-                <p className="mt-3 text-gray-600 leading-relaxed">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-white text-lg">Cardápio Turbo</span>
-            </div>
-            <div className="flex gap-6 text-sm flex-wrap justify-center">
-              <Link href="/sobre" className="hover:text-white transition-colors">Sobre</Link>
-              <Link href="/contato" className="hover:text-white transition-colors">Contato</Link>
-              <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
-              <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
-              <a href="https://instagram.com/cardapioturboonline" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Instagram</a>
-              <Link href="/termos" className="hover:text-white transition-colors">Termos de Uso</Link>
-              <Link href="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
-            </div>
-            <p className="text-sm">© 2026 Agência LD Marketing. Todos os direitos reservados.</p>
-          </div>
+          <div className="mt-12 pt-6 border-t border-white/10 text-sm">© 2026 Cardápio Turbo. Todos os direitos reservados.</div>
         </div>
       </footer>
     </div>
-  );
+  )
 }
