@@ -77,9 +77,7 @@ export function Sidebar({ onClose }: SidebarProps) {
       {/* Logo */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <Link href="/dashboard" className="flex items-center gap-2" onClick={onClose}>
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500">
-            <ChefHat className="h-5 w-5 text-white" />
-          </div>
+          <img src="/brand/icon.png" alt="Cardápio Turbo" width={32} height={32} className="h-8 w-8 object-contain" />
           <span className="font-bold text-gray-900">Cardápio Turbo</span>
         </Link>
         {onClose && (

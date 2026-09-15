@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 import {
-  QrCode, Smartphone, Zap, Star, CheckCircle2, Check, ArrowRight, MessageCircle,
+  QrCode, Smartphone, Star, CheckCircle2, Check, ArrowRight, MessageCircle,
   BarChart3, MapPin, Palette, Bell, Bike, Gift, Pizza, ListPlus, Ticket,
   Menu as MenuIcon, X as XIcon, Users, Wallet, TrendingUp,
 } from "lucide-react"
@@ -146,10 +146,8 @@ export default function LandingPage() {
       {/* ============================== HEADER ============================== */}
       <header className={`sticky top-0 z-50 transition-all ${scrolled ? 'bg-white/80 backdrop-blur-md border-b border-black/5 shadow-sm' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center shadow-sm shadow-orange-200">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
+          <Link href="/" className="flex items-center gap-2.5">
+            <img src="/brand/icon.png" alt="Cardápio Turbo" width={36} height={36} className="w-9 h-9 object-contain" />
             <span className="font-bold text-lg tracking-tight">Cardápio Turbo</span>
           </Link>
 
@@ -623,9 +621,8 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center"><Zap className="w-5 h-5 text-white" /></div>
-                <span className="font-bold text-white text-lg">Cardápio Turbo</span>
+              <div className="mb-4">
+                <img src="/brand/logo.png" alt="Cardápio Turbo" width={200} height={67} className="h-10 w-auto object-contain" />
               </div>
               <p className="text-sm max-w-xs">Seu cardápio digital. Seu cliente. Suas vendas.</p>
             </div>
