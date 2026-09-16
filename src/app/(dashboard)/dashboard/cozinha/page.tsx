@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { ChefHat, Volume2, VolumeX, Printer, Clock, Bike, Store, Maximize2, Minimize2, RotateCcw, History, X } from 'lucide-react'
+import { ChefHat, Volume2, VolumeX, Printer, FileDown, Clock, Bike, Store, Maximize2, Minimize2, RotateCcw, History, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useBusiness } from '@/lib/hooks/useBusiness'
 import { hasProAccess } from '@/lib/plan'
-import { printComanda } from '@/lib/print-comanda'
+import { printComanda, downloadComandaPdf } from '@/lib/print-comanda'
 import type { Order, OrderStatus } from '@/types'
 import { toast } from '@/components/ui/sonner'
 
@@ -208,6 +208,8 @@ export default function CozinhaPage() {
                         <div className="flex gap-2">
                           <button onClick={() => printComanda(o, business?.name || 'Pedido')} title="Imprimir"
                             className="rounded-lg border border-gray-200 px-2.5 py-2 text-gray-500 hover:text-orange-500 hover:border-orange-200"><Printer className="h-4 w-4" /></button>
+                          <button onClick={() => downloadComandaPdf(o, business?.name || 'Pedido')} title="Baixar PDF"
+                            className="rounded-lg border border-gray-200 px-2.5 py-2 text-gray-500 hover:text-orange-500 hover:border-orange-200"><FileDown className="h-4 w-4" /></button>
                           {col.next && (
                             <button onClick={() => changeStatus(o, col.next!)}
                               className="flex-1 rounded-lg bg-orange-500 px-3 py-2 text-sm font-bold text-white hover:bg-orange-600">{col.nextLabel}</button>

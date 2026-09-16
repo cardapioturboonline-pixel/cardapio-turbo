@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { Clock, MapPin, Phone, CreditCard, Bike, Store, Volume2, VolumeX, RefreshCw, Bell, Printer } from 'lucide-react'
-import { printComanda } from '@/lib/print-comanda'
+import { Clock, MapPin, Phone, CreditCard, Bike, Store, Volume2, VolumeX, RefreshCw, Bell, Printer, FileDown } from 'lucide-react'
+import { printComanda, downloadComandaPdf } from '@/lib/print-comanda'
 import { createClient } from '@/lib/supabase/client'
 import { useBusiness } from '@/lib/hooks/useBusiness'
 import { hasProAccess } from '@/lib/plan'
@@ -224,6 +224,10 @@ export default function OrdersPage() {
                     <button onClick={() => printComanda(order, business?.name || 'Pedido')} title="Imprimir comanda"
                       className="rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-500 hover:text-orange-500 hover:border-orange-200 flex items-center gap-1">
                       <Printer className="h-3.5 w-3.5" /> Imprimir
+                    </button>
+                    <button onClick={() => downloadComandaPdf(order, business?.name || 'Pedido')} title="Baixar comanda em PDF"
+                      className="rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-500 hover:text-orange-500 hover:border-orange-200 flex items-center gap-1">
+                      <FileDown className="h-3.5 w-3.5" /> PDF
                     </button>
                     {order.status !== 'cancelled' && order.status !== 'delivered' && (
                       <button onClick={() => updateStatus(order.id, 'cancelled')} className="rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-500 hover:text-red-500 hover:border-red-200">Cancelar</button>

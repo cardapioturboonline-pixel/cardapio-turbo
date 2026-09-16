@@ -89,3 +89,63 @@ export function printComanda(order: Order, businessName: string) {
   // dá um tempinho para renderizar o conteúdo antes de imprimir
   setTimeout(run, 250)
 }
+
+// Baixa a comanda como PDF (formato 80mm, estilo cupom). Útil no celular
+// sem impressora — o dono guarda/reimprime ou compartilha.
+export function downloadComandaPdf(order: Order, businessName: string) {
+  // import dinâmico para não pesar o bundle principal
+  import('jspdf').then(({ jsPDF }) => {
+    const num = order.order_number ? `#${order.order_number}` : ''
+    const dt = new Date(order.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+    const tipo = order.order_type === 'pickup' ? 'Retirar no local' : 'Delivery'
+    const money = (n: number) => formatCurrency(n || 0)
+    const items = order.items ?? []
+
+    // monta a lista de "operações" para calcular a altura antes de criar o PDF
+    type Op = { t: 'center' | 'left' | 'row' | 'hr'; a?: string; b?: string; size?: number; bold?: boolean }
+    const ops: Op[] = []
+    ops.push({ t: 'center', a: businessName, size: 11, bold: true })
+    ops.push({ t: 'center', a: `Pedido ${num}`, size: 15, bold: true })
+    ops.push({ t: 'center', a: `${dt}${order.customer_name ? ' - ' + order.customer_name : ''}`, size: 8 })
+    ops.push({ t: 'hr' })
+    for (const it of items) {
+      ops.push({ t: 'row', a: `${it.quantity}x ${it.name}`, b: money(it.price * it.quantity), size: 9, bold: true })
+      if (it.observations) ops.push({ t: 'left', a: `  ${it.observations}`, size: 8 })
+    }
+    ops.push({ t: 'hr' })
+    ops.push({ t: 'row', a: 'Tipo', b: tipo, size: 9 })
+    if (order.neighborhood) ops.push({ t: 'row', a: 'Bairro', b: order.neighborhood, size: 9 })
+    if (order.delivery_address && order.order_type !== 'pickup') ops.push({ t: 'left', a: order.delivery_address, size: 8 })
+    if (order.customer_phone) ops.push({ t: 'row', a: 'Tel', b: order.customer_phone, size: 9 })
+    if (order.payment_method) ops.push({ t: 'row', a: 'Pagto', b: order.payment_method, size: 9 })
+    ops.push({ t: 'hr' })
+    ops.push({ t: 'row', a: 'Subtotal', b: money(order.subtotal || 0), size: 9 })
+    if (order.discount) ops.push({ t: 'row', a: 'Desconto', b: '-' + money(order.discount), size: 9 })
+    if (order.delivery_fee) ops.push({ t: 'row', a: 'Entrega', b: money(order.delivery_fee), size: 9 })
+    ops.push({ t: 'row', a: 'TOTAL', b: money(order.total || 0), size: 12, bold: true })
+    if (order.observations) { ops.push({ t: 'hr' }); ops.push({ t: 'left', a: `Obs: ${order.observations}`, size: 8 }) }
+    ops.push({ t: 'hr' })
+    ops.push({ t: 'center', a: 'Cardápio Turbo', size: 8 })
+
+    const W = 80, M = 5, LH = 5
+    const height = M * 2 + ops.length * LH
+    const doc = new jsPDF({ unit: 'mm', format: [W, height] })
+    let y = M + 3
+    for (const op of ops) {
+      doc.setFont('helvetica', op.bold ? 'bold' : 'normal')
+      doc.setFontSize(op.size ?? 9)
+      if (op.t === 'hr') {
+        doc.setDrawColor(150); doc.setLineDashPattern([0.6, 0.6], 0); doc.line(M, y - 2, W - M, y - 2)
+      } else if (op.t === 'center') {
+        doc.text(op.a || '', W / 2, y, { align: 'center' })
+      } else if (op.t === 'left') {
+        doc.text(op.a || '', M, y)
+      } else if (op.t === 'row') {
+        doc.text(op.a || '', M, y)
+        doc.text(op.b || '', W - M, y, { align: 'right' })
+      }
+      y += LH
+    }
+    doc.save(`comanda-${order.order_number ?? 'pedido'}.pdf`)
+  }).catch(() => { /* ignore */ })
+}
