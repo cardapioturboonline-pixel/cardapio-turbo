@@ -41,7 +41,7 @@ export function printComanda(order: Order, businessName: string) {
     .tot { display:flex; justify-content:space-between; font-size: 14px; font-weight:bold; margin-top:6px; }
     @media print { body { width: auto; } }
   </style></head>
-  <body onload="window.print()">
+  <body>
     <div class="center biz">${esc(businessName)}</div>
     <div class="center num">Pedido ${num}</div>
     <div class="center muted">${dt}${order.customer_name ? ' · ' + esc(order.customer_name) : ''}</div>
@@ -59,9 +59,33 @@ export function printComanda(order: Order, businessName: string) {
     <div class="center muted">Cardápio Turbo</div>
   </body></html>`
 
-  const w = window.open('', '_blank', 'width=340,height=600')
-  if (!w) return
-  w.document.open()
-  w.document.write(html)
-  w.document.close()
+  // Impressão via iframe invisível (funciona no celular — sem pop-up bloqueado).
+  const iframe = document.createElement('iframe')
+  iframe.setAttribute('aria-hidden', 'true')
+  iframe.style.position = 'fixed'
+  iframe.style.right = '0'
+  iframe.style.bottom = '0'
+  iframe.style.width = '0'
+  iframe.style.height = '0'
+  iframe.style.border = '0'
+  document.body.appendChild(iframe)
+
+  const doc = iframe.contentWindow?.document
+  if (!doc) { document.body.removeChild(iframe); return }
+  doc.open(); doc.write(html); doc.close()
+
+  const cleanup = () => { try { document.body.removeChild(iframe) } catch { /* ignore */ } }
+  const run = () => {
+    try {
+      const win = iframe.contentWindow
+      if (!win) { cleanup(); return }
+      win.focus()
+      win.onafterprint = cleanup
+      win.print()
+      // fallback de limpeza (alguns navegadores não disparam onafterprint)
+      setTimeout(cleanup, 60000)
+    } catch { cleanup() }
+  }
+  // dá um tempinho para renderizar o conteúdo antes de imprimir
+  setTimeout(run, 250)
 }
