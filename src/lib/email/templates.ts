@@ -149,3 +149,27 @@ export function winbackEmail(name: string): { subject: string; html: string } {
     html: baseLayout(content, 'Volte ao Cardápio Turbo Pro e reative seu cardápio.'),
   }
 }
+
+export function reactivateSignupEmail(name: string): { subject: string; html: string } {
+  const firstName = name?.split(' ')[0] || 'amigo(a)'
+  const content = `
+    <h1 style="margin:0 0 16px;color:#1a1a1a;font-size:26px;font-weight:bold;">Seu acesso está liberado, ${firstName}! 🚀</h1>
+    <p style="margin:0 0 16px;color:#4b5563;font-size:16px;line-height:1.6;">
+      Você começou seu cadastro no <strong>Cardápio Turbo</strong> mas ainda não terminou. Já liberamos seu acesso, agora é só entrar e montar seu cardápio digital em poucos minutos.
+    </p>
+    <p style="margin:0 0 8px;color:#4b5563;font-size:16px;line-height:1.6;"><strong>Em minutos você tem:</strong></p>
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 8px;">
+      <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">📲 &nbsp;Pedidos direto no seu WhatsApp, sem comissão</td></tr>
+      <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">🍔 &nbsp;Cardápio com foto, preço e QR Code</td></tr>
+      <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">⚡ &nbsp;7 dias grátis para testar tudo</td></tr>
+    </table>
+    ${button('Entrar e montar meu cardápio', SITE_URL + '/login')}
+    <p style="margin:8px 0 0;color:#9ca3af;font-size:14px;text-align:center;line-height:1.6;">
+      Precisa de ajuda pra entrar? Fale com a gente no <a href="${SUPPORT_WHATSAPP}" style="color:${BRAND};">WhatsApp</a>.
+    </p>
+  `
+  return {
+    subject: `${firstName}, seu cardápio digital está a um passo 🚀`,
+    html: baseLayout(content, 'Seu acesso ao Cardápio Turbo está liberado. Volte e monte seu cardápio.'),
+  }
+}

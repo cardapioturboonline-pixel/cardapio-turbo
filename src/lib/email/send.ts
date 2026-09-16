@@ -1,5 +1,5 @@
 import { Resend } from 'resend'
-import { welcomeEmail, proWelcomeEmail, winbackEmail } from './templates'
+import { welcomeEmail, proWelcomeEmail, winbackEmail, reactivateSignupEmail } from './templates'
 
 const FROM = 'Cardápio Turbo <ola@cardapioturbo.com.br>'
 
@@ -50,6 +50,20 @@ export async function sendWinbackEmail(to: string, name: string): Promise<boolea
     return true
   } catch (err) {
     console.error('[email] winback send exception:', err)
+    return false
+  }
+}
+
+export async function sendReactivateSignupEmail(to: string, name: string): Promise<boolean> {
+  const resend = getClient()
+  if (!resend) return false
+  try {
+    const { subject, html } = reactivateSignupEmail(name)
+    const { error } = await resend.emails.send({ from: FROM, to, subject, html })
+    if (error) { console.error('[email] reactivate send error:', error); return false }
+    return true
+  } catch (err) {
+    console.error('[email] reactivate send exception:', err)
     return false
   }
 }

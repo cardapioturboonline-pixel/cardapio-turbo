@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { isAdminEmail } from '@/lib/admin'
 import { WinbackButton } from './WinbackButton'
 import { PlanActions } from './PlanActions'
+import { ReactivateButton } from './ReactivateButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -182,9 +183,12 @@ export default async function AssinaturasPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Assinaturas & Conversões</h1>
-        <p className="text-sm text-gray-500">Acompanhe quem está em trial e quem converteu para o Pro, por cidade e estado.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Assinaturas & Conversões</h1>
+          <p className="text-sm text-gray-500">Acompanhe quem está em trial e quem converteu para o Pro, por cidade e estado.</p>
+        </div>
+        <ReactivateButton />
       </div>
 
       {/* Cards */}
