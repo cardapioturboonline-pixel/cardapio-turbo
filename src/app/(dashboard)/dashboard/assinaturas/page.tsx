@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { Users, Crown, Clock, TrendingDown, Percent, MapPin, History, RefreshCw, XCircle, Sparkles } from 'lucide-react'
+import { Users, Crown, Clock, TrendingDown, Percent, MapPin, History, RefreshCw, XCircle, Sparkles, ExternalLink } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { isAdminEmail } from '@/lib/admin'
@@ -72,6 +72,19 @@ function localStr(b: BizRow): string {
   const c = cityName(b); const uf = ufOf(b)
   if (c && uf !== 'Não informado') return `${c} / ${uf}`
   return c || (uf !== 'Não informado' ? uf : '—')
+}
+// Nome do negócio como link para o cardápio público (preview da configuração
+// do cliente). Abre em nova aba. Se não tiver slug, mostra só o nome.
+function BizName({ b }: { b: BizRow }) {
+  if (!b.slug) return <span>{b.name}</span>
+  return (
+    <a href={`/menu/${b.slug}`} target="_blank" rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 text-gray-900 hover:text-orange-600 hover:underline"
+      title="Abrir cardápio do cliente em nova aba">
+      {b.name}
+      <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
+    </a>
+  )
 }
 
 export default async function AssinaturasPage() {
@@ -320,7 +333,7 @@ export default async function AssinaturasPage() {
         <Table
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Plano', 'Cadastro', 'Assinou em (aprox.)', 'Ações']}
           rows={pro.map(b => [
-            b.name, localStr(b), emailOf(b), b.whatsapp || '—',
+            <BizName key="n" b={b} />, localStr(b), emailOf(b), b.whatsapp || '—',
             <span key="p" className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-700 uppercase">{b.plan}</span>,
             fmtDate(b.created_at),
             fmtDate(b.updated_at),
@@ -342,7 +355,7 @@ export default async function AssinaturasPage() {
             .map(b => {
               const d = daysLeft(b.trial_ends_at) ?? 0
               return [
-                b.name, localStr(b), emailOf(b), b.whatsapp || '—',
+                <BizName key="n" b={b} />, localStr(b), emailOf(b), b.whatsapp || '—',
                 <span key="d" className={`font-semibold ${d <= 2 ? 'text-red-500' : 'text-blue-600'}`}>{d} dia{d !== 1 ? 's' : ''}</span>,
                 fmtDate(b.created_at),
                 <PlanActions key="a" businessId={b.id} plan={b.plan} name={b.name} />,
@@ -361,7 +374,7 @@ export default async function AssinaturasPage() {
         <Table
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Trial terminou em', 'Ações']}
           rows={trialExpired.map(b => [
-            b.name, localStr(b), emailOf(b), b.whatsapp || '—', fmtDate(b.trial_ends_at),
+            <BizName key="n" b={b} />, localStr(b), emailOf(b), b.whatsapp || '—', fmtDate(b.trial_ends_at),
             <PlanActions key="a" businessId={b.id} plan={b.plan} name={b.name} />,
           ])}
           empty="Nenhum trial expirado."
