@@ -16,9 +16,9 @@ import Link from 'next/link'
 interface ProductDraft { name: string; price: string; category: string }
 
 /* ─── constants ─── */
-const BUSINESS_TYPES = ['Hamburgueria', 'Pizzaria', 'Lanchonete', 'Restaurante', 'Cafeteria', 'Sorveteria', 'Bar', 'Outro']
+const BUSINESS_TYPES = ['Lanchonete', 'Hamburgueria', 'Pizzaria', 'Restaurante', 'Marmitaria', 'Açaí / Sorveteria', 'Padaria', 'Doceria / Confeitaria', 'Cafeteria', 'Pastelaria', 'Bar', 'Food truck', 'Mercadinho / Conveniência', 'Outro']
 const COLOR_OPTIONS   = ['#f97316','#ef4444','#8b5cf6','#3b82f6','#10b981','#f59e0b','#ec4899','#06b6d4','#84cc16','#64748b']
-const BASE_CATEGORIES = ['Destaque','Lanches','Pizzas','Bebidas','Sobremesas','Porções','Combos','Promoções']
+const BASE_CATEGORIES = ['Destaques','Mais pedidos','Bebidas','Sobremesas','Acompanhamentos','Combos','Promoções','Novidades']
 
 const STEPS = [
   { id: 0, title: 'Sua loja',      desc: 'Nome, contato e tipo de negócio', icon: Store },
@@ -279,7 +279,7 @@ export default function OnboardingPage() {
                     <Store className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       className="pl-9"
-                      placeholder="Ex: Burger House, La Pizza..."
+                      placeholder="Ex: Sabor da Casa, Açaí do Bairro..."
                       value={info.name}
                       onChange={e => setInfo(p => ({ ...p, name: e.target.value }))}
                       autoFocus
@@ -417,7 +417,7 @@ export default function OnboardingPage() {
                   <Label className="text-xs text-gray-500 mb-2 block">Adicionar categoria personalizada</Label>
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Ex: Frutos do Mar, Massas..."
+                      placeholder="Ex: Especiais, Kids, Vegano..."
                       value={newCat}
                       onChange={e => setNewCat(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCustomCat())}
@@ -464,7 +464,7 @@ export default function OnboardingPage() {
                         <div className="col-span-2 space-y-1">
                           <Label className="text-xs">Nome *</Label>
                           <Input
-                            placeholder="Ex: X-Burguer Clássico"
+                            placeholder="Ex: nome do produto"
                             value={p.name}
                             onChange={e => updateProduct(i, 'name', e.target.value)}
                           />

@@ -83,7 +83,7 @@ export default function CategoriesPage() {
             </div>
             <div className="sm:col-span-2 space-y-1.5">
               <Label>Nome *</Label>
-              <Input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Ex: Hambúrgueres" />
+              <Input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Ex: Bebidas, Sobremesas, Combos..." />
             </div>
           </div>
           <div className="space-y-1.5">

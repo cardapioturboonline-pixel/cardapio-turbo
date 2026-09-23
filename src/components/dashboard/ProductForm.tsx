@@ -161,7 +161,7 @@ export function ProductForm({ categories, initialData, onSave, mode }: ProductFo
             <h2 className="font-semibold text-gray-900">Informações básicas</h2>
             <div className="space-y-1.5">
               <Label>Nome *</Label>
-              <Input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Ex: X-Burguer Clássico" required />
+              <Input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Ex: nome do produto" required />
             </div>
             <div className="space-y-1.5">
               <Label>Descrição</Label>

@@ -516,7 +516,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="space-y-1.5">
                     <Label>Qual é o brinde?</Label>
-                    <Input value={loyaltyReward} onChange={e => setLoyaltyReward(e.target.value)} placeholder="Ex: 1 lanche grátis, 1 refrigerante, 50% de desconto..." className="bg-white" />
+                    <Input value={loyaltyReward} onChange={e => setLoyaltyReward(e.target.value)} placeholder="Ex: 1 item grátis, 1 bebida, 50% de desconto..." className="bg-white" />
                   </div>
                   <p className="text-xs text-gray-500">Prévia: "A cada <strong>{loyaltyGoal}</strong> pedidos, ganhe <strong>{loyaltyReward || '...'}</strong>"</p>
                 </div>
