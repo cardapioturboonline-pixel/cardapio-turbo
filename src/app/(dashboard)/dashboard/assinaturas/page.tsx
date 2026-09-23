@@ -92,10 +92,32 @@ function cityName(b: BizRow): string {
   if (!c) return ''
   return c.replace(/[-/,]\s*[A-Za-z]{2}\s*$/, '').trim() || c
 }
+// A UF é estimada quando não veio do estado nem da cidade digitada, e só foi
+// deduzida pelo DDD do WhatsApp — deve ser exibida como aproximada.
+function ufIsEstimated(b: BizRow): boolean {
+  if (b.state?.trim()) return false
+  if ((b.city || '').trim().match(/[-/,]\s*([A-Za-z]{2})\s*$/)) return false
+  return ufFromWhatsapp(b.whatsapp) != null
+}
 function localStr(b: BizRow): string {
   const c = cityName(b); const uf = ufOf(b)
   if (c && uf !== 'Não informado') return `${c} / ${uf}`
   return c || (uf !== 'Não informado' ? uf : '—')
+}
+// Célula de localização: mostra a cidade/UF normalmente; quando a UF foi apenas
+// deduzida pelo DDD, marca como "~UF (aprox.)" com dica explicativa.
+function LocalCell({ b }: { b: BizRow }) {
+  const uf = ufOf(b)
+  if (ufIsEstimated(b) && !cityName(b)) {
+    return (
+      <span className="inline-flex items-center gap-1 text-amber-600"
+        title="Estado estimado pelo DDD do WhatsApp (o dono não informou a cidade)">
+        ~{uf}
+        <span className="text-[10px] font-medium text-amber-500">aprox.</span>
+      </span>
+    )
+  }
+  return <span>{localStr(b)}</span>
 }
 // Nome do negócio como link para o cardápio público (preview da configuração
 // do cliente). Abre em nova aba. Se não tiver slug, mostra só o nome.
@@ -357,7 +379,7 @@ export default async function AssinaturasPage() {
         <Table
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Plano', 'Cadastro', 'Assinou em (aprox.)', 'Ações']}
           rows={pro.map(b => [
-            <BizName key="n" b={b} />, localStr(b), emailOf(b), b.whatsapp || '—',
+            <BizName key="n" b={b} />, <LocalCell key="l" b={b} />, emailOf(b), b.whatsapp || '—',
             <span key="p" className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-700 uppercase">{b.plan}</span>,
             fmtDate(b.created_at),
             fmtDate(b.updated_at),
@@ -379,7 +401,7 @@ export default async function AssinaturasPage() {
             .map(b => {
               const d = daysLeft(b.trial_ends_at) ?? 0
               return [
-                <BizName key="n" b={b} />, localStr(b), emailOf(b), b.whatsapp || '—',
+                <BizName key="n" b={b} />, <LocalCell key="l" b={b} />, emailOf(b), b.whatsapp || '—',
                 <span key="d" className={`font-semibold ${d <= 2 ? 'text-red-500' : 'text-blue-600'}`}>{d} dia{d !== 1 ? 's' : ''}</span>,
                 fmtDate(b.created_at),
                 <PlanActions key="a" businessId={b.id} plan={b.plan} name={b.name} />,
@@ -398,7 +420,7 @@ export default async function AssinaturasPage() {
         <Table
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Trial terminou em', 'Ações']}
           rows={trialExpired.map(b => [
-            <BizName key="n" b={b} />, localStr(b), emailOf(b), b.whatsapp || '—', fmtDate(b.trial_ends_at),
+            <BizName key="n" b={b} />, <LocalCell key="l" b={b} />, emailOf(b), b.whatsapp || '—', fmtDate(b.trial_ends_at),
             <PlanActions key="a" businessId={b.id} plan={b.plan} name={b.name} />,
           ])}
           empty="Nenhum trial expirado."
