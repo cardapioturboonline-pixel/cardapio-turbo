@@ -99,6 +99,7 @@ export default function OnboardingPage() {
     if (step === 0) {
       if (!info.name.trim())     { toast.error('Digite o nome da loja'); return false }
       if (!info.whatsapp.trim()) { toast.error('Digite o WhatsApp'); return false }
+      if (!info.city.trim())     { toast.error('Digite a cidade'); return false }
       if (!info.type)            { toast.error('Selecione o tipo de estabelecimento'); return false }
     }
     if (step === 2) {
@@ -301,7 +302,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label>Cidade</Label>
+                  <Label>Cidade *</Label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
