@@ -68,5 +68,14 @@ export async function POST(req: Request) {
   if (!ok) {
     return NextResponse.json({ error: 'falha ao enviar o e-mail' }, { status: 500 })
   }
-  return NextResponse.json({ ok: true, to })
+
+  // Marca a data do envio (best-effort; nao quebra se a coluna nao existir)
+  const sentAt = new Date().toISOString()
+  try {
+    await admin.from('businesses').update({ conversion_email_sent_at: sentAt }).eq('id', businessId)
+  } catch (e) {
+    console.error('[convert-email] failed to mark sent_at:', e)
+  }
+
+  return NextResponse.json({ ok: true, to, sentAt })
 }

@@ -156,6 +156,19 @@ export default async function AssinaturasPage() {
   const eventsTableMissing = !!evErr
   const rawEvents = (evData ?? []) as EventRow[]
 
+  // Data do último e-mail de conversão enviado (consulta separada e tolerante:
+  // se a coluna ainda não existir no banco, apenas ignora e segue sem marcador).
+  const sentById = new Map<string, string>()
+  try {
+    const { data: sentData } = await admin
+      .from('businesses')
+      .select('id, conversion_email_sent_at')
+      .not('conversion_email_sent_at', 'is', null)
+    for (const r of (sentData ?? []) as { id: string; conversion_email_sent_at: string | null }[]) {
+      if (r.conversion_email_sent_at) sentById.set(r.id, r.conversion_email_sent_at)
+    }
+  } catch { /* coluna ainda não criada; sem marcador */ }
+
   const businesses = (bizData ?? []) as BizRow[]
   const nameById = new Map<string, string>()
   for (const b of businesses) nameById.set(b.id, b.name)
@@ -406,7 +419,7 @@ export default async function AssinaturasPage() {
                 <span key="d" className={`font-semibold ${d <= 2 ? 'text-red-500' : 'text-blue-600'}`}>{d} dia{d !== 1 ? 's' : ''}</span>,
                 fmtDate(b.created_at),
                 <div key="a" className="flex items-center gap-1.5">
-                  <ConvertEmailButton businessId={b.id} name={b.name} />
+                  <ConvertEmailButton businessId={b.id} name={b.name} sentAt={sentById.get(b.id) ?? null} />
                   <PlanActions businessId={b.id} plan={b.plan} name={b.name} />
                 </div>,
               ]
@@ -426,7 +439,7 @@ export default async function AssinaturasPage() {
           rows={trialExpired.map(b => [
             <BizName key="n" b={b} />, <LocalCell key="l" b={b} />, emailOf(b), b.whatsapp || '—', fmtDate(b.trial_ends_at),
             <div key="a" className="flex items-center gap-1.5">
-              <ConvertEmailButton businessId={b.id} name={b.name} />
+              <ConvertEmailButton businessId={b.id} name={b.name} sentAt={sentById.get(b.id) ?? null} />
               <PlanActions businessId={b.id} plan={b.plan} name={b.name} />
             </div>,
           ])}
