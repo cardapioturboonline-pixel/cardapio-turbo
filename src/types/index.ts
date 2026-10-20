@@ -123,6 +123,7 @@ export interface Business {
   delivery_fixed_fee?: number | null
   delivery_mode?: 'neighborhood' | 'fixed' | null
   pickup_enabled?: boolean
+  order_emoji?: string | null
   chatbot_enabled?: boolean
   chatbot_greeting?: string | null
   chatbot_faqs?: { q: string; a: string }[]

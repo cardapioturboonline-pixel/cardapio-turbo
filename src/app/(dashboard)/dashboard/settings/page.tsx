@@ -77,6 +77,7 @@ export default function SettingsPage() {
   const [storeName, setStoreName] = useState('')
   const [storeWhatsapp, setStoreWhatsapp] = useState('')
   const [storeCity, setStoreCity] = useState('')
+  const [orderEmoji, setOrderEmoji] = useState('🛒')
   const [logoUrl, setLogoUrl] = useState('')
   const [uploadingLogo, setUploadingLogo] = useState(false)
 
@@ -100,6 +101,7 @@ export default function SettingsPage() {
       setStoreName(business.name || '')
       setStoreWhatsapp(business.whatsapp || '')
       setStoreCity(business.city || '')
+      setOrderEmoji(business.order_emoji?.trim() || '🛒')
       setLogoUrl(business.logo_url || '')
       setInstagram(business.instagram || '')
       setFacebook(business.facebook || '')
@@ -136,7 +138,7 @@ export default function SettingsPage() {
 
   async function handleSaveStore() {
     setSaving(true)
-    const ok = await updateBusiness({ name: storeName, whatsapp: storeWhatsapp, city: storeCity })
+    const ok = await updateBusiness({ name: storeName, whatsapp: storeWhatsapp, city: storeCity, order_emoji: orderEmoji.trim() || '🛒' })
     setSaving(false)
     if (!ok) { toast.error('Erro ao salvar dados da loja'); return }
     toast.success('Dados da loja salvos!')
@@ -264,6 +266,26 @@ export default function SettingsPage() {
                   <Input value={storeCity} onChange={e => setStoreCity(e.target.value)} placeholder="São Paulo - SP" />
                 </div>
               </div>
+
+              {/* Emoji do pedido no WhatsApp */}
+              <div className="space-y-2 border-t border-gray-100 pt-6">
+                <Label>Emoji do pedido no WhatsApp</Label>
+                <p className="text-sm text-gray-500">Aparece no início da mensagem de novo pedido que chega no seu WhatsApp. Escolha o que combina com o seu negócio.</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  {['🛒', '🥤', '🧋', '🍕', '🍔', '🍟', '🍨', '🍰', '🍗', '🍣', '☕', '🔔'].map(e => (
+                    <button key={e} type="button" onClick={() => setOrderEmoji(e)}
+                      className={`h-10 w-10 rounded-lg border text-xl flex items-center justify-center transition-colors ${
+                        orderEmoji === e ? 'border-orange-500 bg-orange-50 ring-2 ring-orange-200' : 'border-gray-200 hover:border-orange-300'
+                      }`}>
+                      {e}
+                    </button>
+                  ))}
+                  <Input value={orderEmoji} onChange={e => setOrderEmoji(e.target.value)} maxLength={4}
+                    className="h-10 w-16 text-center text-xl" aria-label="Emoji personalizado" />
+                </div>
+                <p className="text-xs text-gray-400">Prévia: <span className="font-medium text-gray-600">{(orderEmoji.trim() || '🛒')} Novo Pedido - {storeName || 'Sua Loja'}</span></p>
+              </div>
+
               <button onClick={handleSaveStore} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">
                 {saving ? 'Salvando...' : 'Salvar'}
               </button>

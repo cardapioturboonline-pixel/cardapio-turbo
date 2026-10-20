@@ -124,7 +124,8 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
   }, [couponInput, business.id, getSubtotal, applyCoupon])
 
   function buildWhatsAppMessage() {
-    let msg = `🛒 *Novo Pedido - ${business.name}*\n\n`
+    const emoji = business.order_emoji?.trim() || '🛒'
+    let msg = `${emoji} *Novo Pedido - ${business.name}*\n\n`
 
     // Customer
     if (customerName) msg += `👤 *Cliente:* ${customerName}\n`
