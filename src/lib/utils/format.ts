@@ -20,7 +20,7 @@ export function buildWhatsAppMessage(
   observations?: string,
   couponCode?: string
 ): string {
-  let message = `🍔 *Pedido - ${businessName}*\n\n`
+  let message = `🛒 *Pedido - ${businessName}*\n\n`
   message += `*Itens do Pedido:*\n`
 
   items.forEach((item) => {
