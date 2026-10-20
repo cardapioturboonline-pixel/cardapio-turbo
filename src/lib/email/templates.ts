@@ -173,3 +173,72 @@ export function reactivateSignupEmail(name: string): { subject: string; html: st
     html: baseLayout(content, 'Seu acesso ao Cardápio Turbo está liberado. Volte e monte seu cardápio.'),
   }
 }
+
+export interface ConversionData {
+  name: string
+  productCount: number
+  categoryCount: number
+  orderCount: number
+  daysLeft: number | null // dias restantes do trial; null/<=0 = ja terminou
+  slug?: string | null
+}
+
+// E-mail individual para converter um cliente em trial no Pro (R$ 29,90).
+// A copy se adapta ao que o cliente ja montou dentro do Cardapio Turbo.
+export function conversionEmail(d: ConversionData): { subject: string; html: string } {
+  const firstName = d.name?.split(' ')[0] || 'amigo(a)'
+  const hasBuilt = d.productCount > 0 || d.categoryCount > 0
+
+  // Linha que resume o que ele ja fez
+  const feitos: string[] = []
+  if (d.productCount > 0) feitos.push(`<strong>${d.productCount}</strong> ${d.productCount === 1 ? 'produto' : 'produtos'}`)
+  if (d.categoryCount > 0) feitos.push(`<strong>${d.categoryCount}</strong> ${d.categoryCount === 1 ? 'categoria' : 'categorias'}`)
+  const feitosStr = feitos.length === 2 ? `${feitos[0]} em ${feitos[1]}` : feitos.join('')
+
+  // Abertura personalizada
+  let intro: string
+  if (hasBuilt && d.orderCount > 0) {
+    intro = `Durante o teste você já montou ${feitosStr} e seu cardápio já recebeu <strong>${d.orderCount}</strong> ${d.orderCount === 1 ? 'pedido' : 'pedidos'}. Seu cardápio já está trabalhando por você. 👏`
+  } else if (hasBuilt) {
+    intro = `Durante o teste você já montou ${feitosStr} no seu cardápio. Já está quase tudo pronto para começar a vender de verdade. 👏`
+  } else {
+    intro = `Você começou seu teste no Cardápio Turbo e queremos te ajudar a colocar seu cardápio para vender. Em poucos minutos a gente monta tudo com você.`
+  }
+
+  // Aviso de prazo do trial
+  const prazo = d.daysLeft != null && d.daysLeft > 0
+    ? `Faltam <strong>${d.daysLeft} ${d.daysLeft === 1 ? 'dia' : 'dias'}</strong> do seu período de teste.`
+    : `Seu período de teste terminou, mas seus dados continuam salvos e prontos para voltar ao ar.`
+
+  const linkMenu = d.slug ? `${SITE_URL}/menu/${d.slug}` : null
+
+  const content = `
+    <h1 style="margin:0 0 16px;color:#1a1a1a;font-size:26px;font-weight:bold;">${firstName}, bora deixar seu cardápio no ar de vez? 🚀</h1>
+    <p style="margin:0 0 16px;color:#4b5563;font-size:16px;line-height:1.6;">${intro}</p>
+    <p style="margin:0 0 20px;color:#4b5563;font-size:16px;line-height:1.6;">${prazo} Ativando o <strong>Plano Pro por R$ 29,90/mês</strong>, você não perde nada do que já fez e libera tudo:</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 8px;background-color:#fff7ed;border-radius:12px;">
+      <tr><td style="padding:16px 20px 4px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+          <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">📲 &nbsp;Pedidos direto no WhatsApp, sem comissão por venda</td></tr>
+          <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">🛍️ &nbsp;Produtos e categorias ilimitados</td></tr>
+          <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">🔔 &nbsp;Painel de pedidos em tempo real + cozinha e comanda impressa</td></tr>
+          <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">🛵 &nbsp;Frete automático por bairro</td></tr>
+          <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">🎟️ &nbsp;Cupons, fidelidade e avaliações dos clientes</td></tr>
+          <tr><td style="padding:7px 0;color:#4b5563;font-size:15px;">💰 &nbsp;Controle de caixa e relatórios avançados</td></tr>
+          <tr><td style="padding:7px 0 16px;color:#4b5563;font-size:15px;">✨ &nbsp;Temas premium, QR com logo e sem marca d'água</td></tr>
+        </table>
+      </td></tr>
+    </table>
+    ${button('Ativar meu Pro por R$ 29,90', SITE_URL + '/dashboard/plans')}
+    ${linkMenu ? `<p style="margin:8px 0 0;color:#9ca3af;font-size:14px;text-align:center;line-height:1.6;">Dê uma olhada em como seu cardápio está: <a href="${linkMenu}" style="color:${BRAND};">ver meu cardápio</a></p>` : ''}
+    <p style="margin:16px 0 0;color:#9ca3af;font-size:14px;text-align:center;line-height:1.6;">
+      Qualquer dúvida, é só chamar no <a href="${SUPPORT_WHATSAPP}" style="color:${BRAND};">WhatsApp</a>. A gente te ajuda a deixar tudo pronto.
+    </p>
+  `
+  return {
+    subject: hasBuilt
+      ? `${firstName}, não perca o que você já montou no seu cardápio 🚀`
+      : `${firstName}, vamos deixar seu cardápio pronto para vender? 🚀`,
+    html: baseLayout(content, 'Ative o Plano Pro por R$ 29,90 e libere todos os recursos do seu cardápio.'),
+  }
+}

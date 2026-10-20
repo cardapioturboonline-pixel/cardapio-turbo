@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { isAdminEmail } from '@/lib/admin'
 import { WinbackButton } from './WinbackButton'
 import { PlanActions } from './PlanActions'
+import { ConvertEmailButton } from './ConvertEmailButton'
 import { ReactivateButton } from './ReactivateButton'
 
 export const dynamic = 'force-dynamic'
@@ -404,7 +405,10 @@ export default async function AssinaturasPage() {
                 <BizName key="n" b={b} />, <LocalCell key="l" b={b} />, emailOf(b), b.whatsapp || '—',
                 <span key="d" className={`font-semibold ${d <= 2 ? 'text-red-500' : 'text-blue-600'}`}>{d} dia{d !== 1 ? 's' : ''}</span>,
                 fmtDate(b.created_at),
-                <PlanActions key="a" businessId={b.id} plan={b.plan} name={b.name} />,
+                <div key="a" className="flex items-center gap-1.5">
+                  <ConvertEmailButton businessId={b.id} name={b.name} />
+                  <PlanActions businessId={b.id} plan={b.plan} name={b.name} />
+                </div>,
               ]
             })}
           empty="Ninguém em trial ativo no momento."
@@ -421,7 +425,10 @@ export default async function AssinaturasPage() {
           headers={['Negócio', 'Cidade / Estado', 'E-mail', 'WhatsApp', 'Trial terminou em', 'Ações']}
           rows={trialExpired.map(b => [
             <BizName key="n" b={b} />, <LocalCell key="l" b={b} />, emailOf(b), b.whatsapp || '—', fmtDate(b.trial_ends_at),
-            <PlanActions key="a" businessId={b.id} plan={b.plan} name={b.name} />,
+            <div key="a" className="flex items-center gap-1.5">
+              <ConvertEmailButton businessId={b.id} name={b.name} />
+              <PlanActions businessId={b.id} plan={b.plan} name={b.name} />
+            </div>,
           ])}
           empty="Nenhum trial expirado."
         />

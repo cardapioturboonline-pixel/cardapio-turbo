@@ -1,5 +1,5 @@
 import { Resend } from 'resend'
-import { welcomeEmail, proWelcomeEmail, winbackEmail, reactivateSignupEmail } from './templates'
+import { welcomeEmail, proWelcomeEmail, winbackEmail, reactivateSignupEmail, conversionEmail, type ConversionData } from './templates'
 
 const FROM = 'Cardápio Turbo <ola@cardapioturbo.com.br>'
 
@@ -64,6 +64,20 @@ export async function sendReactivateSignupEmail(to: string, name: string): Promi
     return true
   } catch (err) {
     console.error('[email] reactivate send exception:', err)
+    return false
+  }
+}
+
+export async function sendConversionEmail(to: string, data: ConversionData): Promise<boolean> {
+  const resend = getClient()
+  if (!resend) return false
+  try {
+    const { subject, html } = conversionEmail(data)
+    const { error } = await resend.emails.send({ from: FROM, to, subject, html })
+    if (error) { console.error('[email] conversion send error:', error); return false }
+    return true
+  } catch (err) {
+    console.error('[email] conversion send exception:', err)
     return false
   }
 }
