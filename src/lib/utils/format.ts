@@ -81,5 +81,12 @@ export function isOpenNow(openingHours?: Record<string, { open: string; close: s
   const openMinutes = openH * 60 + openM
   const closeMinutes = closeH * 60 + closeM
 
+  // Fechamento que vira a madrugada (ex.: 18:00 às 02:00) ou à meia-noite
+  // (00:00, que vira closeMinutes = 0): aberto se for depois da abertura OU
+  // antes do horário de fechar já no dia seguinte.
+  if (closeMinutes <= openMinutes) {
+    return currentMinutes >= openMinutes || currentMinutes < closeMinutes
+  }
+
   return currentMinutes >= openMinutes && currentMinutes <= closeMinutes
 }
