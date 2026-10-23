@@ -215,8 +215,25 @@ export default function OrdersPage() {
                   {order.customer_phone && <p className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5" />{order.customer_phone}</p>}
                   {order.payment_method && <p className="flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" />{order.payment_method}</p>}
                   {order.schedule && <p className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" />{order.schedule}</p>}
-                  {order.observations && <p className="text-orange-500">📝 {order.observations}</p>}
+                  {(() => {
+                    // Esconde o resumo do presente das observações (ele já aparece no bloco rosa abaixo).
+                    const obs = order.observations?.split('\n').filter(l => !l.trim().startsWith('🎁 Presente')).join('\n').trim()
+                    return obs ? <p className="text-orange-500">📝 {obs}</p> : null
+                  })()}
                 </div>
+
+                {order.gift_info && (
+                  <div className="rounded-lg border border-pink-200 bg-pink-50 p-2.5 space-y-1 text-xs text-pink-800">
+                    <p className="font-semibold flex items-center gap-1.5">🎁 Presente{order.gift_info.is_surprise ? <span className="rounded-full bg-pink-200 px-1.5 py-0.5 text-[10px] font-bold text-pink-700">SURPRESA</span> : null}</p>
+                    {(order.gift_info.delivery_date || order.gift_info.delivery_time) && (
+                      <p>📅 Entregar em {order.gift_info.delivery_date ? order.gift_info.delivery_date.split('-').reverse().join('/') : ''}{order.gift_info.delivery_time ? ` às ${order.gift_info.delivery_time}` : ''}</p>
+                    )}
+                    {order.gift_info.recipient_name && <p>🎀 Para: <strong>{order.gift_info.recipient_name}</strong></p>}
+                    {order.gift_info.recipient_phone && <p>📞 {order.gift_info.recipient_phone}</p>}
+                    {order.gift_info.recipient_address && <p>📍 {order.gift_info.recipient_address}</p>}
+                    {order.gift_info.card_message && <p>💌 &quot;{order.gift_info.card_message}&quot;</p>}
+                  </div>
+                )}
 
                 <div className="flex items-center justify-between border-t border-gray-100 pt-2">
                   <span className="font-bold text-gray-900">{formatCurrency(order.total)}</span>

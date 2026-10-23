@@ -50,7 +50,18 @@ export interface Order {
   coupon_code?: string
   schedule?: string
   observations?: string
+  gift_info?: GiftInfo | null
   created_at: string
+}
+
+export interface GiftInfo {
+  delivery_date?: string | null
+  delivery_time?: string | null
+  recipient_name?: string | null
+  recipient_phone?: string | null
+  recipient_address?: string | null
+  card_message?: string | null
+  is_surprise?: boolean | null
 }
 
 export type CashMovementType = 'entrada' | 'saida' | 'sangria' | 'suprimento'
