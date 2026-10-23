@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from '@/components/ui/sonner'
 import { createClient } from '@/lib/supabase/client'
+import { getNicheSuggestion, type NicheProduct } from '@/lib/niche-suggestions'
 import Link from 'next/link'
 
 /* ─── types ─── */
@@ -93,6 +94,33 @@ export default function OnboardingPage() {
     setCats(p => [...p, v])
     setNewCat('')
   }
+
+  /* ── guia por nicho ── */
+  const niche = getNicheSuggestion(info.type)
+  // Ao escolher o tipo de negócio, pré-carrega as categorias daquele nicho
+  // (guia o cliente a montar o cardápio conforme o ramo). Só semeia uma vez
+  // por tipo; se o cliente mexer depois, respeita a escolha dele.
+  const [seededType, setSeededType] = useState('')
+  useEffect(() => {
+    if (info.type && info.type !== seededType) {
+      setCats(getNicheSuggestion(info.type).categories)
+      setSeededType(info.type)
+    }
+  }, [info.type, seededType])
+
+  // Adiciona (ou remove) um produto sugerido do nicho pela tecla de atalho.
+  function toggleSuggestedProduct(sp: NicheProduct) {
+    setProducts(prev => {
+      const exists = prev.some(p => p.name.trim().toLowerCase() === sp.name.toLowerCase())
+      if (exists) return prev.filter(p => p.name.trim().toLowerCase() !== sp.name.toLowerCase())
+      // garante que a categoria do produto exista
+      if (!cats.includes(sp.category)) setCats(c => [...c, sp.category])
+      // remove a 1ª linha em branco (placeholder inicial) ao adicionar a 1ª sugestão
+      const base = prev.filter(p => p.name.trim() || p.price)
+      return [...base, { name: sp.name, price: sp.price, category: sp.category }]
+    })
+  }
+  const isSuggestedAdded = (name: string) => products.some(p => p.name.trim().toLowerCase() === name.toLowerCase())
 
   /* ── validation per step ── */
   function validate() {
@@ -395,6 +423,25 @@ export default function OnboardingPage() {
               <div className="space-y-4">
                 <p className="text-sm text-gray-500">Selecione as categorias do seu cardápio. Você pode adicionar mais depois.</p>
 
+                {info.type && (
+                  <div className="rounded-xl border border-orange-100 bg-orange-50 p-3">
+                    <p className="flex items-center gap-1.5 text-xs font-semibold text-orange-700">
+                      <Sparkles className="h-3.5 w-3.5" /> Sugestões para {info.type}
+                    </p>
+                    <p className="mt-1 text-xs text-orange-700/80">{niche.tip}</p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {niche.categories.map(cat => (
+                        <button key={cat} type="button" onClick={() => toggleCat(cat)}
+                          className={`rounded-full px-2.5 py-1 text-xs font-medium border transition-colors ${
+                            cats.includes(cat) ? 'border-orange-500 bg-orange-500 text-white' : 'border-orange-300 bg-white text-orange-600 hover:bg-orange-100'
+                          }`}>
+                          {cats.includes(cat) ? '✓ ' : '+ '}{cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-2">
                   {BASE_CATEGORIES.map(cat => (
                     <button key={cat} type="button"
@@ -449,6 +496,29 @@ export default function OnboardingPage() {
             {step === 3 && (
               <div className="space-y-4">
                 <p className="text-sm text-gray-500">Adicione seus primeiros produtos. Você pode completar depois.</p>
+
+                {info.type && niche.products.length > 0 && (
+                  <div className="rounded-xl border border-orange-100 bg-orange-50 p-3">
+                    <p className="flex items-center gap-1.5 text-xs font-semibold text-orange-700">
+                      <Sparkles className="h-3.5 w-3.5" /> Sugestões para {info.type} — toque para adicionar
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {niche.products.map(sp => {
+                        const added = isSuggestedAdded(sp.name)
+                        return (
+                          <button key={sp.name} type="button" onClick={() => toggleSuggestedProduct(sp)}
+                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border transition-colors ${
+                              added ? 'border-orange-500 bg-orange-500 text-white' : 'border-orange-300 bg-white text-orange-600 hover:bg-orange-100'
+                            }`}>
+                            {added ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                            {sp.name}{sp.price ? ` · R$ ${sp.price}` : ''}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    <p className="mt-2 text-[11px] text-orange-700/70">Os preços são só sugestões. Ajuste cada um na lista abaixo.</p>
+                  </div>
+                )}
 
                 <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
                   {products.map((p, i) => (
