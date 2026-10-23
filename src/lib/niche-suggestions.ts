@@ -160,6 +160,20 @@ export const NICHE_SUGGESTIONS: Record<string, NicheSuggestion> = {
     ],
     tip: 'Dica: um cardápio enxuto e combos bem montados agilizam o atendimento na rua.',
   },
+  'Cesta de Café da Manhã / Presentes': {
+    categories: ['Cestas', 'Cestas Luxo', 'Adicionais', 'Datas Especiais'],
+    products: [
+      { name: 'Cesta Café da Manhã Simples', price: '80.00', category: 'Cestas' },
+      { name: 'Cesta Café da Manhã Completa', price: '120.00', category: 'Cestas' },
+      { name: 'Cesta Café da Manhã Luxo', price: '180.00', category: 'Cestas Luxo' },
+      { name: 'Cesta Romântica (casal)', price: '160.00', category: 'Cestas Luxo' },
+      { name: 'Adicional Balão metalizado', price: '20.00', category: 'Adicionais' },
+      { name: 'Adicional Vinho / Espumante', price: '45.00', category: 'Adicionais' },
+      { name: 'Adicional Cartão personalizado', price: '10.00', category: 'Adicionais' },
+      { name: 'Cesta Dia das Mães', price: '150.00', category: 'Datas Especiais' },
+    ],
+    tip: 'Dica: descreva bem o que vem em cada cesta e use fotos reais. Cadastre balão, vinho e cartão como adicionais (item montável) e combine a data de entrega com o cliente.',
+  },
   'Mercadinho / Conveniência': {
     categories: ['Bebidas', 'Mercearia', 'Gelados', 'Limpeza'],
     products: [

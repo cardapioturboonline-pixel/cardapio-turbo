@@ -17,7 +17,7 @@ import Link from 'next/link'
 interface ProductDraft { name: string; price: string; category: string }
 
 /* ─── constants ─── */
-const BUSINESS_TYPES = ['Lanchonete', 'Hamburgueria', 'Pizzaria', 'Restaurante', 'Marmitaria', 'Açaí / Sorveteria', 'Padaria', 'Doceria / Confeitaria', 'Cafeteria', 'Pastelaria', 'Bar', 'Food truck', 'Mercadinho / Conveniência', 'Outro']
+const BUSINESS_TYPES = ['Lanchonete', 'Hamburgueria', 'Pizzaria', 'Restaurante', 'Marmitaria', 'Açaí / Sorveteria', 'Padaria', 'Doceria / Confeitaria', 'Cafeteria', 'Pastelaria', 'Bar', 'Food truck', 'Cesta de Café da Manhã / Presentes', 'Mercadinho / Conveniência', 'Outro']
 const COLOR_OPTIONS   = ['#f97316','#ef4444','#8b5cf6','#3b82f6','#10b981','#f59e0b','#ec4899','#06b6d4','#84cc16','#64748b']
 const BASE_CATEGORIES = ['Destaques','Mais pedidos','Bebidas','Sobremesas','Acompanhamentos','Combos','Promoções','Novidades']
 
