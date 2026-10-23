@@ -18,6 +18,25 @@ export default function RegisterPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    const email = form.email.trim().toLowerCase()
+    // Formato válido de e-mail (evita cadastros com e-mail digitado errado,
+    // ainda mais agora que a confirmação por e-mail está desligada).
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      toast.error('Digite um e-mail válido (ex: nome@gmail.com)')
+      return
+    }
+    // Erros de digitação comuns no domínio
+    const domain = email.split('@')[1] || ''
+    const typos: Record<string, string> = {
+      'gmai.com': 'gmail.com', 'gmial.com': 'gmail.com', 'gmail.co': 'gmail.com',
+      'gamil.com': 'gmail.com', 'gmailcom': 'gmail.com', 'hotmai.com': 'hotmail.com',
+      'hotmail.co': 'hotmail.com', 'hotmial.com': 'hotmail.com', 'outlok.com': 'outlook.com',
+      'yaho.com': 'yahoo.com', 'icloud.co': 'icloud.com',
+    }
+    if (typos[domain]) {
+      toast.error(`Parece que o e-mail tem um erro de digitação. Você quis dizer "${email.split('@')[0]}@${typos[domain]}"?`)
+      return
+    }
     if (form.password !== form.confirm) {
       toast.error('As senhas não coincidem')
       return
@@ -29,7 +48,7 @@ export default function RegisterPage() {
     setLoading(true)
     const supabase = createClient()
     const { error } = await supabase.auth.signUp({
-      email: form.email,
+      email,
       password: form.password,
       options: {
         data: { full_name: form.name },
@@ -42,7 +61,7 @@ export default function RegisterPage() {
       return
     }
     toast.success('Conta criada! Verifique seu email para confirmar.')
-    router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
+    router.push(`/verify-email?email=${encodeURIComponent(email)}`)
   }
 
   async function handleGoogle() {
