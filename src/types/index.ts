@@ -124,6 +124,7 @@ export interface Business {
   delivery_mode?: 'neighborhood' | 'fixed' | null
   pickup_enabled?: boolean
   order_emoji?: string | null
+  catalog_mode?: boolean
   conversion_email_sent_at?: string | null
   chatbot_enabled?: boolean
   chatbot_greeting?: string | null

@@ -78,6 +78,7 @@ export default function SettingsPage() {
   const [storeWhatsapp, setStoreWhatsapp] = useState('')
   const [storeCity, setStoreCity] = useState('')
   const [orderEmoji, setOrderEmoji] = useState('🛒')
+  const [catalogMode, setCatalogMode] = useState(false)
   const [logoUrl, setLogoUrl] = useState('')
   const [uploadingLogo, setUploadingLogo] = useState(false)
 
@@ -102,6 +103,7 @@ export default function SettingsPage() {
       setStoreWhatsapp(business.whatsapp || '')
       setStoreCity(business.city || '')
       setOrderEmoji(business.order_emoji?.trim() || '🛒')
+      setCatalogMode(!!business.catalog_mode)
       setLogoUrl(business.logo_url || '')
       setInstagram(business.instagram || '')
       setFacebook(business.facebook || '')
@@ -138,7 +140,7 @@ export default function SettingsPage() {
 
   async function handleSaveStore() {
     setSaving(true)
-    const ok = await updateBusiness({ name: storeName, whatsapp: storeWhatsapp, city: storeCity, order_emoji: orderEmoji.trim() || '🛒' })
+    const ok = await updateBusiness({ name: storeName, whatsapp: storeWhatsapp, city: storeCity, order_emoji: orderEmoji.trim() || '🛒', catalog_mode: catalogMode })
     setSaving(false)
     if (!ok) { toast.error('Erro ao salvar dados da loja'); return }
     toast.success('Dados da loja salvos!')
@@ -284,6 +286,20 @@ export default function SettingsPage() {
                     className="h-10 w-16 text-center text-xl" aria-label="Emoji personalizado" />
                 </div>
                 <p className="text-xs text-gray-400">Prévia: <span className="font-medium text-gray-600">{(orderEmoji.trim() || '🛒')} Novo Pedido - {storeName || 'Sua Loja'}</span></p>
+              </div>
+
+              {/* Modo catálogo / presente */}
+              <div className="space-y-2 border-t border-gray-100 pt-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <Label>Modo catálogo (cestas / presentes)</Label>
+                    <p className="text-sm text-gray-500 mt-0.5">Para quem vende cestas de café da manhã e presentes. No checkout, o cliente informa <strong>data de entrega, quem recebe, mensagem do cartão e se é surpresa</strong>.</p>
+                  </div>
+                  <button type="button" role="switch" aria-checked={catalogMode} onClick={() => setCatalogMode(v => !v)}
+                    className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${catalogMode ? 'bg-pink-500' : 'bg-gray-300'}`}>
+                    <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${catalogMode ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                  </button>
+                </div>
               </div>
 
               <button onClick={handleSaveStore} disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-60">

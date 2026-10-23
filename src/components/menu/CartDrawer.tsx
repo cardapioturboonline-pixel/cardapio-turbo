@@ -45,6 +45,16 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
   // Observations
   const [observations, setObservations] = useState('')
 
+  // Modo catálogo/presente (cestas de café da manhã, presentes)
+  const catalogMode = !!business.catalog_mode
+  const [giftDeliveryDate, setGiftDeliveryDate] = useState('')
+  const [giftDeliveryTime, setGiftDeliveryTime] = useState('')
+  const [giftRecipientName, setGiftRecipientName] = useState('')
+  const [giftRecipientPhone, setGiftRecipientPhone] = useState('')
+  const [giftRecipientAddress, setGiftRecipientAddress] = useState('')
+  const [giftCardMessage, setGiftCardMessage] = useState('')
+  const [giftIsSurprise, setGiftIsSurprise] = useState(false)
+
   // Coupon
   const [couponInput, setCouponInput] = useState('')
   const [pixCopied, setPixCopied] = useState(false)
@@ -123,6 +133,37 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     setCouponInput('')
   }, [couponInput, business.id, getSubtotal, applyCoupon])
 
+  // Formata a data (yyyy-mm-dd do input) para dd/mm/aaaa sem problema de fuso.
+  function formatGiftDate(d: string): string {
+    const m = d.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : d
+  }
+  // Objeto estruturado com os dados do presente (para salvar no pedido).
+  function giftInfo() {
+    if (!catalogMode) return null
+    return {
+      delivery_date: giftDeliveryDate || null,
+      delivery_time: giftDeliveryTime || null,
+      recipient_name: giftRecipientName || null,
+      recipient_phone: giftRecipientPhone || null,
+      recipient_address: giftRecipientAddress || null,
+      card_message: giftCardMessage || null,
+      is_surprise: giftIsSurprise,
+    }
+  }
+  // Resumo legível do presente, anexado às observações para aparecer no painel/comanda.
+  function giftSummary(): string {
+    if (!catalogMode) return ''
+    const parts: string[] = ['🎁 Presente']
+    if (giftDeliveryDate) parts.push(`Entregar em ${formatGiftDate(giftDeliveryDate)}${giftDeliveryTime ? ` às ${giftDeliveryTime}` : ''}`)
+    if (giftRecipientName) parts.push(`Para: ${giftRecipientName}`)
+    if (giftRecipientPhone) parts.push(`Tel: ${giftRecipientPhone}`)
+    if (giftRecipientAddress) parts.push(`Endereço: ${giftRecipientAddress}`)
+    if (giftCardMessage) parts.push(`Cartão: "${giftCardMessage}"`)
+    if (giftIsSurprise) parts.push('Entrega surpresa')
+    return parts.join(' | ')
+  }
+
   function buildWhatsAppMessage() {
     const emoji = business.order_emoji?.trim() || '🛒'
     let msg = `${emoji} *Novo Pedido - ${business.name}*\n\n`
@@ -145,6 +186,18 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
 
     // Schedule
     msg += `⏰ *Horário:* ${scheduleType === 'now' ? 'Agora' : scheduleTime || 'A combinar'}\n\n`
+
+    // Dados do presente (modo catálogo)
+    if (catalogMode) {
+      msg += `🎁 *Dados do presente:*\n`
+      if (giftDeliveryDate) msg += `📅 *Entregar em:* ${formatGiftDate(giftDeliveryDate)}${giftDeliveryTime ? ` às ${giftDeliveryTime}` : ''}\n`
+      if (giftRecipientName) msg += `🎀 *Para:* ${giftRecipientName}\n`
+      if (giftRecipientPhone) msg += `📞 *Tel. de quem recebe:* ${giftRecipientPhone}\n`
+      if (giftRecipientAddress) msg += `📍 *Endereço de entrega:* ${giftRecipientAddress}\n`
+      if (giftCardMessage) msg += `💌 *Mensagem do cartão:* "${giftCardMessage}"\n`
+      msg += `🤫 *Entrega surpresa:* ${giftIsSurprise ? 'Sim (não avisar quem recebe)' : 'Não'}\n`
+      msg += '\n'
+    }
 
     // Items
     msg += `*🛒 Itens do Pedido:*\n`
@@ -211,7 +264,8 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
         total: finalTotal,
         coupon_code: couponCode || null,
         schedule: scheduleType === 'now' ? 'Agora' : (scheduleTime || 'A combinar'),
-        observations: observations || null,
+        observations: [observations, giftSummary()].filter(Boolean).join('\n') || null,
+        ...(catalogMode ? { gift_info: giftInfo() } : {}),
         status: 'pending',
       }).select('order_number').single()
       return (data?.order_number as number | undefined) ?? null
@@ -227,6 +281,8 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
     if (!customerPhone) { toast.error('Informe seu telefone'); return }
     if (effectiveOrderType === 'delivery' && !addressStreet) { toast.error('Informe o endereço de entrega'); return }
     if (effectiveOrderType === 'delivery' && hasDeliveryAreas && !selectedArea) { toast.error('Selecione seu bairro para calcular a entrega'); return }
+    if (catalogMode && !giftDeliveryDate) { toast.error('Escolha a data de entrega do presente'); return }
+    if (catalogMode && !giftRecipientName) { toast.error('Informe quem vai receber o presente'); return }
     if (!payment) { toast.error('Selecione a forma de pagamento'); return }
 
     // Abre o WhatsApp IMEDIATAMENTE (dentro do gesto do clique) para não ser bloqueado pelo navegador
@@ -350,6 +406,54 @@ export function CartDrawer({ open, onClose, business }: CartDrawerProps) {
                     placeholder="Ex.: (67) 99999-9999" type="tel"
                     className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-900 placeholder:text-gray-400" />
                 </div>
+
+                {/* Dados do presente (modo catálogo) */}
+                {catalogMode && (
+                  <div className="rounded-xl border border-pink-200 bg-pink-50 p-3 space-y-3">
+                    <p className="text-sm font-semibold text-pink-700 flex items-center gap-1.5">🎁 Dados do presente</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-600">Data de entrega *</label>
+                        <input type="date" value={giftDeliveryDate} onChange={e => setGiftDeliveryDate(e.target.value)}
+                          className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 text-gray-900" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-600">Horário</label>
+                        <input type="time" value={giftDeliveryTime} onChange={e => setGiftDeliveryTime(e.target.value)}
+                          className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 text-gray-900" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-600">Quem vai receber *</label>
+                      <input value={giftRecipientName} onChange={e => setGiftRecipientName(e.target.value)}
+                        placeholder="Nome de quem recebe"
+                        className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 text-gray-900 placeholder:text-gray-400" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-600">Telefone de quem recebe</label>
+                      <input value={giftRecipientPhone} onChange={e => setGiftRecipientPhone(e.target.value)}
+                        placeholder="(00) 00000-0000" type="tel"
+                        className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 text-gray-900 placeholder:text-gray-400" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-600">Endereço de entrega</label>
+                      <input value={giftRecipientAddress} onChange={e => setGiftRecipientAddress(e.target.value)}
+                        placeholder="Rua, número, bairro, complemento"
+                        className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 text-gray-900 placeholder:text-gray-400" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-600">Mensagem do cartão</label>
+                      <textarea value={giftCardMessage} onChange={e => setGiftCardMessage(e.target.value)}
+                        placeholder="Ex.: Feliz aniversário! Com carinho, João." rows={2}
+                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 text-gray-900 placeholder:text-gray-400 resize-none" />
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" checked={giftIsSurprise} onChange={e => setGiftIsSurprise(e.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 text-pink-500 focus:ring-pink-400" />
+                      <span className="text-sm text-gray-700">É uma surpresa (não avisar quem recebe antes)</span>
+                    </label>
+                  </div>
+                )}
 
                 {/* Cartão fidelidade */}
                 {loyaltyOn && loyaltyCount !== null && (() => {
